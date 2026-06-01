@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arquímedes de Siracusa | Genio de la Ingeniería</title>
+    
+    <!-- Metaetiquetas SEO -->
+    <meta name="description" content="Explora los inventos y desarrollos de ingeniería de Arquímedes de Siracusa. Su historia, su legado, el tornillo hidráulico, sus armas mecánicas y el portal de proyectos activos.">
+    <meta name="keywords" content="Arquímedes, Siracusa, ingeniería, historia, inventos, tornillo de Arquímedes, garra de Arquímedes, física, matemática">
+    <meta name="author" content="Arquímedes Online">
+    
+    <!-- Open Graph (Compartir en Redes Sociales) -->
+    <meta property="og:title" content="Arquímedes de Siracusa | Genio de la Ingeniería">
+    <meta property="og:description" content="Descubre la vida y desarrollos mecánicos de uno de los mayores científicos de la historia. Ilustraciones vectoriales animadas, interactividad y acceso al hub de proyectos.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.arquimedes.online">
+    
+    <!-- Estilos -->
+    <link rel="stylesheet" href="styles.css">
+    
+    <style>
+        /* Estilos específicos para las animaciones y SVGs de los inventos */
+        .svg-illustration {
+            width: 100%;
+            height: 100%;
+            display: block;
+            background: rgba(10, 12, 18, 0.4);
+            transition: var(--transition-smooth);
+        }
+        
+        /* Animación del Tornillo */
+        .invention-card:hover .screw-helix {
+            animation: screw-pump 1.5s linear infinite;
+        }
+        @keyframes screw-pump {
+            0% { stroke-dashoffset: 0; }
+            100% { stroke-dashoffset: -40; }
+        }
+        
+        /* Animación de la Garra */
+        .claw-arm {
+            transform-origin: 20px 80px;
+            transition: var(--transition-bounce);
+        }
+        .roman-ship {
+            transform-origin: 70px 75px;
+            transition: var(--transition-bounce);
+        }
+        .invention-card:hover .claw-arm {
+            transform: rotate(-15deg);
+        }
+        .invention-card:hover .roman-ship {
+            transform: translate(-10px, -25px) rotate(25deg);
+        }
+        
+        /* Animación del Rayo de Calor */
+        .ray-beam {
+            stroke-dasharray: 8 4;
+            animation: ray-pulse 2s linear infinite;
+            opacity: 0.3;
+        }
+        .invention-card:hover .ray-beam {
+            opacity: 1;
+            stroke-dashoffset: -20;
+        }
+        .ship-fire {
+            opacity: 0;
+            transition: var(--transition-smooth);
+        }
+        .invention-card:hover .ship-fire {
+            opacity: 1;
+        }
+        @keyframes ray-pulse {
+            0% { stroke-dashoffset: 0; }
+            100% { stroke-dashoffset: -12; }
+        }
+        
+        /* Animación de la Corona (Eureka) */
+        .water-level {
+            transition: var(--transition-smooth);
+        }
+        .crown-submerged {
+            transform-origin: 50px 45px;
+            transition: var(--transition-smooth);
+        }
+        .invention-card:hover .water-level {
+            d: path("M20,55 Q50,53 80,55 L80,85 L20,85 Z");
+        }
+        .invention-card:hover .crown-submerged {
+            transform: translateY(12px);
+        }
+        
+        /* Animación de la Polea */
+        .pulley-rope {
+            transition: var(--transition-smooth);
+            stroke-dasharray: 4;
+        }
+        .pulley-load {
+            transition: var(--transition-smooth);
+        }
+        .invention-card:hover .pulley-load {
+            transform: translateY(-15px);
+        }
+        
+        /* Animación del Planetario */
+        .planetarium-gear-small {
+            transform-origin: 65px 35px;
+            animation: spin-gear 15s linear infinite;
+        }
+        .planetarium-gear-large {
+            transform-origin: 45px 55px;
+            animation: spin-gear-reverse 25s linear infinite;
+        }
+        
+        /* Mecanismo del Hero */
+        .hero-mechanism {
+            width: 100%;
+            max-width: 420px;
+            height: auto;
+            filter: drop-shadow(0 0 15px rgba(0, 229, 255, 0.15));
+        }
+        .hero-gear-center {
+            transform-origin: 200px 200px;
+            animation: spin-gear 40s linear infinite;
+        }
+        .hero-gear-top {
+            transform-origin: 310px 110px;
+            animation: spin-gear-reverse 25s linear infinite;
+        }
+        .hero-gear-left {
+            transform-origin: 90px 240px;
+            animation: spin-gear-reverse 30s linear infinite;
+        }
+        .hero-orbit {
+            transform-origin: 200px 200px;
+            animation: spin-gear 60s linear infinite;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Canvas para Partículas de Fondo -->
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- Engranajes de Fondo Decorativos -->
+    <div class="background-gears" aria-hidden="true">
+        <!-- Engranaje 1 -->
+        <svg class="gear-svg gear-1" viewBox="0 0 100 100">
+            <path d="M50 35c-8.3 0-15 6.7-15 15s6.7 15 15 15 15-6.7 15-15-6.7-15-15-15zm0 24c-5 0-9-4-9-9s4-9 9-9 9 4 9 9-4 9-9 9zm8-36.2l-1.6-4.9c-.3-.9-1.2-1.4-2.1-1.2l-5.8 1.5c-1.3-.6-2.6-1.1-4-1.4L44 1.1c-.2-.9-1-1.6-2-1.5L37 0c-1 .1-1.7.9-1.7 1.9l.4 5.9c-1.3.4-2.6 1-3.8 1.7l-4.5-3.9c-.7-.6-1.8-.6-2.4.2L22 9.1c-.6.7-.5 1.8.2 2.4l4.5 3.9c-1 1-1.8 2.1-2.4 3.4l-5.6-2c-.9-.3-1.9.2-2.1 1.1L15 23.8c-.3.9.2 1.9 1.1 2.1l5.6 2c-.4 1.4-.6 2.8-.6 4.3L15.2 33c-.9-.1-1.8.6-1.9 1.5L13 39.4c-.1 1 .6 1.8 1.5 1.9l5.9.8c.2 1.4.5 2.7 1 4l-4.8 3.5c-.8.6-1 1.6-.5 2.4L20 57.5c.5.8 1.6 1 2.4.5l4.8-3.5c.8 1.1 1.8 2.1 2.9 3l-3.3 5c-.5.8-.3 1.9.5 2.4l4.8 3.2c.8.5 1.9.3 2.4-.5l3.3-5c1.2.6 2.5 1.1 3.9 1.4l1.3 5.8c.2.9 1.1 1.5 2 1.3l5 .6c.9-.1 1.6-.9 1.5-1.9l-1.3-5.8c1.3-.4 2.6-.9 3.8-1.6l4 4.4c.6.7 1.7.8 2.4.2l4.1-4.4c.7-.6.7-1.7.2-2.4l-4-4.4c1.1-1 2-2.1 2.6-3.4l5.3 2.7c.9.4 1.9-.1 2.2-1l2-5.5c.3-.9-.1-1.9-1-2.2l-5.3-2.7c.5-1.3.8-2.7.9-4.2l5.7.4c1 .1 1.8-.6 1.9-1.5l.8-5c.1-.9-.6-1.8-1.5-1.9l-5.7-.4c-.1-1.4-.4-2.8-.9-4.1l5.2-2.9c.8-.5 1.1-1.5.7-2.3l-2.6-5.2c-.5-.8-1.5-1.1-2.3-.7l-5.2 2.9c-.9-1.1-2-2.1-3.2-2.9l2.4-5.5c.4-.9-.1-1.9-1-2.3l-5.2-2.3c-.9-.4-1.9.1-2.3 1L58 22.8z"/>
+        </svg>
+        <!-- Engranaje 2 -->
+        <svg class="gear-svg gear-2" viewBox="0 0 100 100">
+            <path d="M50 35c-8.3 0-15 6.7-15 15s6.7 15 15 15 15-6.7 15-15-6.7-15-15-15zm0 24c-5 0-9-4-9-9s4-9 9-9 9 4 9 9-4 9-9 9zm8-36.2l-1.6-4.9c-.3-.9-1.2-1.4-2.1-1.2l-5.8 1.5c-1.3-.6-2.6-1.1-4-1.4L44 1.1c-.2-.9-1-1.6-2-1.5L37 0c-1 .1-1.7.9-1.7 1.9l.4 5.9c-1.3.4-2.6 1-3.8 1.7l-4.5-3.9c-.7-.6-1.8-.6-2.4.2L22 9.1c-.6.7-.5 1.8.2 2.4l4.5 3.9c-1 1-1.8 2.1-2.4 3.4l-5.6-2c-.9-.3-1.9.2-2.1 1.1L15 23.8c-.3.9.2 1.9 1.1 2.1l5.6 2c-.4 1.4-.6 2.8-.6 4.3L15.2 33c-.9-.1-1.8.6-1.9 1.5L13 39.4c-.1 1 .6 1.8 1.5 1.9l5.9.8c.2 1.4.5 2.7 1 4l-4.8 3.5c-.8.6-1 1.6-.5 2.4L20 57.5c.5.8 1.6 1 2.4.5l4.8-3.5c.8 1.1 1.8 2.1 2.9 3l-3.3 5c-.5.8-.3 1.9.5 2.4l4.8 3.2c.8.5 1.9.3 2.4-.5l3.3-5c1.2.6 2.5 1.1 3.9 1.4l1.3 5.8c.2.9 1.1 1.5 2 1.3l5 .6c.9-.1 1.6-.9 1.5-1.9l-1.3-5.8c1.3-.4 2.6-.9 3.8-1.6l4 4.4c.6.7 1.7.8 2.4.2l4.1-4.4c.7-.6.7-1.7.2-2.4l-4-4.4c1.1-1 2-2.1 2.6-3.4l5.3 2.7c.9.4 1.9-.1 2.2-1l2-5.5c.3-.9-.1-1.9-1-2.2l-5.3-2.7c.5-1.3.8-2.7.9-4.2l5.7.4c1 .1 1.8-.6 1.9-1.5l.8-5c.1-.9-.6-1.8-1.5-1.9l-5.7-.4c-.1-1.4-.4-2.8-.9-4.1l5.2-2.9c.8-.5 1.1-1.5.7-2.3l-2.6-5.2c-.5-.8-1.5-1.1-2.3-.7l-5.2 2.9c-.9-1.1-2-2.1-3.2-2.9l2.4-5.5c.4-.9-.1-1.9-1-2.3l-5.2-2.3c-.9-.4-1.9.1-2.3 1L58 22.8z"/>
+        </svg>
+    </div>
+
+    <!-- Encabezado / Nav -->
+    <header>
+        <div class="nav-container">
+            <a href="#" class="logo" id="nav-logo">
+                <svg class="logo-gear" viewBox="0 0 100 100" aria-hidden="true">
+                    <path d="M50 35c-8.3 0-15 6.7-15 15s6.7 15 15 15 15-6.7 15-15-6.7-15-15-15zm0 24c-5 0-9-4-9-9s4-9 9-9 9 4 9 9-4 9-9 9zm8-36.2l-1.6-4.9c-.3-.9-1.2-1.4-2.1-1.2l-5.8 1.5c-1.3-.6-2.6-1.1-4-1.4L44 1.1c-.2-.9-1-1.6-2-1.5L37 0c-1 .1-1.7.9-1.7 1.9l.4 5.9c-1.3.4-2.6 1-3.8 1.7l-4.5-3.9c-.7-.6-1.8-.6-2.4.2L22 9.1c-.6.7-.5 1.8.2 2.4l4.5 3.9c-1 1-1.8 2.1-2.4 3.4l-5.6-2c-.9-.3-1.9.2-2.1 1.1L15 23.8c-.3.9.2 1.9 1.1 2.1l5.6 2c-.4 1.4-.6 2.8-.6 4.3L15.2 33c-.9-.1-1.8.6-1.9 1.5L13 39.4c-.1 1 .6 1.8 1.5 1.9l5.9.8c.2 1.4.5 2.7 1 4l-4.8 3.5c-.8.6-1 1.6-.5 2.4L20 57.5c.5.8 1.6 1 2.4.5l4.8-3.5c.8 1.1 1.8 2.1 2.9 3l-3.3 5c-.5.8-.3 1.9.5 2.4l4.8 3.2c.8.5 1.9.3 2.4-.5l3.3-5c1.2.6 2.5 1.1 3.9 1.4l1.3 5.8c.2.9 1.1 1.5 2 1.3l5 .6c.9-.1 1.6-.9 1.5-1.9l-1.3-5.8c1.3-.4 2.6-.9 3.8-1.6l4 4.4c.6.7 1.7.8 2.4.2l4.1-4.4c.7-.6.7-1.7.2-2.4l-4-4.4c1.1-1 2-2.1 2.6-3.4l5.3 2.7c.9.4 1.9-.1 2.2-1l2-5.5c.3-.9-.1-1.9-1-2.2l-5.3-2.7c.5-1.3.8-2.7.9-4.2l5.7.4c1 .1 1.8-.6 1.9-1.5l.8-5c.1-.9-.6-1.8-1.5-1.9l-5.7-.4c-.1-1.4-.4-2.8-.9-4.1l5.2-2.9c.8-.5 1.1-1.5.7-2.3l-2.6-5.2c-.5-.8-1.5-1.1-2.3-.7l-5.2 2.9c-.9-1.1-2-2.1-3.2-2.9l2.4-5.5c.4-.9-.1-1.9-1-2.3l-5.2-2.3c-.9-.4-1.9.1-2.3 1L58 22.8z"/>
+                </svg>
+                <span class="logo-text">ARQUÍMEDES</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#hero">Inicio</a></li>
+                <li><a href="#history">Historia</a></li>
+                <li><a href="#inventions">Inventos</a></li>
+                <li><a href="proyectos.html" class="btn-nav-projects" id="btn-nav-projects">Proyectos</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <!-- Sección Hero / Inicio -->
+    <main>
+        <section id="hero" class="hero">
+            <div class="hero-container">
+                <div class="hero-info">
+                    <span class="hero-subtitle">El mayor genio de la antigüedad</span>
+                    <h1 class="hero-title" id="main-heading">ARQUÍMEDES DE SIRACUSA</h1>
+                    <p class="hero-description">
+                        Matemático, físico, ingeniero, astrónomo e inventor del siglo III a.C. Sus revoluciones conceptuales y mecánicas sentaron las bases de la hidrostática, la física estática y el cálculo integral moderno.
+                    </p>
+                    <div class="hero-buttons">
+                        <a href="#inventions" class="btn-primary gold" id="btn-discover">Descubrir Inventos</a>
+                        <a href="proyectos.html" class="btn-outline" id="btn-hub-link">Ver Ecosistema</a>
+                    </div>
+                </div>
+                
+                <div class="hero-visual">
+                    <!-- Mecanismo Interactivo de Siracusa (SVG) -->
+                    <svg class="hero-mechanism" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Órbitas y Geometría Sagrada -->
+                        <circle cx="200" cy="200" r="180" stroke="rgba(0, 229, 255, 0.15)" stroke-width="1" stroke-dasharray="6 6"/>
+                        <circle cx="200" cy="200" r="140" stroke="rgba(212, 175, 55, 0.2)" stroke-width="1.5"/>
+                        <circle cx="200" cy="200" r="90" stroke="rgba(255, 255, 255, 0.08)" stroke-width="1"/>
+                        
+                        <!-- Líneas Geométricas de Alineación -->
+                        <line x1="200" y1="10" x2="200" y2="390" stroke="rgba(212, 175, 55, 0.1)" stroke-width="1"/>
+                        <line x1="10" y1="200" x2="390" y2="200" stroke="rgba(212, 175, 55, 0.1)" stroke-width="1"/>
+                        <line x1="65" y1="65" x2="335" y2="335" stroke="rgba(0, 229, 255, 0.05)" stroke-width="1" stroke-dasharray="2 2"/>
+                        
+                        <!-- Órbita Animada con Planeta -->
+                        <g class="hero-orbit">
+                            <circle cx="200" cy="200" r="140" fill="none"/>
+                            <circle cx="200" cy="60" r="7" fill="#00e5ff" filter="drop-shadow(0 0 6px #00e5ff)"/>
+                        </g>
+
+                        <!-- Engranaje Central (Dorado) -->
+                        <g class="hero-gear-center" stroke="#d4af37" stroke-width="2">
+                            <circle cx="200" cy="200" r="45" fill="rgba(8, 9, 13, 0.8)"/>
+                            <circle cx="200" cy="200" r="15"/>
+                            <!-- Dientes de Engranaje -->
+                            <path d="M200,150 L200,140 M200,250 L200,260 M150,200 L140,200 M250,200 L260,200 M165,165 L157,157 M235,235 L243,243 M165,235 L157,243 M235,165 L243,157" stroke-linecap="round" stroke-width="6"/>
+                            <path d="M180,180 L220,220 M180,220 L220,180" stroke="rgba(212, 175, 55, 0.4)" stroke-width="1"/>
+                        </g>
+
+                        <!-- Engranaje Superior Derecho (Cian) -->
+                        <g class="hero-gear-top" stroke="#00e5ff" stroke-width="1.5">
+                            <circle cx="310" cy="110" r="25" fill="rgba(8, 9, 13, 0.8)"/>
+                            <circle cx="310" cy="110" r="8"/>
+                            <path d="M310,80 L310,75 M310,140 L310,145 M280,110 L275,110 M340,110 L345,110 M289,89 L285,85 M331,131 L335,135 M289,131 L285,135 M331,89 L335,85" stroke-linecap="round" stroke-width="4"/>
+                        </g>
+
+                        <!-- Engranaje Inferior Izquierdo (Gris / Bronce) -->
+                        <g class="hero-gear-left" stroke="#c5a880" stroke-width="1.5">
+                            <circle cx="90" cy="240" r="35" fill="rgba(8, 9, 13, 0.8)"/>
+                            <circle cx="90" cy="240" r="10"/>
+                            <path d="M90,200 L90,193 M90,280 L90,287 M50,240 L43,240 M130,240 L137,240 M62,212 L56,206 M118,268 L124,274 M62,268 L56,274 M118,212 L124,206" stroke-linecap="round" stroke-width="5"/>
+                        </g>
+                    </svg>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección de Historia / Biografía -->
+        <section id="history" class="section-container scroll-animate">
+            <div class="section-header">
+                <span class="section-tag">Crónica</span>
+                <h2 class="section-title" id="history-heading">Biografía e Hitos</h2>
+            </div>
+            
+            <div class="timeline">
+                <!-- Hito 1 -->
+                <div class="timeline-item scroll-animate">
+                    <div class="timeline-badge"></div>
+                    <div class="timeline-date">287 a.C.</div>
+                    <div class="timeline-content">
+                        <h3>Nacimiento</h3>
+                        <p>Nace en Siracusa, Sicilia, una colonia autónoma griega. Hijo del astrónomo Fidias, crece rodeado de ciencia y el estudio del movimiento de las estrellas.</p>
+                    </div>
+                </div>
+
+                <!-- Hito 2 -->
+                <div class="timeline-item scroll-animate">
+                    <div class="timeline-badge"></div>
+                    <div class="timeline-date">240 a.C.</div>
+                    <div class="timeline-content">
+                        <h3>Estudios en Alejandría</h3>
+                        <p>Viaja a Alejandría (Egipto), el centro intelectual del mundo. Allí estudia con los discípulos de Euclides y diseña sus primeros inventos hidráulicos, como el famoso tornillo sin fin.</p>
+                    </div>
+                </div>
+
+                <!-- Hito 3 -->
+                <div class="timeline-item scroll-animate">
+                    <div class="timeline-badge"></div>
+                    <div class="timeline-date">215 a.C.</div>
+                    <div class="timeline-content">
+                        <h3>Defensa de Siracusa</h3>
+                        <p>El rey Hierón II le encomienda el diseño de la defensa de la ciudad contra el asedio de la República Romana. Arquímedes sorprende al ejército de Marcelo con grúas de guerra y catapultas de alcance variable.</p>
+                    </div>
+                </div>
+
+                <!-- Hito 4 -->
+                <div class="timeline-item scroll-animate">
+                    <div class="timeline-badge"></div>
+                    <div class="timeline-date">212 a.C.</div>
+                    <div class="timeline-content">
+                        <h3>Su Legado Eterno</h3>
+                        <p>Siracusa cae. Arquímedes es asesinado por un soldado romano desobediente mientras resolvía un problema geométrico dibujado en la arena. Sus últimas palabras fueron: <em>"No toques mis círculos"</em>.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección de Inventos -->
+        <section id="inventions" class="section-container scroll-animate">
+            <div class="section-header">
+                <span class="section-tag">Desarrollos Ingenieriles</span>
+                <h2 class="section-title" id="inventions-heading">Ingeniería y Mecánica</h2>
+            </div>
+            
+            <div class="inventions-grid">
+                <!-- Invento 1: Tornillo -->
+                <div class="invention-card scroll-animate" data-invention="tornillo" id="card-tornillo">
+                    <div class="invention-img-container">
+                        <svg class="svg-illustration" viewBox="0 0 100 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Cilindro Externo -->
+                            <rect x="15" y="28" width="70" height="24" rx="2" transform="rotate(-15 50 40)" stroke="#c5a880" stroke-width="1.5" fill="rgba(197, 168, 128, 0.05)"/>
+                            <!-- Eje Central -->
+                            <line x1="12" y1="46" x2="88" y2="26" stroke="#d4af37" stroke-width="2.5"/>
+                            <!-- Hélice / Tornillo (Animada con stroke-dashoffset) -->
+                            <path class="screw-helix" d="M16,45 L26,42 M26,42 Q32,34 38,40 L48,37 Q54,29 60,35 L70,32 Q76,24 82,30 L84,29" stroke="#00e5ff" stroke-width="2" fill="none" stroke-linecap="round"/>
+                            <!-- Nivel de Agua inferior -->
+                            <path d="M5,62 Q20,58 35,62 L35,75 L5,75 Z" fill="rgba(0, 229, 255, 0.2)" stroke="#00b4d8" stroke-width="1"/>
+                            <!-- Salida de Agua superior -->
+                            <path d="M78,20 Q84,22 88,27" stroke="#00e5ff" stroke-width="1.5" stroke-dasharray="2 2"/>
+                            <!-- Manivela -->
+                            <path d="M12,46 L5,48 L5,38" stroke="#d4af37" stroke-width="1.5" fill="none"/>
+                        </svg>
+                    </div>
+                    <div class="invention-info">
+                        <h3 class="invention-title">Tornillo Hidráulico</h3>
+                        <p class="invention-desc">La máquina helicoidal que revolucionó el bombeo de agua para agricultura y minería elevando fluidos de forma continua mediante giros.</p>
+                        <span class="invention-link-text">
+                            Ver Detalles 
+                            <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Invento 2: La Garra -->
+                <div class="invention-card scroll-animate" data-invention="garra" id="card-garra">
+                    <div class="invention-img-container">
+                        <svg class="svg-illustration" viewBox="0 0 100 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Muralla de Siracusa -->
+                            <rect x="0" y="55" width="30" height="25" fill="#303540" stroke="#c5a880" stroke-width="1"/>
+                            <path d="M0,55 L5,50 L10,55 L15,50 L20,55 L25,50 L30,55" fill="#303540" stroke="#c5a880" stroke-width="1"/>
+                            
+                            <!-- Grúa / Brazo (Claw Arm) -->
+                            <g class="claw-arm">
+                                <line x1="20" y1="80" x2="20" y2="40" stroke="#d4af37" stroke-width="3"/>
+                                <line x1="20" y1="45" x2="65" y2="25" stroke="#d4af37" stroke-width="2.5"/>
+                                <!-- Cadena / Cable -->
+                                <line x1="65" y1="25" x2="65" y2="45" stroke="#a0a5b5" stroke-width="1" stroke-dasharray="2 2"/>
+                                <!-- Garra / Gancho -->
+                                <path d="M62,45 Q65,50 68,45" stroke="#00e5ff" stroke-width="1.5" fill="none"/>
+                            </g>
+                            
+                            <!-- Mar -->
+                            <path d="M30,70 Q45,67 60,70 Q75,73 90,70 Q95,69 100,70 L100,80 L30,80 Z" fill="rgba(0, 180, 216, 0.15)" stroke="rgba(0, 229, 255, 0.3)" stroke-width="1"/>
+                            
+                            <!-- Barco Romano (Roman Ship) -->
+                            <g class="roman-ship">
+                                <path d="M50,60 L80,60 L85,50 L45,52 Z" fill="#604030" stroke="#d4af37" stroke-width="1"/>
+                                <line x1="65" y1="60" x2="65" y2="38" stroke="#604030" stroke-width="1.5"/>
+                                <path d="M65,40 Q75,45 65,50" fill="#fff" opacity="0.7"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="invention-info">
+                        <h3 class="invention-title">La Garra de Siracusa</h3>
+                        <p class="invention-desc">Un arma defensiva de poleas compuestas y ganchos metálicos capaz de elevar barcos de guerra enemigos y volcarlos en el mar.</p>
+                        <span class="invention-link-text">
+                            Ver Detalles 
+                            <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Invento 3: Rayo de Calor -->
+                <div class="invention-card scroll-animate" data-invention="rayo" id="card-rayo">
+                    <div class="invention-img-container">
+                        <svg class="svg-illustration" viewBox="0 0 100 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Sol -->
+                            <circle cx="10" cy="15" r="8" fill="#d4af37" filter="drop-shadow(0 0 4px #d4af37)"/>
+                            <!-- Rayos del Sol al Espejo -->
+                            <line x1="16" y1="20" x2="28" y2="48" stroke="rgba(212, 175, 55, 0.4)" stroke-width="1" stroke-dasharray="2 2"/>
+                            
+                            <!-- Espejo Cóncavo -->
+                            <path d="M25,40 Q32,50 25,60" stroke="#d4af37" stroke-width="3" fill="none"/>
+                            <line x1="22" y1="50" x2="28" y2="50" stroke="#c5a880" stroke-width="1.5"/>
+                            
+                            <!-- Rayos Reflejados Concentrados (Ray Beam) -->
+                            <line class="ray-beam" x1="28" y1="50" x2="75" y2="45" stroke="#00e5ff" stroke-width="2.5"/>
+                            <line class="ray-beam" x1="28" y1="50" x2="74" y2="44" stroke="#fff" stroke-width="1"/>
+                            
+                            <!-- Mar -->
+                            <path d="M0,68 Q25,65 50,68 Q75,70 100,68 L100,80 L0,80 Z" fill="rgba(0, 180, 216, 0.15)" stroke="rgba(0, 229, 255, 0.2)" stroke-width="1"/>
+                            
+                            <!-- Galera Romana -->
+                            <path d="M65,58 L85,58 L90,50 L60,52 Z" fill="#604030" stroke="#c5a880" stroke-width="1"/>
+                            <line x1="75" y1="58" x2="75" y2="38" stroke="#604030" stroke-width="1.5"/>
+                            <path d="M75,40 Q85,45 75,50" fill="#e53e3e" opacity="0.8"/> <!-- Vela roja -->
+                            
+                            <!-- Fuego Animado en la Vela -->
+                            <g class="ship-fire">
+                                <path d="M73,43 Q75,30 77,43 Q79,35 81,45 Z" fill="#ff5722"/>
+                                <path d="M75,43 Q76,35 77,43" fill="#ffeb3b"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="invention-info">
+                        <h3 class="invention-title">El Rayo de Calor</h3>
+                        <p class="invention-desc">Espejos parabólicos que concentraban la luz solar para encender fuego a las naves enemigas a distancia en la bahía.</p>
+                        <span class="invention-link-text">
+                            Ver Detalles 
+                            <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Invento 4: Corona -->
+                <div class="invention-card scroll-animate" data-invention="corona" id="card-corona">
+                    <div class="invention-img-container">
+                        <svg class="svg-illustration" viewBox="0 0 100 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Recipiente / Tina -->
+                            <rect x="20" y="40" width="60" height="30" rx="3" stroke="#c5a880" stroke-width="2" fill="rgba(255,255,255,0.02)"/>
+                            
+                            <!-- Agua (Animada) -->
+                            <path class="water-level" d="M20,60 Q50,60 80,60 L80,85 L20,85 Z" fill="rgba(0, 229, 255, 0.25)" stroke="#00e5ff" stroke-width="1.5"/>
+                            
+                            <!-- Corona Sumergida -->
+                            <g class="crown-submerged">
+                                <path d="M40,43 L45,35 L50,43 L55,35 L60,43 Z" fill="none" stroke="#d4af37" stroke-width="1.5"/>
+                                <rect x="40" y="43" width="20" height="4" fill="none" stroke="#d4af37" stroke-width="1.5"/>
+                            </g>
+                            
+                            <!-- Ondas de Desplazamiento de agua -->
+                            <path d="M15,60 Q10,50 5,60 M85,60 Q90,50 95,60" stroke="#00e5ff" stroke-width="1" opacity="0.6"/>
+                        </svg>
+                    </div>
+                    <div class="invention-info">
+                        <h3 class="invention-title">Principio de Flotabilidad</h3>
+                        <p class="invention-desc">El descubrimiento del empuje hidrostático a raíz de la famosa corona de oro del Rey Hierón II. Eureka en la bañera.</p>
+                        <span class="invention-link-text">
+                            Ver Detalles 
+                            <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Invento 5: Polea -->
+                <div class="invention-card scroll-animate" data-invention="polea" id="card-polea">
+                    <div class="invention-img-container">
+                        <svg class="svg-illustration" viewBox="0 0 100 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Viga Superior -->
+                            <line x1="10" y1="15" x2="90" y2="15" stroke="#c5a880" stroke-width="3"/>
+                            
+                            <!-- Polea Fija Superior -->
+                            <circle cx="50" cy="30" r="10" stroke="#d4af37" stroke-width="2" fill="rgba(8,9,13,0.8)"/>
+                            <circle cx="50" cy="30" r="3" fill="#d4af37"/>
+                            
+                            <!-- Polea Móvil Inferior -->
+                            <g class="pulley-load">
+                                <circle cx="50" cy="55" r="8" stroke="#00e5ff" stroke-width="1.5" fill="rgba(8,9,13,0.8)"/>
+                                <circle cx="50" cy="55" r="2.5" fill="#00e5ff"/>
+                                <!-- Gancho e Ingot / Carga -->
+                                <path d="M50,63 L50,67 M45,67 L55,67 L50,75 Z" fill="#c5a880" stroke="#d4af37" stroke-width="1"/>
+                            </g>
+                            
+                            <!-- Cuerda (Pulley Rope) -->
+                            <path class="pulley-rope" d="M30,70 L30,30 Q30,20 40,20 Q50,20 50,30 L50,55 Q50,63 58,55 L58,30" stroke="#a0a5b5" stroke-width="1.5" fill="none"/>
+                        </svg>
+                    </div>
+                    <div class="invention-info">
+                        <h3 class="invention-title">Polea Compuesta</h3>
+                        <p class="invention-desc">Demostración física donde Arquímedes movió un navío cargado tirando con una sola mano mediante la ventaja mecánica.</p>
+                        <span class="invention-link-text">
+                            Ver Detalles 
+                            <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Invento 6: Planetario -->
+                <div class="invention-card scroll-animate" data-invention="planetario" id="card-planetario">
+                    <div class="invention-img-container">
+                        <svg class="svg-illustration" viewBox="0 0 100 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Fondo del Espacio -->
+                            <circle cx="50" cy="40" r="32" stroke="rgba(255,255,255,0.04)" stroke-width="1" stroke-dasharray="3 3"/>
+                            
+                            <!-- Engranaje Grande (Bronze) -->
+                            <g class="planetarium-gear-large" stroke="#c5a880" stroke-width="1.5">
+                                <circle cx="45" cy="55" r="22" fill="none"/>
+                                <circle cx="45" cy="55" r="5" fill="#c5a880"/>
+                                <path d="M45,28 L45,33 M45,77 L45,72 M18,55 L23,55 M72,55 L67,55" stroke-width="3" stroke-linecap="round"/>
+                            </g>
+                            
+                            <!-- Engranaje Pequeño (Gold) -->
+                            <g class="planetarium-gear-small" stroke="#d4af37" stroke-width="1.2">
+                                <circle cx="65" cy="35" r="14" fill="none"/>
+                                <circle cx="65" cy="35" r="3" fill="#d4af37"/>
+                                <path d="M65,18 L65,22 M65,52 L65,48 M48,35 L52,35 M82,35 L78,35" stroke-width="2.5" stroke-linecap="round"/>
+                            </g>
+                            
+                            <!-- Símbolos del Zodiaco / Planetas en la Órbita -->
+                            <circle cx="20" cy="25" r="2" fill="#00e5ff" filter="drop-shadow(0 0 3px #00e5ff)"/>
+                            <circle cx="75" cy="62" r="3" fill="#d4af37"/>
+                        </svg>
+                    </div>
+                    <div class="invention-info">
+                        <h3 class="invention-title">Planetario Mecánico</h3>
+                        <p class="invention-desc">Esfera de engranajes metálicos que calculaba y mostraba las posiciones del Sol, la Luna, sus eclipses y planetas.</p>
+                        <span class="invention-link-text">
+                            Ver Detalles 
+                            <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal Detallado de Inventos -->
+    <div class="modal" id="invention-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal-content">
+            <button class="modal-close" aria-label="Cerrar modal">&times;</button>
+            <div class="modal-img-container" id="modal-svg-container">
+                <!-- Se poblará dinámicamente con el SVG del invento -->
+            </div>
+            <div class="modal-body">
+                <h3 class="modal-title" id="modal-title"></h3>
+                <div class="modal-formula"></div>
+                <p class="modal-text"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pie de Página -->
+    <footer>
+        <div class="footer-container">
+            <p class="footer-quote">"Dadme un punto de apoyo y moveré el mundo."</p>
+            <p class="footer-copy">&copy; 2026 Arquímedes Online - Ecosistema de Ingeniería y Desarrollo.</p>
+        </div>
+    </footer>
+
+    <!-- Lógica Interactiva -->
+    <script src="app.js"></script>
+</body>
+</html>

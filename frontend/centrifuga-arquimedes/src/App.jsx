@@ -35,7 +35,7 @@ function App() {
       className="app-container" 
       style={{ 
         gridTemplateColumns: currentView === 'simulator' ? '1fr 420px' : '1fr',
-        background: '#ffffff'
+        background: 'var(--bg-primary)'
       }}
     >
       {/* Global Floating Navigation Bar */}

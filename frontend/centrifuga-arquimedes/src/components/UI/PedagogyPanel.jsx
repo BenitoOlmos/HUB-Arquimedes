@@ -58,10 +58,10 @@ const PedagogyPanel = () => {
       {/* Hero Header */}
       <div style={{ borderBottom: '1px solid var(--border-glass)', paddingBottom: '20px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-          <span style={{ fontSize: '0.75rem', fontWeight: 800, background: 'var(--accent-blue)', color: '#ffffff', padding: '3px 8px', borderRadius: '4px', textTransform: 'uppercase' }}>Chile - Educación Técnico Profesional</span>
+          <span style={{ fontSize: '0.75rem', fontWeight: 800, background: 'rgba(56, 189, 248, 0.15)', color: 'var(--accent-cyan)', padding: '3px 8px', borderRadius: '4px', border: '1px solid rgba(56, 189, 248, 0.25)', textTransform: 'uppercase' }}>Chile - Educación Técnico Profesional</span>
           <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)' }}>Carrera de Mantenimiento Industrial (8 Semestres)</span>
         </div>
-        <h1 style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--accent-blue)', letterSpacing: '-0.03em' }}>Proyecto Pedagógico: Módulo Virtual de Maquinaria</h1>
+        <h1 style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--accent-cyan)', letterSpacing: '-0.03em' }}>Proyecto Pedagógico: Módulo Virtual de Maquinaria</h1>
         <p style={{ fontSize: '1.05rem', color: 'var(--text-secondary)', marginTop: '8px', lineHeight: '1.6', maxWidth: '850px' }}>
           Propuesta innovadora de plataforma virtual con tecnología de <strong>Realidad Virtual (VR)</strong> e <strong>Internet de las Cosas (IoT)</strong>, enfocada en el estudio, diagnóstico y mantenimiento de una bomba de agua centrífuga acoplada a un motor eléctrico.
         </p>
@@ -71,8 +71,8 @@ const PedagogyPanel = () => {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
         
         {/* Objectives Section */}
-        <div style={{ background: '#ffffff', border: '1px solid var(--border-glass)', borderRadius: '12px', padding: '24px', boxShadow: 'var(--shadow-premium)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--accent-blue)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div style={{ background: 'var(--bg-glass)', border: '1px solid var(--border-glass)', borderRadius: '12px', padding: '24px', boxShadow: 'var(--shadow-premium)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--accent-cyan)', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Target size={20} color="var(--accent-cyan)" /> Objetivos del Proyecto
           </h2>
           
@@ -96,15 +96,15 @@ const PedagogyPanel = () => {
         </div>
 
         {/* Demo validation Box */}
-        <div style={{ background: 'linear-gradient(135deg, rgba(30, 58, 138, 0.02) 0%, rgba(2, 132, 199, 0.02) 100%)', border: '1px solid var(--border-glass)', borderRadius: '12px', padding: '24px', boxShadow: 'var(--shadow-premium)', display: 'flex', flexDirection: 'column', gap: '14px' }}>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--accent-blue)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div style={{ background: 'linear-gradient(135deg, rgba(56, 189, 248, 0.03) 0%, rgba(99, 102, 241, 0.03) 100%)', border: '1px solid var(--border-glass)', borderRadius: '12px', padding: '24px', boxShadow: 'var(--shadow-premium)', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--accent-cyan)', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <BookOpen size={20} color="var(--accent-cyan)" /> Validación Inicial (Demo MVP)
           </h2>
           <p style={{ fontSize: '0.88rem', lineHeight: '1.5', color: 'var(--text-secondary)' }}>
             Antes del despliegue masivo en los talleres, se implementa una <strong>maqueta funcional</strong>. Este piloto web de componentes 3D cumple la función de validar la interfaz gráfica y familiarizar a los docentes con las métricas del simulador.
           </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', background: '#ffffff', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
-            <strong style={{ fontSize: '0.8rem', color: 'var(--accent-blue)', display: 'block' }}>Alcance del Piloto:</strong>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', background: 'var(--bg-secondary)', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
+            <strong style={{ fontSize: '0.8rem', color: 'var(--accent-cyan)', display: 'block' }}>Alcance del Piloto:</strong>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
               <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                 <div style={{ width: '6px', height: '6px', background: 'var(--status-operational)', borderRadius: '50%' }} />
@@ -129,10 +129,10 @@ const PedagogyPanel = () => {
       </div>
 
       {/* 5W2H Plan de Trabajo (Timeline and tabs) */}
-      <div style={{ background: '#ffffff', border: '1px solid var(--border-glass)', borderRadius: '12px', padding: '24px', boxShadow: 'var(--shadow-premium)' }}>
+      <div style={{ background: 'var(--bg-glass)', border: '1px solid var(--border-glass)', borderRadius: '12px', padding: '24px', boxShadow: 'var(--shadow-premium)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-glass)', paddingBottom: '16px', marginBottom: '20px' }}>
           <div>
-            <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--accent-blue)' }}>Plan de Trabajo (Metodología 5W2H)</h2>
+            <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--accent-cyan)' }}>Plan de Trabajo (Metodología 5W2H)</h2>
             <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600 }}>Cronograma detallado del desarrollo e implementación</span>
           </div>
           
@@ -155,8 +155,8 @@ const PedagogyPanel = () => {
         <div>
           <div style={{ marginBottom: '20px', background: 'var(--bg-sidebar-header)', padding: '16px', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-              <h3 style={{ fontSize: '1.05rem', fontWeight: '800', color: 'var(--accent-blue)' }}>{stagesData[activeStage - 1].title}</h3>
-              <span style={{ fontSize: '0.8rem', fontWeight: 'bold', color: 'var(--accent-cyan)', background: '#ffffff', padding: '4px 10px', borderRadius: '12px', border: '1px solid var(--border-glass)' }}>{stagesData[activeStage - 1].period}</span>
+              <h3 style={{ fontSize: '1.05rem', fontWeight: '800', color: 'var(--accent-cyan)' }}>{stagesData[activeStage - 1].title}</h3>
+              <span style={{ fontSize: '0.8rem', fontWeight: 'bold', color: 'var(--accent-cyan)', background: 'var(--bg-secondary)', padding: '4px 10px', borderRadius: '12px', border: '1px solid var(--border-glass)' }}>{stagesData[activeStage - 1].period}</span>
             </div>
             <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: '1.5' }}>{stagesData[activeStage - 1].summary}</p>
           </div>
@@ -166,8 +166,8 @@ const PedagogyPanel = () => {
             {stagesData[activeStage - 1].details.map((item, idx) => {
               const IconComponent = item.icon;
               return (
-                <div key={idx} style={{ border: '1px solid var(--border-glass)', padding: '16px', borderRadius: '8px', display: 'flex', gap: '12px', alignItems: 'flex-start', background: '#ffffff', transition: 'var(--transition-smooth)' }}>
-                  <div style={{ background: 'rgba(30, 58, 138, 0.04)', padding: '8px', borderRadius: '6px', color: 'var(--accent-blue)' }}>
+                <div key={idx} style={{ border: '1px solid var(--border-glass)', padding: '16px', borderRadius: '8px', display: 'flex', gap: '12px', alignItems: 'flex-start', background: 'rgba(255,255,255,0.02)', transition: 'var(--transition-smooth)' }}>
+                  <div style={{ background: 'rgba(56, 189, 248, 0.08)', padding: '8px', borderRadius: '6px', color: 'var(--accent-cyan)' }}>
                     <IconComponent size={18} />
                   </div>
                   <div>

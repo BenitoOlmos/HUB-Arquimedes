@@ -150,7 +150,7 @@ const DiagnosisPanel = () => {
       
       {/* Title */}
       <div style={{ borderBottom: '1px solid var(--border-glass)', paddingBottom: '20px' }}>
-        <h1 style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--accent-blue)', letterSpacing: '-0.03em' }}>Guía Diagnóstica y Tabla de Síntomas</h1>
+        <h1 style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--accent-cyan)', letterSpacing: '-0.03em' }}>Guía Diagnóstica y Tabla de Síntomas</h1>
         <p style={{ fontSize: '1.05rem', color: 'var(--text-secondary)', marginTop: '8px', lineHeight: '1.6' }}>
           Matriz interactiva para la detección, diagnóstico y corrección de fallas mecánicas y eléctricas comunes en el conjunto motor-bomba. Sigue las secuencias de verificación indicadas para aplicar en tu simulador o visor VR.
         </p>
@@ -169,7 +169,7 @@ const DiagnosisPanel = () => {
             onChange={(e) => setSearchQuery(e.target.value)}
             style={{ 
               width: '100%', 
-              background: '#ffffff', 
+              background: 'var(--bg-secondary)', 
               border: '1px solid var(--border-glass)', 
               color: 'var(--text-primary)', 
               borderRadius: '24px', 
@@ -223,7 +223,7 @@ const DiagnosisPanel = () => {
               <div 
                 key={item.id} 
                 style={{ 
-                  background: '#ffffff', 
+                  background: 'var(--bg-glass)', 
                   border: isExpanded ? '1px solid var(--border-glass-active)' : '1px solid var(--border-glass)', 
                   borderRadius: '12px', 
                   boxShadow: isExpanded ? 'var(--shadow-premium), var(--shadow-glow)' : 'var(--shadow-premium)', 
@@ -241,7 +241,7 @@ const DiagnosisPanel = () => {
                     gap: '16px', 
                     alignItems: 'center', 
                     cursor: 'pointer',
-                    background: isExpanded ? 'rgba(30, 58, 138, 0.01)' : 'transparent'
+                    background: isExpanded ? 'rgba(56, 189, 248, 0.03)' : 'transparent'
                   }}
                 >
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -291,14 +291,14 @@ const DiagnosisPanel = () => {
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                         <div>
                           <strong style={{ fontSize: '0.78rem', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Causas Probables</strong>
-                          <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: '1.5', background: '#ffffff', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
+                          <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: '1.5', background: 'rgba(255, 255, 255, 0.02)', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
                             {item.causes}
                           </p>
                         </div>
                         
                         <div>
                           <strong style={{ fontSize: '0.78rem', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Acción Correctiva Recomendada</strong>
-                          <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: '1.5', background: '#ffffff', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
+                          <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: '1.5', background: 'rgba(255, 255, 255, 0.02)', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
                             {item.correction}
                           </p>
                         </div>
@@ -317,7 +317,7 @@ const DiagnosisPanel = () => {
                               style={{ 
                                 display: 'flex', 
                                 gap: '10px', 
-                                background: '#ffffff', 
+                                background: 'rgba(255, 255, 255, 0.02)', 
                                 padding: '10px 12px', 
                                 borderRadius: '8px', 
                                 border: '1px solid var(--border-glass)',

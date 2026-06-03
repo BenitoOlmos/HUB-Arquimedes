@@ -66,7 +66,7 @@ const SecurityPanel = () => {
       
       {/* Title */}
       <div style={{ borderBottom: '1px solid var(--border-glass)', paddingBottom: '20px' }}>
-        <h1 style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--accent-blue)', letterSpacing: '-0.03em' }}>Seguridad Industrial y Telemetría IoT</h1>
+        <h1 style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--accent-cyan)', letterSpacing: '-0.03em' }}>Seguridad Industrial y Telemetría IoT</h1>
         <p style={{ fontSize: '1.05rem', color: 'var(--text-secondary)', marginTop: '8px', lineHeight: '1.6' }}>
           Visualización de protocolos de seguridad en Realidad Virtual e integración bidireccional de sensores para el monitoreo y mantenimiento de la maquinaria (Industria 4.0).
         </p>
@@ -76,7 +76,7 @@ const SecurityPanel = () => {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
         
         {/* Safety Box */}
-        <div style={{ background: '#ffffff', border: '1px solid var(--border-glass)', borderRadius: '12px', padding: '24px', boxShadow: 'var(--shadow-premium)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div style={{ background: 'var(--bg-glass)', border: '1px solid var(--border-glass)', borderRadius: '12px', padding: '24px', boxShadow: 'var(--shadow-premium)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--status-operational)', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <ShieldCheck size={22} color="var(--status-operational)" /> Módulo de Ensayos Virtuales 100% Seguros
           </h2>
@@ -102,8 +102,8 @@ const SecurityPanel = () => {
         </div>
 
         {/* IoT Protocols Box */}
-        <div style={{ background: '#ffffff', border: '1px solid var(--border-glass)', borderRadius: '12px', padding: '24px', boxShadow: 'var(--shadow-premium)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--accent-blue)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div style={{ background: 'var(--bg-glass)', border: '1px solid var(--border-glass)', borderRadius: '12px', padding: '24px', boxShadow: 'var(--shadow-premium)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--accent-cyan)', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Cpu size={22} color="var(--accent-cyan)" /> Domótica Industrial e Integración IoT
           </h2>
           <p style={{ fontSize: '0.88rem', lineHeight: '1.5', color: 'var(--text-secondary)' }}>
@@ -111,15 +111,15 @@ const SecurityPanel = () => {
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <div style={{ display: 'flex', gap: '10px', alignItems: 'center', fontSize: '0.82rem', color: 'var(--text-secondary)', borderBottom: '1px solid var(--border-glass)', paddingBottom: '8px' }}>
-              <strong style={{ color: 'var(--accent-blue)', width: '130px', flexShrink: 0 }}>Protocolos de Red:</strong>
+              <strong style={{ color: 'var(--accent-cyan)', width: '130px', flexShrink: 0 }}>Protocolos de Red:</strong>
               <span>WebSockets para actualización inmediata de gráficos, MQTT para sensores IoT industriales.</span>
             </div>
             <div style={{ display: 'flex', gap: '10px', alignItems: 'center', fontSize: '0.82rem', color: 'var(--text-secondary)', borderBottom: '1px solid var(--border-glass)', paddingBottom: '8px' }}>
-              <strong style={{ color: 'var(--accent-blue)', width: '130px', flexShrink: 0 }}>Visualización:</strong>
+              <strong style={{ color: 'var(--accent-cyan)', width: '130px', flexShrink: 0 }}>Visualización:</strong>
               <span>Gafas de Realidad Virtual (HUD inmersivo) y Dashboard web unificado para docentes.</span>
             </div>
             <div style={{ display: 'flex', gap: '10px', alignItems: 'center', fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
-              <strong style={{ color: 'var(--accent-blue)', width: '130px', flexShrink: 0 }}>Retroalimentación:</strong>
+              <strong style={{ color: 'var(--accent-cyan)', width: '130px', flexShrink: 0 }}>Retroalimentación:</strong>
               <span>Alarma visual y sonora instantánea en caso de desbordamiento de límites térmicos o mecánicos.</span>
             </div>
           </div>
@@ -128,12 +128,12 @@ const SecurityPanel = () => {
       </div>
 
       {/* IoT Telemetry Simulation Dashboard */}
-      <div style={{ background: '#ffffff', border: '1px solid var(--border-glass)', borderRadius: '12px', padding: '24px', boxShadow: 'var(--shadow-premium)', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      <div style={{ background: 'var(--bg-glass)', border: '1px solid var(--border-glass)', borderRadius: '12px', padding: '24px', boxShadow: 'var(--shadow-premium)', display: 'flex', flexDirection: 'column', gap: '20px' }}>
         
         {/* Dashboard Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', borderBottom: '1px solid var(--border-glass)', paddingBottom: '16px', flexWrap: 'wrap', alignItems: 'center' }}>
           <div>
-            <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--accent-blue)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--accent-cyan)', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Activity size={20} color="var(--accent-cyan)" /> Telemetría de Control de Planta (IoT Simulado)
             </h2>
             <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600 }}>Inyecta fallas y observa el comportamiento de los sensores en tiempo real</span>

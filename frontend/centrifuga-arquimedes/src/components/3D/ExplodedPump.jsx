@@ -29,27 +29,39 @@ class ModelErrorBoundary extends React.Component {
 // Procedural 3D Centrifugal Pump Component
 const ProceduralPump = ({ explodeFactor, selectedPartId, onSelectPart }) => {
   const [hoveredId, setHoveredId] = useState(null);
+
+  // Helper to construct mesh standard materials with dynamic glowing highlights
+  const getMat = (partId, color, metalness = 0.5, roughness = 0.5) => {
+    const isSelected = selectedPartId === partId;
+    const isHovered = hoveredId === partId;
+    return (
+      <meshStandardMaterial
+        color={color}
+        metalness={metalness}
+        roughness={roughness}
+        emissive={isSelected ? "#38bdf8" : (isHovered ? "#22d3ee" : "#000000")}
+        emissiveIntensity={isSelected ? 0.8 : (isHovered ? 0.45 : 0)}
+      />
+    );
+  };
   
   // Define parts of the pump with their relative explosion directions and base positions
   const parts = [
     {
       id: 'suction_flange',
       name: 'Suction Flange',
-      color: '#475569', // Slate
-      metalness: 0.2,
-      roughness: 0.8,
       explodeDir: [0, 0, -2.5], // Moves forward along Z
       render: () => (
         <group>
-          {/* Suction Pipe Tube */}
-          <mesh castShadow receiveShadow>
+          {/* Suction Pipe Tube - rotated to Z-axis */}
+          <mesh castShadow receiveShadow rotation={[Math.PI / 2, 0, 0]}>
             <cylinderGeometry args={[0.5, 0.5, 1.2, 32]} />
-            <meshStandardMaterial color="#475569" rotation={[Math.PI / 2, 0, 0]} />
+            {getMat('suction_flange', '#475569', 0.2, 0.8)}
           </mesh>
-          {/* Flange Collar */}
-          <mesh position={[0, 0, -0.5]} castShadow receiveShadow>
+          {/* Flange Collar - rotated to Z-axis */}
+          <mesh position={[0, 0, -0.5]} castShadow receiveShadow rotation={[Math.PI / 2, 0, 0]}>
             <cylinderGeometry args={[0.8, 0.8, 0.2, 32]} />
-            <meshStandardMaterial color="#334155" rotation={[Math.PI / 2, 0, 0]} />
+            {getMat('suction_flange', '#334155', 0.2, 0.8)}
           </mesh>
         </group>
       )
@@ -57,31 +69,28 @@ const ProceduralPump = ({ explodeFactor, selectedPartId, onSelectPart }) => {
     {
       id: 'volute_casing',
       name: 'Volute Casing',
-      color: '#1e3a8a', // Deep Blue
-      metalness: 0.4,
-      roughness: 0.5,
       explodeDir: [0, 0, 0], // Stays central
       render: () => (
         <group>
           {/* Main Volute Ring */}
           <mesh castShadow receiveShadow>
             <torusGeometry args={[1.5, 0.4, 16, 100]} />
-            <meshStandardMaterial color="#1e3a8a" metalness={0.6} roughness={0.3} />
+            {getMat('volute_casing', '#1e3a8a', 0.6, 0.3)}
           </mesh>
-          {/* Backplate */}
-          <mesh position={[0, 0, 0.2]} castShadow receiveShadow>
+          {/* Backplate - rotated to Z-axis */}
+          <mesh position={[0, 0, 0.2]} castShadow receiveShadow rotation={[Math.PI / 2, 0, 0]}>
             <cylinderGeometry args={[1.6, 1.6, 0.2, 32]} />
-            <meshStandardMaterial color="#172554" rotation={[Math.PI / 2, 0, 0]} />
+            {getMat('volute_casing', '#172554', 0.5, 0.5)}
           </mesh>
           {/* Discharge Pipe Outward (pointing up in Y) */}
           <mesh position={[0, 1.5, 0]} castShadow receiveShadow>
             <cylinderGeometry args={[0.4, 0.4, 1.5, 32]} />
-            <meshStandardMaterial color="#1e3a8a" />
+            {getMat('volute_casing', '#1e3a8a', 0.5, 0.5)}
           </mesh>
           {/* Discharge Flange Collar */}
           <mesh position={[0, 2.2, 0]} castShadow receiveShadow>
             <cylinderGeometry args={[0.7, 0.7, 0.15, 32]} />
-            <meshStandardMaterial color="#172554" />
+            {getMat('volute_casing', '#172554', 0.5, 0.5)}
           </mesh>
         </group>
       )
@@ -89,30 +98,24 @@ const ProceduralPump = ({ explodeFactor, selectedPartId, onSelectPart }) => {
     {
       id: 'wear_rings',
       name: 'Wear Rings',
-      color: '#b45309', // Amber / Bronze
-      metalness: 0.9,
-      roughness: 0.1,
       explodeDir: [0, 0, -0.8], // Slides out forward
       render: () => (
         <mesh castShadow>
           <torusGeometry args={[0.6, 0.08, 8, 48]} />
-          <meshStandardMaterial color="#d97706" metalness={0.9} roughness={0.2} />
+          {getMat('wear_rings', '#d97706', 0.9, 0.2)}
         </mesh>
       )
     },
     {
       id: 'impeller',
       name: 'Impeller',
-      color: '#c2410c', // Copper / Bronze Metallic
-      metalness: 0.95,
-      roughness: 0.15,
       explodeDir: [0, 0, -0.4], // Slides out slightly forward
       render: () => (
         <group>
           {/* Impeller Hub */}
-          <mesh castShadow>
+          <mesh castShadow rotation={[Math.PI / 2, 0, 0]}>
             <cylinderGeometry args={[0.3, 0.5, 0.5, 32]} />
-            <meshStandardMaterial color="#ea580c" metalness={0.9} roughness={0.2} />
+            {getMat('impeller', '#ea580c', 0.9, 0.2)}
           </mesh>
           {/* Impeller Blades */}
           {[0, 60, 120, 180, 240, 300].map((angle, idx) => (
@@ -123,13 +126,13 @@ const ProceduralPump = ({ explodeFactor, selectedPartId, onSelectPart }) => {
               castShadow
             >
               <boxGeometry args={[0.2, 0.8, 0.1]} />
-              <meshStandardMaterial color="#ea580c" metalness={0.9} roughness={0.2} />
+              {getMat('impeller', '#ea580c', 0.9, 0.2)}
             </mesh>
           ))}
           {/* Impeller Shroud Rim */}
           <mesh castShadow>
             <torusGeometry args={[1.1, 0.05, 8, 64]} />
-            <meshStandardMaterial color="#c2410c" metalness={0.9} roughness={0.2} />
+            {getMat('impeller', '#c2410c', 0.9, 0.2)}
           </mesh>
         </group>
       )
@@ -137,21 +140,18 @@ const ProceduralPump = ({ explodeFactor, selectedPartId, onSelectPart }) => {
     {
       id: 'mechanical_seal',
       name: 'Mechanical Seal',
-      color: '#3f3f46', // Carbon / Dark Grey
-      metalness: 0.8,
-      roughness: 0.2,
       explodeDir: [0, 0, 1.2], // Slides backward along Z
       render: () => (
         <group>
-          {/* Stationary face */}
-          <mesh castShadow position={[0, 0, -0.15]}>
+          {/* Stationary face - rotated to Z-axis */}
+          <mesh castShadow position={[0, 0, -0.15]} rotation={[Math.PI / 2, 0, 0]}>
             <cylinderGeometry args={[0.35, 0.35, 0.3, 32]} />
-            <meshStandardMaterial color="#18181b" metalness={0.2} roughness={0.7} />
+            {getMat('mechanical_seal', '#18181b', 0.2, 0.7)}
           </mesh>
-          {/* Rotating spring / bellows */}
-          <mesh castShadow position={[0, 0, 0.15]}>
+          {/* Rotating spring / bellows - rotated to Z-axis */}
+          <mesh castShadow position={[0, 0, 0.15]} rotation={[Math.PI / 2, 0, 0]}>
             <cylinderGeometry args={[0.32, 0.32, 0.3, 32]} />
-            <meshStandardMaterial color="#71717a" metalness={0.9} roughness={0.1} />
+            {getMat('mechanical_seal', '#71717a', 0.9, 0.1)}
           </mesh>
         </group>
       )
@@ -159,35 +159,29 @@ const ProceduralPump = ({ explodeFactor, selectedPartId, onSelectPart }) => {
     {
       id: 'shaft_sleeve',
       name: 'Shaft Sleeve',
-      color: '#e2e8f0', // Shiny Chrome
-      metalness: 0.95,
-      roughness: 0.05,
       explodeDir: [0, 0, 2.2], // Slides further backward
       render: () => (
-        <mesh castShadow>
+        <mesh castShadow rotation={[Math.PI / 2, 0, 0]}>
           <cylinderGeometry args={[0.25, 0.25, 0.8, 32]} />
-          <meshStandardMaterial color="#cbd5e1" metalness={1.0} roughness={0.05} />
+          {getMat('shaft_sleeve', '#cbd5e1', 1.0, 0.05)}
         </mesh>
       )
     },
     {
       id: 'bearings',
       name: 'Bearings',
-      color: '#ca8a04', // Brass cage with shiny steel balls
-      metalness: 0.9,
-      roughness: 0.1,
       explodeDir: [0, 0, 3.2], // Slides far backward
       render: () => (
         <group>
           {/* Outer Ring */}
           <mesh castShadow>
             <torusGeometry args={[0.45, 0.08, 12, 48]} />
-            <meshStandardMaterial color="#a16207" metalness={0.9} roughness={0.2} />
+            {getMat('bearings', '#a16207', 0.9, 0.2)}
           </mesh>
           {/* Inner Ring */}
           <mesh castShadow>
             <torusGeometry args={[0.3, 0.05, 12, 48]} />
-            <meshStandardMaterial color="#a16207" metalness={0.9} roughness={0.2} />
+            {getMat('bearings', '#a16207', 0.9, 0.2)}
           </mesh>
           {/* Steel balls */}
           {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, idx) => (
@@ -197,7 +191,7 @@ const ProceduralPump = ({ explodeFactor, selectedPartId, onSelectPart }) => {
               castShadow
             >
               <sphereGeometry args={[0.06, 16, 16]} />
-              <meshStandardMaterial color="#e4e4e7" metalness={1.0} roughness={0.05} />
+              {getMat('bearings', '#e4e4e7', 1.0, 0.05)}
             </mesh>
           ))}
         </group>
@@ -206,14 +200,11 @@ const ProceduralPump = ({ explodeFactor, selectedPartId, onSelectPart }) => {
     {
       id: 'shaft',
       name: 'Shaft',
-      color: '#475569', // Ground Steel
-      metalness: 0.9,
-      roughness: 0.2,
       explodeDir: [0, 0, 4.2], // Slides furthest backward
       render: () => (
-        <mesh castShadow>
+        <mesh castShadow rotation={[Math.PI / 2, 0, 0]}>
           <cylinderGeometry args={[0.2, 0.2, 4.8, 32]} />
-          <meshStandardMaterial color="#64748b" metalness={0.9} roughness={0.15} />
+          {getMat('shaft', '#64748b', 0.9, 0.15)}
         </mesh>
       )
     }

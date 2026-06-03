@@ -304,14 +304,14 @@ const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
           })}
         </div>
 
-        <div style={{ marginTop: '4px', borderTop: '1px solid rgba(0,0,0,0.04)', paddingTop: '8px' }}>
+        <div style={{ marginTop: '4px', borderTop: '1px solid var(--border-glass)', paddingTop: '8px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', marginBottom: '4px' }}>
             <span style={{ color: 'var(--text-secondary)' }}>Vida Útil Remanente:</span>
             <strong style={{ 
               color: life > 50 ? 'var(--status-operational)' : (life > 20 ? 'var(--status-inspect)' : 'var(--status-replace)') 
             }}>{life}%</strong>
           </div>
-          <div style={{ height: '6px', background: '#e2e8f0', borderRadius: '3px', overflow: 'hidden' }}>
+          <div style={{ height: '6px', background: 'rgba(255, 255, 255, 0.1)', borderRadius: '3px', overflow: 'hidden' }}>
             <div style={{ 
               height: '100%', 
               width: `${life}%`, 
@@ -327,14 +327,14 @@ const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
   const renderInstallationNotes = (notes, date) => {
     return (
       <div style={{ background: 'var(--bg-sidebar-header)', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-glass)', marginTop: '8px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.72rem', fontWeight: '700', textTransform: 'uppercase', color: 'var(--accent-blue)', marginBottom: '4px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.72rem', fontWeight: '700', textTransform: 'uppercase', color: 'var(--accent-cyan)', marginBottom: '4px' }}>
           <ShieldCheck size={14} color="var(--status-operational)" /> Protocolo de Puesta en Marcha (Instalación)
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '4px' }}>
           <span>Fecha de Montaje:</span>
           <span>{date}</span>
         </div>
-        <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', lineHeight: '1.4', background: '#ffffff', padding: '8px', borderRadius: '6px', border: '1px dotted #cbd5e1', marginTop: '4px' }}>
+        <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', lineHeight: '1.4', background: 'rgba(255, 255, 255, 0.02)', padding: '8px', borderRadius: '6px', border: '1px dotted var(--border-glass)', marginTop: '4px' }}>
           {notes}
         </p>
       </div>
@@ -550,7 +550,7 @@ const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
                 placeholder="Nombre del Técnico"
                 value={techName}
                 onChange={(e) => setTechName(e.target.value)}
-                style={{ background: '#ffffff', border: '1px solid var(--border-glass)', color: 'var(--text-primary)', borderRadius: '6px', padding: '6px 8px', fontSize: '0.8rem', outline: 'none' }}
+                style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-glass)', color: 'var(--text-primary)', borderRadius: '6px', padding: '6px 8px', fontSize: '0.8rem', outline: 'none' }}
               />
             </div>
             
@@ -560,7 +560,7 @@ const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
                 value={logDesc}
                 onChange={(e) => setLogDesc(e.target.value)}
                 rows={2}
-                style={{ background: '#ffffff', border: '1px solid var(--border-glass)', color: 'var(--text-primary)', borderRadius: '6px', padding: '6px 8px', fontSize: '0.8rem', outline: 'none', resize: 'vertical', fontFamily: 'inherit' }}
+                style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-glass)', color: 'var(--text-primary)', borderRadius: '6px', padding: '6px 8px', fontSize: '0.8rem', outline: 'none', resize: 'vertical', fontFamily: 'inherit' }}
               />
             </div>
 
@@ -568,15 +568,15 @@ const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
               <select
                 value={logStatus}
                 onChange={(e) => setLogStatus(e.target.value)}
-                style={{ background: '#ffffff', border: '1px solid var(--border-glass)', color: 'var(--text-primary)', borderRadius: '6px', padding: '5px', fontSize: '0.75rem', flex: 1, outline: 'none' }}
+                style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-glass)', color: 'var(--text-primary)', borderRadius: '6px', padding: '5px', fontSize: '0.75rem', flex: 1, outline: 'none' }}
               >
-                <option value="">Dejar estado actual</option>
-                <option value="Operational">Fijar: Operativo</option>
-                <option value="Inspect">Fijar: Inspección</option>
-                <option value="Replace">Fijar: Reemplazo</option>
+                <option value="" style={{ background: 'var(--bg-secondary)' }}>Dejar estado actual</option>
+                <option value="Operational" style={{ background: 'var(--bg-secondary)' }}>Fijar: Operativo</option>
+                <option value="Inspect" style={{ background: 'var(--bg-secondary)' }}>Fijar: Inspección</option>
+                <option value="Replace" style={{ background: 'var(--bg-secondary)' }}>Fijar: Reemplazo</option>
               </select>
 
-              <button type="submit" className="btn-secondary" style={{ padding: '6px 12px', fontSize: '0.75rem', background: 'var(--accent-blue)', borderColor: 'var(--accent-blue)', color: '#ffffff', cursor: 'pointer' }}>
+              <button type="submit" className="btn-secondary" style={{ padding: '6px 12px', fontSize: '0.75rem', background: 'var(--accent-cyan)', borderColor: 'var(--accent-cyan)', color: '#ffffff', cursor: 'pointer' }}>
                 Registrar
               </button>
             </div>

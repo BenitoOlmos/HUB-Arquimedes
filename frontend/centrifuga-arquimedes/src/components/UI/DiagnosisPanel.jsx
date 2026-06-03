@@ -146,7 +146,7 @@ const DiagnosisPanel = () => {
   };
 
   return (
-    <div style={{ padding: '32px', maxWidth: '1200px', margin: '0 auto', color: 'var(--text-primary)', display: 'flex', flexDirection: 'column', gap: '24px', overflowY: 'auto', height: '100%' }}>
+    <div style={{ maxWidth: '1200px', margin: '0 auto', color: 'var(--text-primary)', display: 'flex', flexDirection: 'column', gap: '24px', width: '100%' }}>
       
       {/* Title */}
       <div style={{ borderBottom: '1px solid var(--border-glass)', paddingBottom: '20px' }}>

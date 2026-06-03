@@ -5,8 +5,9 @@ import ErrorBoundary from './components/UI/ErrorBoundary';
 import PedagogyPanel from './components/UI/PedagogyPanel';
 import DiagnosisPanel from './components/UI/DiagnosisPanel';
 import SecurityPanel from './components/UI/SecurityPanel';
+import HistoryPanel from './components/UI/HistoryPanel';
 import { usePumpSimulation } from './hooks/usePumpSimulation';
-import { RotateCcw, Activity, HelpCircle, Eye, EyeOff, BookOpen, ClipboardList, ShieldCheck } from 'lucide-react';
+import { RotateCcw, Activity, HelpCircle, Eye, EyeOff, BookOpen, ClipboardList, ShieldCheck, BarChart3 } from 'lucide-react';
 
 function App() {
   const [currentView, setCurrentView] = useState('simulator'); // 'simulator', 'pedagogy', 'diagnosis', 'security'
@@ -81,6 +82,13 @@ function App() {
           >
             <ShieldCheck size={14} />
             <span>Seguridad e IoT</span>
+          </button>
+          <button 
+            className={`nav-tab ${currentView === 'history' ? 'active' : ''}`}
+            onClick={() => setCurrentView('history')}
+          >
+            <BarChart3 size={14} />
+            <span>Historial e Informes</span>
           </button>
         </nav>
       </header>
@@ -210,6 +218,7 @@ function App() {
             {currentView === 'pedagogy' && <PedagogyPanel />}
             {currentView === 'diagnosis' && <DiagnosisPanel />}
             {currentView === 'security' && <SecurityPanel />}
+            {currentView === 'history' && <HistoryPanel />}
           </div>
         )}
       </main>

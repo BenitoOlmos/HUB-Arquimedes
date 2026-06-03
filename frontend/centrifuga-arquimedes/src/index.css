@@ -1359,3 +1359,269 @@ body {
 
 
 
+
+
+/* ==========================================================================
+   Sidebar Sizing & Scroll Enhancements
+   ========================================================================== */
+.info-sidebar {
+  width: 380px;
+  height: 100%;
+  background: var(--bg-secondary);
+  border-left: 1px solid var(--border-glass);
+  display: flex;
+  flex-direction: column;
+  box-shadow: -10px 0 30px -15px rgba(15, 23, 42, 0.04);
+  z-index: 10;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.sidebar-header {
+  padding: 20px 24px;
+  background: var(--bg-sidebar-header);
+  border-bottom: 1px solid var(--border-glass);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.sidebar-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.sidebar-subtitle {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+@media (max-width: 1024px) {
+  .simulator-view {
+    flex-direction: column;
+    overflow-y: auto;
+    height: auto;
+  }
+  .canvas-zone {
+    height: 50vh;
+    min-height: 350px;
+  }
+  .info-sidebar {
+    width: 100%;
+    height: auto;
+    border-left: none;
+    border-top: 1px solid var(--border-glass);
+  }
+  .sidebar-content {
+    overflow-y: visible;
+    height: auto;
+  }
+}
+
+/* ==========================================================================
+   History Panel Dashboard Styles
+   ========================================================================== */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.kpi-card {
+  background: var(--bg-glass);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--border-glass);
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: var(--shadow-premium);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.kpi-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-glass-active);
+  box-shadow: var(--shadow-premium), var(--shadow-glow);
+}
+
+.kpi-title {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.kpi-value {
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.kpi-value.text-green { color: var(--status-operational); }
+.kpi-value.text-blue { color: var(--accent-blue); }
+.kpi-value.text-cyan { color: var(--accent-cyan); }
+
+.kpi-subtitle {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 1024px) {
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.history-chart-card {
+  background: var(--bg-glass);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--border-glass);
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: var(--shadow-premium);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: border-color 0.3s;
+}
+
+.history-chart-card:hover {
+  border-color: var(--border-glass-active);
+}
+
+.history-chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-glass);
+  padding-bottom: 12px;
+}
+
+.history-chart-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.history-chart-legend {
+  display: flex;
+  gap: 12px;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.legend-color {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.legend-color.blue { background-color: var(--accent-blue); }
+.legend-color.cyan { background-color: var(--accent-cyan); }
+.legend-color.orange { background-color: var(--status-inspect); }
+.legend-color.red { background-color: var(--status-replace); }
+
+/* Hydrated Logs Audit Table */
+.audit-logs-card {
+  background: var(--bg-glass);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--border-glass);
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: var(--shadow-premium);
+  margin-bottom: 24px;
+}
+
+.audit-table-wrapper {
+  overflow-x: auto;
+  width: 100%;
+  margin-top: 16px;
+}
+
+.audit-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.85rem;
+}
+
+.audit-table th {
+  padding: 12px 16px;
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  border-bottom: 2px solid var(--border-glass);
+  letter-spacing: 0.05em;
+}
+
+.audit-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-glass);
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
+.audit-table tr:hover td {
+  background: rgba(15, 23, 42, 0.01);
+}
+
+.audit-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 12px;
+  text-transform: uppercase;
+}
+
+.audit-status-badge.operational {
+  background: rgba(16, 185, 129, 0.08);
+  color: var(--status-operational);
+  border: 1px solid rgba(16, 185, 129, 0.15);
+}
+.audit-status-badge.inspect {
+  background: rgba(245, 158, 11, 0.08);
+  color: var(--status-inspect);
+  border: 1px solid rgba(245, 158, 11, 0.15);
+}
+.audit-status-badge.replace {
+  background: rgba(239, 68, 68, 0.08);
+  color: var(--status-replace);
+  border: 1px solid rgba(239, 68, 68, 0.15);
+}

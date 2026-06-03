@@ -1,10 +1,10 @@
 # Stage 1: Build
 FROM node:20-alpine AS build
 WORKDIR /app
-COPY package*.json ./
-COPY frontend/centrifuga-arquimedes/package*.json ./frontend/centrifuga-arquimedes/
-COPY shared-schemas/package*.json ./shared-schemas/
-RUN npm ci --legacy-peer-deps
+COPY package.json ./
+COPY frontend/centrifuga-arquimedes/package.json ./frontend/centrifuga-arquimedes/
+COPY shared-schemas/package.json ./shared-schemas/
+RUN npm install --legacy-peer-deps
 COPY shared-schemas/ ./shared-schemas/
 COPY frontend/centrifuga-arquimedes/ ./frontend/centrifuga-arquimedes/
 RUN npm run build --workspace=shared-schemas

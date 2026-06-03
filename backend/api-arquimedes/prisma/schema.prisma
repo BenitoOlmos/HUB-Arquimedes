@@ -1,0 +1,32 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model PumpPart {
+  id                  String   @id // Corresponds to translated mesh name (e.g. 'impeller', 'shaft')
+  name                String
+  spanishName         String
+  description         String
+  material            String
+  function            String
+  maintenanceInterval String
+  status              String   // 'Operational', 'Inspect', 'Replace'
+  commonFailures      String   // Common mechanical failures (e.g. cavitation, fatigue)
+  technicianAlert     String   // High priority alerts for operators
+  entryDate           String   // Date when put into service (e.g. '2025-05-15')
+  operatingHours      Int      // Accrued service hours (e.g. 8450)
+  vibrationHistory    String   // JSON string storing vibration trends over time
+  stressHistory       String   // JSON string storing mechanical stress percentage trends (e.g. '[45, 55, 60]')
+  remainingLife       Int      // Remaining useful life percentage (0 to 100)
+  lifecycleStage      String   // Current phase: 'Installation', 'Maintenance', 'Replacement'
+  installationNotes   String   // Technical comments from the installation and commissioning phase
+  nextMaintenance     String   // Next planned maintenance date (e.g. '2026-07-12')
+  maintenanceLogs     String   // JSON string storing list of past logs: [{"date": "...", "tech": "...", "desc": "..."}]
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}

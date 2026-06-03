@@ -1,0 +1,31 @@
+========================================================================
+GUIDE: ADDING YOUR PUMP.GLB MODEL
+========================================================================
+
+Place your downloaded centrifugal pump 3D model (.glb format) in this folder and name it:
+  pump.glb
+
+------------------------------------------------------------------------
+HOW INTERACTION WORKS:
+------------------------------------------------------------------------
+Our React viewer uses raycasting (clicking) to query information about the pump parts.
+It targets meshes in your GLB file based on their object/mesh names inside the 3D model:
+
+1. 'volute_casing'   - The outer spiral housing of the pump.
+2. 'impeller'        - The spinning blade element.
+3. 'shaft'           - The long rotor rod.
+4. 'mechanical_seal' - The seal assembly.
+5. 'bearings'        - The rotor support bearings.
+6. 'shaft_sleeve'    - The sleeve shielding the shaft.
+7. 'wear_rings'      - The sealing wear rings.
+8. 'suction_flange'  - The inlet flange connection.
+
+To change which mesh maps to which DB entry, open:
+  frontend/src/components/3D/ExplodedPump.jsx
+Under the `useFrame` animation loop, adjust the matchers (e.g., `name.includes('impeller')`).
+
+------------------------------------------------------------------------
+PROCEDURAL FALLBACK:
+------------------------------------------------------------------------
+If no `pump.glb` file is found in this directory, the application will catch the error and automatically render a gorgeous, procedurally-drawn 3D model of a centrifugal pump. This ensures the app compiles and is fully interactive right away!
+========================================================================

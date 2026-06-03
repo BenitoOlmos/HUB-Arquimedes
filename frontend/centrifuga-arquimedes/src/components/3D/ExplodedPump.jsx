@@ -1,0 +1,420 @@
+import React, { useState, useRef, useEffect } from 'react';
+import { useGLTF } from '@react-three/drei';
+import { useFrame } from '@react-three/fiber';
+import * as THREE from 'three';
+
+// Error Boundary to gracefully handle GLB loading errors
+class ModelErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.warn("GLB Model not found or failed to load. Falling back to the procedural 3D model.");
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback;
+    }
+    return this.props.children;
+  }
+}
+
+// Procedural 3D Centrifugal Pump Component
+const ProceduralPump = ({ explodeFactor, selectedPartId, onSelectPart }) => {
+  const [hoveredId, setHoveredId] = useState(null);
+  
+  // Define parts of the pump with their relative explosion directions and base positions
+  const parts = [
+    {
+      id: 'suction_flange',
+      name: 'Suction Flange',
+      color: '#475569', // Slate
+      metalness: 0.2,
+      roughness: 0.8,
+      explodeDir: [0, 0, -2.5], // Moves forward along Z
+      render: () => (
+        <group>
+          {/* Suction Pipe Tube */}
+          <mesh castShadow receiveShadow>
+            <cylinderGeometry args={[0.5, 0.5, 1.2, 32]} />
+            <meshStandardMaterial color="#475569" rotation={[Math.PI / 2, 0, 0]} />
+          </mesh>
+          {/* Flange Collar */}
+          <mesh position={[0, 0, -0.5]} castShadow receiveShadow>
+            <cylinderGeometry args={[0.8, 0.8, 0.2, 32]} />
+            <meshStandardMaterial color="#334155" rotation={[Math.PI / 2, 0, 0]} />
+          </mesh>
+        </group>
+      )
+    },
+    {
+      id: 'volute_casing',
+      name: 'Volute Casing',
+      color: '#1e3a8a', // Deep Blue
+      metalness: 0.4,
+      roughness: 0.5,
+      explodeDir: [0, 0, 0], // Stays central
+      render: () => (
+        <group>
+          {/* Main Volute Ring */}
+          <mesh castShadow receiveShadow>
+            <torusGeometry args={[1.5, 0.4, 16, 100]} />
+            <meshStandardMaterial color="#1e3a8a" metalness={0.6} roughness={0.3} />
+          </mesh>
+          {/* Backplate */}
+          <mesh position={[0, 0, 0.2]} castShadow receiveShadow>
+            <cylinderGeometry args={[1.6, 1.6, 0.2, 32]} />
+            <meshStandardMaterial color="#172554" rotation={[Math.PI / 2, 0, 0]} />
+          </mesh>
+          {/* Discharge Pipe Outward (pointing up in Y) */}
+          <mesh position={[0, 1.5, 0]} castShadow receiveShadow>
+            <cylinderGeometry args={[0.4, 0.4, 1.5, 32]} />
+            <meshStandardMaterial color="#1e3a8a" />
+          </mesh>
+          {/* Discharge Flange Collar */}
+          <mesh position={[0, 2.2, 0]} castShadow receiveShadow>
+            <cylinderGeometry args={[0.7, 0.7, 0.15, 32]} />
+            <meshStandardMaterial color="#172554" />
+          </mesh>
+        </group>
+      )
+    },
+    {
+      id: 'wear_rings',
+      name: 'Wear Rings',
+      color: '#b45309', // Amber / Bronze
+      metalness: 0.9,
+      roughness: 0.1,
+      explodeDir: [0, 0, -0.8], // Slides out forward
+      render: () => (
+        <mesh castShadow>
+          <torusGeometry args={[0.6, 0.08, 8, 48]} />
+          <meshStandardMaterial color="#d97706" metalness={0.9} roughness={0.2} />
+        </mesh>
+      )
+    },
+    {
+      id: 'impeller',
+      name: 'Impeller',
+      color: '#c2410c', // Copper / Bronze Metallic
+      metalness: 0.95,
+      roughness: 0.15,
+      explodeDir: [0, 0, -0.4], // Slides out slightly forward
+      render: () => (
+        <group>
+          {/* Impeller Hub */}
+          <mesh castShadow>
+            <cylinderGeometry args={[0.3, 0.5, 0.5, 32]} />
+            <meshStandardMaterial color="#ea580c" metalness={0.9} roughness={0.2} />
+          </mesh>
+          {/* Impeller Blades */}
+          {[0, 60, 120, 180, 240, 300].map((angle, idx) => (
+            <mesh
+              key={idx}
+              position={[Math.cos(THREE.MathUtils.degToRad(angle)) * 0.7, Math.sin(THREE.MathUtils.degToRad(angle)) * 0.7, 0]}
+              rotation={[0, 0, THREE.MathUtils.degToRad(angle + 30)]}
+              castShadow
+            >
+              <boxGeometry args={[0.2, 0.8, 0.1]} />
+              <meshStandardMaterial color="#ea580c" metalness={0.9} roughness={0.2} />
+            </mesh>
+          ))}
+          {/* Impeller Shroud Rim */}
+          <mesh castShadow>
+            <torusGeometry args={[1.1, 0.05, 8, 64]} />
+            <meshStandardMaterial color="#c2410c" metalness={0.9} roughness={0.2} />
+          </mesh>
+        </group>
+      )
+    },
+    {
+      id: 'mechanical_seal',
+      name: 'Mechanical Seal',
+      color: '#3f3f46', // Carbon / Dark Grey
+      metalness: 0.8,
+      roughness: 0.2,
+      explodeDir: [0, 0, 1.2], // Slides backward along Z
+      render: () => (
+        <group>
+          {/* Stationary face */}
+          <mesh castShadow position={[0, 0, -0.15]}>
+            <cylinderGeometry args={[0.35, 0.35, 0.3, 32]} />
+            <meshStandardMaterial color="#18181b" metalness={0.2} roughness={0.7} />
+          </mesh>
+          {/* Rotating spring / bellows */}
+          <mesh castShadow position={[0, 0, 0.15]}>
+            <cylinderGeometry args={[0.32, 0.32, 0.3, 32]} />
+            <meshStandardMaterial color="#71717a" metalness={0.9} roughness={0.1} />
+          </mesh>
+        </group>
+      )
+    },
+    {
+      id: 'shaft_sleeve',
+      name: 'Shaft Sleeve',
+      color: '#e2e8f0', // Shiny Chrome
+      metalness: 0.95,
+      roughness: 0.05,
+      explodeDir: [0, 0, 2.2], // Slides further backward
+      render: () => (
+        <mesh castShadow>
+          <cylinderGeometry args={[0.25, 0.25, 0.8, 32]} />
+          <meshStandardMaterial color="#cbd5e1" metalness={1.0} roughness={0.05} />
+        </mesh>
+      )
+    },
+    {
+      id: 'bearings',
+      name: 'Bearings',
+      color: '#ca8a04', // Brass cage with shiny steel balls
+      metalness: 0.9,
+      roughness: 0.1,
+      explodeDir: [0, 0, 3.2], // Slides far backward
+      render: () => (
+        <group>
+          {/* Outer Ring */}
+          <mesh castShadow>
+            <torusGeometry args={[0.45, 0.08, 12, 48]} />
+            <meshStandardMaterial color="#a16207" metalness={0.9} roughness={0.2} />
+          </mesh>
+          {/* Inner Ring */}
+          <mesh castShadow>
+            <torusGeometry args={[0.3, 0.05, 12, 48]} />
+            <meshStandardMaterial color="#a16207" metalness={0.9} roughness={0.2} />
+          </mesh>
+          {/* Steel balls */}
+          {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, idx) => (
+            <mesh
+              key={idx}
+              position={[Math.cos(THREE.MathUtils.degToRad(angle)) * 0.38, Math.sin(THREE.MathUtils.degToRad(angle)) * 0.38, 0]}
+              castShadow
+            >
+              <sphereGeometry args={[0.06, 16, 16]} />
+              <meshStandardMaterial color="#e4e4e7" metalness={1.0} roughness={0.05} />
+            </mesh>
+          ))}
+        </group>
+      )
+    },
+    {
+      id: 'shaft',
+      name: 'Shaft',
+      color: '#475569', // Ground Steel
+      metalness: 0.9,
+      roughness: 0.2,
+      explodeDir: [0, 0, 4.2], // Slides furthest backward
+      render: () => (
+        <mesh castShadow>
+          <cylinderGeometry args={[0.2, 0.2, 4.8, 32]} />
+          <meshStandardMaterial color="#64748b" metalness={0.9} roughness={0.15} />
+        </mesh>
+      )
+    }
+  ];
+
+  return (
+    <group rotation={[0, -Math.PI / 4, 0]}>
+      {parts.map((part) => {
+        const isSelected = selectedPartId === part.id;
+        const isHovered = hoveredId === part.id;
+        
+        // Calculate dynamic position based on explosion factor
+        const position = part.explodeDir.map((coord) => coord * explodeFactor);
+
+        // Highlight colors
+        let emissiveColor = new THREE.Color(0, 0, 0);
+        if (isSelected) {
+          emissiveColor = new THREE.Color(0x3b82f6); // Glowing blue for selection
+        } else if (isHovered) {
+          emissiveColor = new THREE.Color(0x06b6d4); // Glowing cyan for hover
+        }
+
+        return (
+          <group
+            key={part.id}
+            position={position}
+            onPointerOver={(e) => {
+              e.stopPropagation();
+              setHoveredId(part.id);
+            }}
+            onPointerOut={(e) => {
+              e.stopPropagation();
+              if (hoveredId === part.id) setHoveredId(null);
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelectPart(part.id);
+            }}
+          >
+            {/* The actual shapes of the component */}
+            <group rotation={[Math.PI / 2, 0, 0]}>
+              {part.render()}
+            </group>
+
+            {/* Glowing selection ring / helper box (visible only when selected) */}
+            {isSelected && (
+              <mesh position={[0, 0, 0]}>
+                <boxGeometry args={[2.5, 2.5, 0.8]} />
+                <meshBasicMaterial
+                  color="#3b82f6"
+                  wireframe
+                  transparent
+                  opacity={0.15}
+                />
+              </mesh>
+            )}
+          </group>
+        );
+      })}
+    </group>
+  );
+};
+
+// GLB Loader Component (attempts to load user GLB)
+const GLBPumpModel = ({ modelName, explodeFactor, selectedPartId, onSelectPart, onModelLoaded }) => {
+  // Try loading the GLB from public directory
+  const { scene } = useGLTF(`/models/${modelName}`);
+  const [hoveredMeshName, setHoveredMeshName] = useState(null);
+
+  useEffect(() => {
+    if (scene) {
+      // Auto-scale model to normalize dimensions (target max size is 2.8 units)
+      const box = new THREE.Box3().setFromObject(scene);
+      const size = box.getSize(new THREE.Vector3());
+      const maxDim = Math.max(size.x, size.y, size.z);
+      
+      const targetSize = 2.8; 
+      if (maxDim > 0) {
+        const scale = targetSize / maxDim;
+        scene.scale.set(scale, scale, scale);
+      }
+      
+      onModelLoaded(true);
+    }
+  }, [scene, onModelLoaded]);
+
+  // Adjust node positions dynamically during frame renders
+  useFrame(() => {
+    scene.traverse((child) => {
+      if (child.isMesh) {
+        // Apply custom explosion math based on child names
+        // Example: if name contains 'impeller', move it on the Z-axis
+        const name = child.name.toLowerCase();
+        
+        // Define base directions
+        let dir = new THREE.Vector3(0, 0, 0);
+        if (name.includes('suction') || name.includes('inlet')) {
+          dir.set(0, 0, -2.5);
+        } else if (name.includes('impeller') || name.includes('rodete') || name.includes('impulseur')) {
+          dir.set(0, 0, -1.2);
+        } else if (name.includes('seal') || name.includes('sello') || name.includes('etancheite') || name.includes('joint')) {
+          dir.set(0, 0, 1.2);
+        } else if (name.includes('bearing') || name.includes('cojinete') || name.includes('rodamiento') || name.includes('palier')) {
+          dir.set(0, 0, 2.5);
+        } else if (name.includes('shaft') || name.includes('eje') || name.includes('arbre')) {
+          dir.set(0, 0, 3.8);
+        } else if (name.includes('casing') || name.includes('carcasa') || name.includes('volute') || name.includes('corps')) {
+          dir.set(0, 0, 0.0); // central reference
+        } else {
+          // General radial/axial explosion for accessories like rings, shims, grease nipples
+          const pos = child.position.clone().normalize();
+          // move slightly outward on Y/X and move along Z depending on side
+          const zOffset = child.position.z > 0 ? 1.5 : -1.5;
+          dir.set(pos.x * 1.0, pos.y * 1.0, zOffset);
+        }
+        
+        // Store base position if not already stored
+        if (!child.userData.basePosition) {
+          child.userData.basePosition = child.position.clone();
+        }
+        
+        // Interpolate position
+        const targetPos = child.userData.basePosition.clone().add(dir.multiplyScalar(explodeFactor));
+        child.position.lerp(targetPos, 0.1);
+
+        // Manage selection highlight
+        const isSelected = selectedPartId === child.name;
+        const isHovered = hoveredMeshName === child.name;
+        
+        if (child.material) {
+          // Ensure material supports emissive colors
+          if (!child.userData.originalEmissive) {
+            child.userData.originalEmissive = child.material.emissive?.clone() || new THREE.Color(0,0,0);
+          }
+          
+          if (isSelected) {
+            child.material.emissive?.setHex(0x3b82f6); // blue glow
+            child.material.emissiveIntensity = 0.6;
+          } else if (isHovered) {
+            child.material.emissive?.setHex(0x06b6d4); // cyan glow
+            child.material.emissiveIntensity = 0.4;
+          } else {
+            child.material.emissive?.copy(child.userData.originalEmissive);
+            child.material.emissiveIntensity = child.userData.originalEmissiveIntensity || 1.0;
+          }
+        }
+      }
+    });
+  });
+
+  return (
+    <primitive
+      object={scene}
+      onPointerOver={(e) => {
+        e.stopPropagation();
+        if (e.object && e.object.isMesh) {
+          setHoveredMeshName(e.object.name);
+        }
+      }}
+      onPointerOut={(e) => {
+        e.stopPropagation();
+        setHoveredMeshName(null);
+      }}
+      onClick={(e) => {
+        e.stopPropagation();
+        if (e.object && e.object.isMesh) {
+          onSelectPart(e.object.name);
+        }
+      }}
+    />
+  );
+};
+
+// Wrapper Component that exports the Error Boundary and switches between GLB & Procedural
+const ExplodedPump = ({ modelName = 'pump.glb', explodeFactor, selectedPartId, onSelectPart, onModelLoaded }) => {
+  useEffect(() => {
+    // Fallback loading check
+    onModelLoaded(true);
+  }, [onModelLoaded]);
+
+  return (
+    <ModelErrorBoundary
+      fallback={
+        <ProceduralPump
+          explodeFactor={explodeFactor}
+          selectedPartId={selectedPartId}
+          onSelectPart={onSelectPart}
+        />
+      }
+    >
+      <GLBPumpModel
+        modelName={modelName}
+        explodeFactor={explodeFactor}
+        selectedPartId={selectedPartId}
+        onSelectPart={onSelectPart}
+        onModelLoaded={onModelLoaded}
+      />
+    </ModelErrorBoundary>
+  );
+};
+
+export default ExplodedPump;
+// Preload the GLTF file to optimize load times
+useGLTF.preload('/models/pump.glb');

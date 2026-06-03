@@ -34,7 +34,7 @@ else
     git pull
 fi
 
-cd "$PROJECT_PATH"
+cd "$PROJECT_PATH"/deploy
 
 # 2. Crear archivo .env de producción
 echo "Creando archivo .env de configuración..."

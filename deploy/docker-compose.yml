@@ -21,8 +21,8 @@ services:
 
   backend:
     build:
-      context: .
-      dockerfile: ./backend/api-arquimedes/Dockerfile
+      context: ..
+      dockerfile: backend/api-arquimedes/Dockerfile
     container_name: hub-arquimedes-backend
     restart: always
     environment:
@@ -38,19 +38,19 @@ services:
 
   frontend-centrifuga:
     build:
-      context: .
-      dockerfile: ./frontend/centrifuga-arquimedes/Dockerfile
+      context: ..
+      dockerfile: frontend/centrifuga-arquimedes/Dockerfile
     container_name: hub-arquimedes-frontend-centrifuga
     restart: always
     ports:
-      - "${HOST_PORT_CENTRIFUGA:-20005}:80"
+      - "${HOST_PORT_CENTRIFUGA:-20000}:80"
     depends_on:
       - backend
 
   frontend-web:
     build:
-      context: .
-      dockerfile: ./frontend/web-arquimedes/Dockerfile
+      context: ..
+      dockerfile: frontend/web-arquimedes/Dockerfile
     container_name: hub-arquimedes-frontend-web
     restart: always
     ports:

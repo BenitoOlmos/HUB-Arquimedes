@@ -1,119 +1,72 @@
-import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
-import fs from 'fs';
-import path from 'path';
+import { Request, Response, NextFunction } from 'express';
+import * as partService from '../services/part.service';
+import { partStatusSchema, maintenanceLogSchema } from 'shared-schemas';
 
-const prisma = new PrismaClient();
-
-export const getAvailableModels = async (req: Request, res: Response) => {
+export const getAvailableModels = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const modelsDir = path.join(__dirname, '..', '..', 'frontend', 'public', 'models');
-    if (!fs.existsSync(modelsDir)) {
-      return res.status(200).json(['pump.glb']);
-    }
-    const files = fs.readdirSync(modelsDir);
-    const glbFiles = files.filter(file => file.endsWith('.glb'));
-    return res.status(200).json(glbFiles);
+    const models = partService.getAvailableModels();
+    return res.status(200).json(models);
   } catch (error) {
-    console.error('Error listing models:', error);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    next(error);
   }
 };
 
-export const getAllParts = async (req: Request, res: Response) => {
+export const getAllParts = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const parts = await prisma.pumpPart.findMany({
-      orderBy: { name: 'asc' }
-    });
+    const parts = await partService.getAllParts();
     return res.status(200).json(parts);
   } catch (error) {
-    console.error('Error fetching parts:', error);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    next(error);
   }
 };
 
-export const getPartById = async (req: Request, res: Response) => {
+export const getPartById = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.params;
   try {
-    const part = await prisma.pumpPart.findUnique({
-      where: { id }
-    });
-    if (!part) {
-      return res.status(404).json({ error: `Part with ID ${id} not found` });
-    }
+    const part = await partService.getPartById(id);
     return res.status(200).json(part);
   } catch (error) {
-    console.error(`Error fetching part with ID ${id}:`, error);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    next(error);
   }
 };
 
-export const updatePartStatus = async (req: Request, res: Response) => {
+export const updatePartStatus = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.params;
-  const { status } = req.body;
   
-  if (!status || !['Operational', 'Inspect', 'Replace'].includes(status)) {
-    return res.status(400).json({ error: 'Invalid status value. Must be Operational, Inspect, or Replace' });
-  }
-
   try {
-    const updatedPart = await prisma.pumpPart.update({
-      where: { id },
-      data: { status }
-    });
+    // Validate request body status using shared Zod schema
+    const parsedBody = partStatusSchema.safeParse(req.body.status);
+    if (!parsedBody.success) {
+      return res.status(400).json({ 
+        error: 'Invalid status value. Must be Operational, Inspect, or Replace',
+        details: parsedBody.error.errors
+      });
+    }
+
+    const updatedPart = await partService.updatePartStatus(id, parsedBody.data);
     return res.status(200).json(updatedPart);
   } catch (error) {
-    console.error(`Error updating status for part ${id}:`, error);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    next(error);
   }
 };
 
-export const addMaintenanceLog = async (req: Request, res: Response) => {
+export const addMaintenanceLog = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.params;
-  const { tech, desc, status } = req.body;
-
-  if (!tech || !desc) {
-    return res.status(400).json({ error: 'Technician name and log description are required' });
-  }
 
   try {
-    const part = await prisma.pumpPart.findUnique({ where: { id } });
-    if (!part) {
-      return res.status(404).json({ error: `Part ${id} not found` });
+    // Validate request body using shared Zod schema
+    const parsedBody = maintenanceLogSchema.safeParse(req.body);
+    if (!parsedBody.success) {
+      return res.status(400).json({ 
+        error: 'Validation failed', 
+        details: parsedBody.error.errors 
+      });
     }
 
-    let logs = [];
-    if (part.maintenanceLogs) {
-      try {
-        logs = JSON.parse(part.maintenanceLogs);
-      } catch (e) {
-        logs = [];
-      }
-    }
-
-    const newLog = {
-      id: `log-${Date.now()}`,
-      date: new Date().toISOString().split('T')[0],
-      tech,
-      desc
-    };
-    logs.push(newLog);
-
-    const updateData: any = {
-      maintenanceLogs: JSON.stringify(logs)
-    };
-    if (status) {
-      updateData.status = status;
-    }
-
-    const updatedPart = await prisma.pumpPart.update({
-      where: { id },
-      data: updateData
-    });
-
+    const { tech, desc, status } = parsedBody.data;
+    const updatedPart = await partService.addMaintenanceLog(id, tech, desc, status);
     return res.status(200).json(updatedPart);
   } catch (error) {
-    console.error(`Error adding maintenance log for part ${id}:`, error);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    next(error);
   }
 };

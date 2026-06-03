@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: hub-arquimedes-db
+    restart: always
+    environment:
+      POSTGRES_USER: admin_arquimedes
+      POSTGRES_PASSWORD: admin_password_secure
+      POSTGRES_DB: arquimedes_database
+    ports:
+      - "${HOST_PORT_DB:-20002}:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin_arquimedes -d arquimedes_database"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: ./backend/api-arquimedes/Dockerfile
+    container_name: hub-arquimedes-backend
+    restart: always
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://admin_arquimedes:admin_password_secure@db:5432/arquimedes_database?schema=public
+      - PORT=20001
+      - LOG_LEVEL=info
+    ports:
+      - "${HOST_PORT_BACKEND:-20001}:20001"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend-centrifuga:
+    build:
+      context: .
+      dockerfile: ./frontend/centrifuga-arquimedes/Dockerfile
+    container_name: hub-arquimedes-frontend-centrifuga
+    restart: always
+    ports:
+      - "${HOST_PORT_CENTRIFUGA:-20005}:80"
+    depends_on:
+      - backend
+
+  frontend-web:
+    build:
+      context: .
+      dockerfile: ./frontend/web-arquimedes/Dockerfile
+    container_name: hub-arquimedes-frontend-web
+    restart: always
+    ports:
+      - "${HOST_PORT_WEB:-20004}:80"
+
+volumes:
+  pg_data:
+    name: hub-arquimedes-pgdata

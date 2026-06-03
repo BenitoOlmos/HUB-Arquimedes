@@ -1,0 +1,9 @@
+{
+  "name": "hub-arquimedes",
+  "private": true,
+  "workspaces": [
+    "backend/api-arquimedes",
+    "frontend/centrifuga-arquimedes",
+    "shared-schemas"
+  ]
+}

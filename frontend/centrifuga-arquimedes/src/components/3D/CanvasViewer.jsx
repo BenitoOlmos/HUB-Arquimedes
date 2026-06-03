@@ -18,13 +18,13 @@ const CanvasViewer = ({
         camera={{ position: [5, 4, 6], fov: 45 }}
         gl={{ antialias: true, preserveDrawingBuffer: true }}
       >
-        <color attach="background" args={['#090d16']} />
+        <color attach="background" args={['#f8fafc']} />
         
-        {/* Holographic Technical Grid */}
+        {/* Technical Grid (Light Theme) */}
         <gridHelper 
-          args={[16, 32, '#38bdf8', '#121b2d']} 
+          args={[16, 32, '#0ea5e9', '#cbd5e1']} 
           position={[0, -1.5, 0]} 
-          opacity={0.3} 
+          opacity={0.4} 
           transparent
         />
 

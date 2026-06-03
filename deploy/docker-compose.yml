@@ -56,6 +56,18 @@ services:
     ports:
       - "${HOST_PORT_WEB:-20004}:80"
 
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    container_name: ${COMPOSE_PROJECT_NAME}_tunnel
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      - TUNNEL_TOKEN=${TUNNEL_TOKEN}
+    depends_on:
+      - frontend-centrifuga
+      - frontend-web
+      - backend
+
 volumes:
   pg_data:
     name: hub-arquimedes-pgdata

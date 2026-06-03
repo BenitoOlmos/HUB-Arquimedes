@@ -1,5 +1,6 @@
 # Stage 1: Build
 FROM node:20-alpine AS build
+RUN apk add --no-cache openssl
 WORKDIR /app
 COPY package.json ./
 COPY backend/api-arquimedes/package.json ./backend/api-arquimedes/
@@ -14,6 +15,7 @@ RUN npm run build
 
 # Stage 2: Runtime
 FROM node:20-alpine AS runner
+RUN apk add --no-cache openssl
 WORKDIR /app
 COPY package.json ./
 COPY backend/api-arquimedes/package.json ./backend/api-arquimedes/

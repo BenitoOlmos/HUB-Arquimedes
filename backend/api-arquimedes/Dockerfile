@@ -12,6 +12,7 @@ RUN npm run build --workspace=shared-schemas
 WORKDIR /app/backend/api-arquimedes
 RUN npx prisma generate
 RUN npm run build
+RUN npx tsc prisma/seed.ts --target es2020 --module commonjs
 
 # Stage 2: Runtime
 FROM node:20-alpine AS runner

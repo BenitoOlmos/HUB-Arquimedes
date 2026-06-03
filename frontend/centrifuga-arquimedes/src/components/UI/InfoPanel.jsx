@@ -83,18 +83,21 @@ const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
       case 'Operational':
         return (
           <span className="badge-status operational">
+            <span className="pulse-dot green"></span>
             <ShieldCheck size={13} /> Operativo
           </span>
         );
       case 'Inspect':
         return (
           <span className="badge-status inspect">
+            <span className="pulse-dot orange"></span>
             <AlertTriangle size={13} /> Inspección
           </span>
         );
       case 'Replace':
         return (
           <span className="badge-status replace">
+            <span className="pulse-dot red"></span>
             <AlertTriangle size={13} /> Reemplazo
           </span>
         );
@@ -146,19 +149,25 @@ const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
           </defs>
           
           {/* Grid lines */}
-          <line x1={padding} y1={padding} x2={width - padding} y2={padding} stroke="rgba(15, 23, 42, 0.05)" strokeDasharray="3,3" />
-          <line x1={padding} y1={padding + chartHeight/2} x2={width - padding} y2={padding + chartHeight/2} stroke="rgba(15, 23, 42, 0.05)" strokeDasharray="3,3" />
+          <line x1={padding} y1={padding} x2={width - padding} y2={padding} stroke="rgba(15, 23, 42, 0.05)" strokeDasharray="3,3" className="chart-grid-line" />
+          <line x1={padding} y1={padding + chartHeight/2} x2={width - padding} y2={padding + chartHeight/2} stroke="rgba(15, 23, 42, 0.05)" strokeDasharray="3,3" className="chart-grid-line" />
           <line x1={padding} y1={height - padding} x2={width - padding} y2={height - padding} stroke="rgba(15, 23, 42, 0.15)" />
 
           {/* Area under line */}
           <path d={areaD} fill="url(#chart-glow)" />
 
           {/* Line */}
-          <path d={pathD} fill="none" stroke="var(--accent-cyan)" strokeWidth="2" />
+          <path d={pathD} fill="none" stroke="var(--accent-cyan)" strokeWidth="2" className="chart-line-animate" />
 
           {/* Dots & Labels */}
           {points.map((p, i) => (
             <g key={i}>
+              {(i === points.length - 1 || p.val === Math.max(...data)) && (
+                <circle cx={p.x} cy={p.y} r="3.5" fill="var(--accent-cyan)" opacity="0.4">
+                  <animate attributeName="r" values="3.5;10;3.5" dur="2s" repeatCount="indefinite" />
+                  <animate attributeName="opacity" values="0.8;0;0.8" dur="2s" repeatCount="indefinite" />
+                </circle>
+              )}
               <circle cx={p.x} cy={p.y} r="3.5" fill="var(--accent-cyan)" stroke="#ffffff" strokeWidth="1.5" />
               {/* Show labels for peak or last point */}
               {(i === points.length - 1 || p.val === Math.max(...data)) && (
@@ -222,15 +231,21 @@ const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
             </linearGradient>
           </defs>
           
-          <line x1={padding} y1={padding} x2={width - padding} y2={padding} stroke="rgba(15, 23, 42, 0.05)" strokeDasharray="3,3" />
-          <line x1={padding} y1={padding + chartHeight/2} x2={width - padding} y2={padding + chartHeight/2} stroke="rgba(15, 23, 42, 0.05)" strokeDasharray="3,3" />
+          <line x1={padding} y1={padding} x2={width - padding} y2={padding} stroke="rgba(15, 23, 42, 0.05)" strokeDasharray="3,3" className="chart-grid-line" />
+          <line x1={padding} y1={padding + chartHeight/2} x2={width - padding} y2={padding + chartHeight/2} stroke="rgba(15, 23, 42, 0.05)" strokeDasharray="3,3" className="chart-grid-line" />
           <line x1={padding} y1={height - padding} x2={width - padding} y2={height - padding} stroke="rgba(15, 23, 42, 0.15)" />
 
           <path d={areaD} fill="url(#stress-glow)" />
-          <path d={pathD} fill="none" stroke="var(--status-replace)" strokeWidth="2" />
+          <path d={pathD} fill="none" stroke="var(--status-replace)" strokeWidth="2" className="chart-line-animate" />
 
           {points.map((p, i) => (
             <g key={i}>
+              {(i === points.length - 1 || p.val === Math.max(...data)) && (
+                <circle cx={p.x} cy={p.y} r="3.5" fill="var(--status-replace)" opacity="0.4">
+                  <animate attributeName="r" values="3.5;10;3.5" dur="2.5s" repeatCount="indefinite" />
+                  <animate attributeName="opacity" values="0.8;0;0.8" dur="2.5s" repeatCount="indefinite" />
+                </circle>
+              )}
               <circle cx={p.x} cy={p.y} r="3.5" fill="var(--status-replace)" stroke="#ffffff" strokeWidth="1.5" />
               {(i === points.length - 1 || p.val === Math.max(...data)) && (
                 <text x={p.x} y={p.y - 8} fill="var(--text-primary)" fontSize="8" fontFamily="monospace" textAnchor="middle" fontWeight="bold">
@@ -254,7 +269,77 @@ const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
     );
   };
 
-  const renderLifecycleStepper = (stage, life) => {
+  const renderRadialGauge = (life, operatingHours, status) => {
+    const radius = 35;
+    const circumference = 2 * Math.PI * radius;
+    const offset = circumference - (life / 100) * circumference;
+    
+    let strokeColor = 'var(--status-operational)';
+    if (life <= 20) {
+      strokeColor = 'var(--status-replace)';
+    } else if (life <= 50) {
+      strokeColor = 'var(--status-inspect)';
+    }
+
+    return (
+      <div className="radial-gauge-card">
+        <div className="radial-gauge-wrapper">
+          <svg width="100" height="100" viewBox="0 0 100 100" className="radial-gauge-svg">
+            <defs>
+              <linearGradient id="gauge-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor={strokeColor} />
+                <stop offset="100%" stopColor="var(--accent-cyan)" />
+              </linearGradient>
+            </defs>
+            {/* Background track */}
+            <circle 
+              cx="50" 
+              cy="50" 
+              r={radius} 
+              fill="transparent" 
+              stroke="rgba(15, 23, 42, 0.08)" 
+              strokeWidth="6" 
+            />
+            {/* Active progress track */}
+            <circle 
+              cx="50" 
+              cy="50" 
+              r={radius} 
+              fill="transparent" 
+              stroke="url(#gauge-grad)" 
+              strokeWidth="6" 
+              strokeDasharray={circumference}
+              strokeDashoffset={offset}
+              strokeLinecap="round"
+              transform="rotate(-90 50 50)"
+              style={{
+                transition: 'stroke-dashoffset 0.8s ease-out',
+                filter: 'drop-shadow(0 0 3px ' + strokeColor + ')'
+              }}
+            />
+          </svg>
+          <div className="radial-gauge-center">
+            <span className="radial-gauge-percentage">{life}%</span>
+            <span className="radial-gauge-label">VIDA ÚTIL</span>
+          </div>
+        </div>
+        <div className="radial-gauge-metrics">
+          <div className="metric-box">
+            <span className="metric-lbl">Estado Operacional</span>
+            <span className="metric-val" style={{ color: strokeColor }}>
+              {status === 'Operational' ? 'ÓPTIMO' : (status === 'Inspect' ? 'BAJO CONTROL' : 'CRÍTICO')}
+            </span>
+          </div>
+          <div className="metric-box">
+            <span className="metric-lbl">Uso Acumulado</span>
+            <span className="metric-val text-cyan">{operatingHours.toLocaleString()} Hrs</span>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderLifecycleStepper = (stage) => {
     const stages = [
       { key: 'Installation', label: '1. Instalación' },
       { key: 'Maintenance', label: '2. Mantenimiento' },
@@ -262,63 +347,32 @@ const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
     ];
 
     return (
-      <div style={{ background: 'var(--bg-sidebar-header)', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-glass)', display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '4px' }}>
+      <div style={{ background: 'var(--bg-sidebar-header)', padding: '14px', borderRadius: '12px', border: '1px solid var(--border-glass)', display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '4px' }}>
         <span className="detail-label" style={{ fontSize: '0.7rem' }}>Etapa del Ciclo de Vida</span>
         
-        <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative', padding: '4px 0' }}>
-          <div style={{ position: 'absolute', top: '11px', left: '15%', right: '15%', height: '2px', background: '#e2e8f0', zIndex: 1 }} />
+        <div className="lifecycle-stepper">
+          <div className="stepper-track-bg"></div>
+          <div className="stepper-track-fill" style={{ width: stage === 'Installation' ? '0%' : (stage === 'Maintenance' ? '50%' : '100%') }}></div>
           
           {stages.map((st, idx) => {
             const isActive = stage === st.key;
             const isCompleted = (stage === 'Maintenance' && idx === 0) || (stage === 'Replacement' && idx <= 1);
             
+            let nodeClass = '';
+            if (isActive) nodeClass = 'active';
+            else if (isCompleted) nodeClass = 'completed';
+
             return (
-              <div key={st.key} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 2, flex: 1 }}>
-                <div style={{ 
-                  width: '20px', 
-                  height: '20px', 
-                  borderRadius: '50%', 
-                  background: isActive ? 'var(--accent-blue)' : (isCompleted ? 'var(--status-operational)' : '#cbd5e1'),
-                  color: '#ffffff',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '0.65rem',
-                  fontWeight: 'bold',
-                  boxShadow: isActive ? '0 0 8px rgba(30, 58, 138, 0.3)' : 'none',
-                  transition: 'all 0.3s ease'
-                }}>
+              <div key={st.key} className={`stepper-node ${nodeClass}`}>
+                <div className="stepper-circle">
                   {isCompleted ? '✓' : idx + 1}
                 </div>
-                <span style={{ 
-                  fontSize: '0.62rem', 
-                  fontWeight: isActive ? 'bold' : '600', 
-                  color: isActive ? 'var(--accent-blue)' : 'var(--text-muted)', 
-                  marginTop: '4px',
-                  textAlign: 'center'
-                }}>
+                <span className="stepper-label">
                   {st.label}
                 </span>
               </div>
             );
           })}
-        </div>
-
-        <div style={{ marginTop: '4px', borderTop: '1px solid var(--border-glass)', paddingTop: '8px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', marginBottom: '4px' }}>
-            <span style={{ color: 'var(--text-secondary)' }}>Vida Útil Remanente:</span>
-            <strong style={{ 
-              color: life > 50 ? 'var(--status-operational)' : (life > 20 ? 'var(--status-inspect)' : 'var(--status-replace)') 
-            }}>{life}%</strong>
-          </div>
-          <div style={{ height: '6px', background: 'rgba(255, 255, 255, 0.1)', borderRadius: '3px', overflow: 'hidden' }}>
-            <div style={{ 
-              height: '100%', 
-              width: `${life}%`, 
-              background: life > 50 ? 'var(--status-operational)' : (life > 20 ? 'var(--status-inspect)' : 'var(--status-replace)'),
-              transition: 'width 0.5s ease-out'
-            }} />
-          </div>
         </div>
       </div>
     );
@@ -326,17 +380,24 @@ const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
 
   const renderInstallationNotes = (notes, date) => {
     return (
-      <div style={{ background: 'var(--bg-sidebar-header)', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-glass)', marginTop: '8px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.72rem', fontWeight: '700', textTransform: 'uppercase', color: 'var(--accent-cyan)', marginBottom: '4px' }}>
-          <ShieldCheck size={14} color="var(--status-operational)" /> Protocolo de Puesta en Marcha (Instalación)
+      <div className="certification-card">
+        <div className="cert-header">
+          <div className="cert-badge">
+            <ShieldCheck size={14} />
+            <span>CERTIFICADO DE PUESTA EN MARCHA</span>
+          </div>
+          <span className="cert-date">{date}</span>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '4px' }}>
-          <span>Fecha de Montaje:</span>
-          <span>{date}</span>
+        <div className="cert-body">
+          <div className="cert-watermark">
+            <ShieldCheck size={72} />
+          </div>
+          <p className="cert-text">{notes}</p>
+          <div className="cert-footer">
+            <span className="cert-stamp">VERIFICADO</span>
+            <span className="cert-org">DEPT. INGENIERÍA MECÁNICA</span>
+          </div>
         </div>
-        <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', lineHeight: '1.4', background: 'rgba(255, 255, 255, 0.02)', padding: '8px', borderRadius: '6px', border: '1px dotted var(--border-glass)', marginTop: '4px' }}>
-          {notes}
-        </p>
       </div>
     );
   };
@@ -348,7 +409,7 @@ const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
       return;
     }
     
-    // Call parents callback
+    // Call parent's callback
     onAddLog(selectedPart.id, {
       tech: techName.trim(),
       desc: logDesc.trim(),
@@ -375,26 +436,26 @@ const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
       </div>
 
       {/* Modern Tabs */}
-      <div style={{ display: 'flex', borderBottom: '1px solid var(--border-glass)', gap: '4px', paddingBottom: '2px' }}>
+      <div className="sidebar-tabs">
         <button 
           onClick={() => setActiveTab('detail')}
-          className={`btn-secondary ${activeTab === 'detail' ? 'active' : ''}`}
-          style={{ flex: 1, padding: '8px 4px', fontSize: '0.75rem', borderRadius: '6px', borderBottom: activeTab === 'detail' ? '2px solid var(--accent-cyan)' : '1px solid transparent' }}
+          className={`sidebar-tab ${activeTab === 'detail' ? 'active' : ''}`}
         >
+          <ClipboardList size={14} />
           Ficha Técnica
         </button>
         <button 
           onClick={() => setActiveTab('telemetry')}
-          className={`btn-secondary ${activeTab === 'telemetry' ? 'active' : ''}`}
-          style={{ flex: 1, padding: '8px 4px', fontSize: '0.75rem', borderRadius: '6px', borderBottom: activeTab === 'telemetry' ? '2px solid var(--accent-cyan)' : '1px solid transparent' }}
+          className={`sidebar-tab ${activeTab === 'telemetry' ? 'active' : ''}`}
         >
+          <Activity size={14} />
           Telemetría y Uso
         </button>
         <button 
           onClick={() => setActiveTab('logs')}
-          className={`btn-secondary ${activeTab === 'logs' ? 'active' : ''}`}
-          style={{ flex: 1, padding: '8px 4px', fontSize: '0.75rem', borderRadius: '6px', borderBottom: activeTab === 'logs' ? '2px solid var(--accent-cyan)' : '1px solid transparent' }}
+          className={`sidebar-tab ${activeTab === 'logs' ? 'active' : ''}`}
         >
+          <FileText size={14} />
           Bitácora ({logsData.length})
         </button>
       </div>
@@ -404,7 +465,10 @@ const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           
           {/* Lifecycle Stepper (Ciclo de Vida) */}
-          {renderLifecycleStepper(lifecycleStage, remainingLife)}
+          {renderLifecycleStepper(lifecycleStage)}
+
+          {/* Radial Life Gauge */}
+          {renderRadialGauge(remainingLife, selectedPart.operatingHours, selectedPart.status)}
 
           {/* Engineering Alerts */}
           {selectedPart.technicianAlert && (
@@ -427,37 +491,45 @@ const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
             </div>
           )}
 
-          <div className="detail-section">
-            <span className="detail-label">Función Mecánica</span>
-            <p className="detail-value" style={{ fontSize: '0.85rem' }}>{selectedPart.function}</p>
-          </div>
-
-          <div className="detail-section">
-            <span className="detail-label">Material de Construcción</span>
-            <span className="detail-value material" style={{ fontSize: '0.8rem' }}>
-              <HardDrive size={12} style={{ marginRight: '6px', verticalAlign: 'middle' }} />
-              {selectedPart.material}
-            </span>
-          </div>
-
-          <div className="detail-section">
-            <span className="detail-label">Fallas más frecuentes</span>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', padding: '10px', background: 'var(--bg-sidebar-header)', borderRadius: '6px', border: '1px solid var(--border-glass)' }}>
-              <p className="detail-value" style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                {selectedPart.commonFailures || "No hay registros cargados para esta pieza."}
-              </p>
+          {/* Technical Specs Grid Card Layout */}
+          <div className="technical-grid">
+            <div className="technical-card">
+              <div className="card-header-row">
+                <Wrench size={12} className="card-icon text-blue" />
+                <span className="card-title-lbl">Función Mecánica</span>
+              </div>
+              <p className="card-value-txt">{selectedPart.function}</p>
             </div>
-          </div>
 
-          <div className="detail-section">
-            <span className="detail-label">Descripción General</span>
-            <p className="detail-value" style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{selectedPart.description}</p>
+            <div className="technical-card">
+              <div className="card-header-row">
+                <HardDrive size={12} className="card-icon text-cyan" />
+                <span className="card-title-lbl">Material</span>
+              </div>
+              <p className="card-value-txt highlight-mono">{selectedPart.material}</p>
+            </div>
+
+            <div className="technical-card span-2">
+              <div className="card-header-row">
+                <AlertTriangle size={12} className="card-icon text-orange" />
+                <span className="card-title-lbl">Fallas más frecuentes</span>
+              </div>
+              <p className="card-value-txt">{selectedPart.commonFailures || "No hay fallas recurrentes registradas."}</p>
+            </div>
+
+            <div className="technical-card span-2">
+              <div className="card-header-row">
+                <FileText size={12} className="card-icon text-indigo" />
+                <span className="card-title-lbl">Descripción General</span>
+              </div>
+              <p className="card-value-txt">{selectedPart.description}</p>
+            </div>
           </div>
 
           {/* Installation Commissioning notes */}
           {renderInstallationNotes(installationNotes, selectedPart.entryDate)}
 
-          <div className="detail-section" style={{ borderTop: '1px solid var(--border-glass)', paddingTop: '12px' }}>
+          <div className="detail-section" style={{ borderTop: '1px solid var(--border-glass)', paddingTop: '12px', marginTop: '4px' }}>
             <span className="detail-label">Identificador de Malla</span>
             <span className="detail-value" style={{ fontFamily: 'monospace', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
               {selectedPart.id}
@@ -539,76 +611,100 @@ const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
           </div>
 
           {/* Add log entry Form */}
-          <form onSubmit={handleAddLogSubmit} style={{ background: 'var(--bg-sidebar-header)', border: '1px solid var(--border-glass)', padding: '12px', borderRadius: '8px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            <span className="detail-label" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <FileText size={12} /> Registrar Mantenimiento
+          <form onSubmit={handleAddLogSubmit} className="premium-form">
+            <span className="form-title-lbl">
+              <FileText size={14} className="text-cyan" /> Registrar Mantenimiento
             </span>
             
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <div className="input-group">
+              <User size={14} className="input-icon" />
               <input
                 type="text"
                 placeholder="Nombre del Técnico"
                 value={techName}
                 onChange={(e) => setTechName(e.target.value)}
-                style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-glass)', color: 'var(--text-primary)', borderRadius: '6px', padding: '6px 8px', fontSize: '0.8rem', outline: 'none' }}
+                className="premium-input"
               />
             </div>
             
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <div className="input-group">
               <textarea
                 placeholder="Descripción del trabajo o hallazgos..."
                 value={logDesc}
                 onChange={(e) => setLogDesc(e.target.value)}
                 rows={2}
-                style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-glass)', color: 'var(--text-primary)', borderRadius: '6px', padding: '6px 8px', fontSize: '0.8rem', outline: 'none', resize: 'vertical', fontFamily: 'inherit' }}
+                className="premium-textarea"
               />
             </div>
 
-            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <div className="form-action-row">
               <select
                 value={logStatus}
                 onChange={(e) => setLogStatus(e.target.value)}
-                style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-glass)', color: 'var(--text-primary)', borderRadius: '6px', padding: '5px', fontSize: '0.75rem', flex: 1, outline: 'none' }}
+                className="premium-select"
               >
-                <option value="" style={{ background: 'var(--bg-secondary)' }}>Dejar estado actual</option>
-                <option value="Operational" style={{ background: 'var(--bg-secondary)' }}>Fijar: Operativo</option>
-                <option value="Inspect" style={{ background: 'var(--bg-secondary)' }}>Fijar: Inspección</option>
-                <option value="Replace" style={{ background: 'var(--bg-secondary)' }}>Fijar: Reemplazo</option>
+                <option value="">Dejar estado actual</option>
+                <option value="Operational">Fijar: Operativo</option>
+                <option value="Inspect">Fijar: Inspección</option>
+                <option value="Replace">Fijar: Reemplazo</option>
               </select>
 
-              <button type="submit" className="btn-secondary" style={{ padding: '6px 12px', fontSize: '0.75rem', background: 'var(--accent-cyan)', borderColor: 'var(--accent-cyan)', color: '#ffffff', cursor: 'pointer' }}>
-                Registrar
+              <button type="submit" className="premium-btn">
+                <span>Registrar</span>
               </button>
             </div>
 
             {formError && (
-              <span style={{ color: 'var(--status-replace)', fontSize: '0.7rem' }}>{formError}</span>
+              <span className="form-error-msg">{formError}</span>
             )}
           </form>
 
           {/* Historical timeline logs list */}
-          <div className="detail-section">
+          <div className="timeline-section">
             <span className="detail-label" style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '8px' }}>
               <ClipboardList size={12} /> Historial de Bitácora
             </span>
             
             {logsData.length === 0 ? (
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textAlign: 'center', padding: '10px 0' }}>
-                No hay mantenimientos previos registrados.
-              </p>
+              <div className="timeline-empty">
+                <p>No hay mantenimientos previos registrados.</p>
+              </div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: '180px', overflowY: 'auto', paddingRight: '4px' }}>
-                {logsData.map((log, index) => (
-                  <div key={log.id || index} style={{ background: 'var(--bg-sidebar-header)', border: '1px solid var(--border-glass)', borderLeft: '3px solid var(--accent-cyan)', padding: '8px 10px', borderRadius: '0 6px 6px 0', fontSize: '0.75rem' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)', fontSize: '0.7rem', marginBottom: '4px' }}>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <User size={10} /> {log.tech}
-                      </span>
-                      <span>{log.date}</span>
-                    </div>
-                    <p style={{ color: 'var(--text-primary)', lineHeight: '1.4' }}>{log.desc}</p>
-                  </div>
-                ))}
+              <div className="timeline-container">
+                <div className="timeline-line"></div>
+                <div className="timeline-list">
+                  {logsData.map((log, index) => {
+                    let nodeColorClass = 'green';
+                    if (log.status === 'Replace') nodeColorClass = 'red';
+                    else if (log.status === 'Inspect') nodeColorClass = 'orange';
+
+                    return (
+                      <div key={log.id || index} className="timeline-item">
+                        <div className={`timeline-node ${nodeColorClass}`}>
+                          <div className="timeline-node-inner"></div>
+                        </div>
+                        <div className="timeline-card">
+                          <div className="timeline-card-header">
+                            <span className="timeline-tech">
+                              <User size={10} style={{ marginRight: '4px' }} />
+                              {log.tech}
+                            </span>
+                            <span className="timeline-date">
+                              <Calendar size={10} style={{ marginRight: '4px' }} />
+                              {log.date}
+                            </span>
+                          </div>
+                          <p className="timeline-desc">{log.desc}</p>
+                          {log.status && (
+                            <span className={`timeline-status-badge ${log.status.toLowerCase()}`}>
+                              {log.status === 'Operational' ? 'Operativo' : (log.status === 'Inspect' ? 'Inspección' : 'Reemplazo')}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             )}
           </div>

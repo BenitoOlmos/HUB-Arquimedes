@@ -15,6 +15,7 @@ import {
 
 const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
   const [activeTab, setActiveTab] = useState('detail'); // 'detail', 'telemetry', 'logs'
+  const [selectedStageInfo, setSelectedStageInfo] = useState(null);
   const [techName, setTechName] = useState('');
   const [logDesc, setLogDesc] = useState('');
   const [logStatus, setLogStatus] = useState('');
@@ -339,6 +340,117 @@ const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
     );
   };
 
+  const renderStageInfoContent = (stage) => {
+    switch (stage) {
+      case 'Installation':
+        return (
+          <div className="history-chart-container" style={{ background: 'var(--bg-sidebar-header)', padding: '14px', borderRadius: '12px', border: '1px solid var(--border-glass)', display: 'flex', flexDirection: 'column', gap: '8px', animation: 'fade-in-tooltip 0.25s' }}>
+            <h4 style={{ fontSize: '0.8rem', fontWeight: '800', color: 'var(--status-inspect)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <AlertTriangle size={14} /> Fallas de Juventud (Mortalidad Infantil)
+            </h4>
+            <p style={{ fontSize: '0.74rem', color: 'var(--text-secondary)', lineHeight: '1.45' }}>
+              Ocurren al inicio de la vida del equipo con una alta tasa de fallos. Generalmente son consecuencia de problemas en la instalación, la puesta en marcha, el almacenamiento o el transporte.
+            </p>
+          </div>
+        );
+      case 'Maintenance':
+        return (
+          <div className="history-chart-container" style={{ background: 'var(--bg-sidebar-header)', padding: '14px', borderRadius: '12px', border: '1px solid var(--border-glass)', display: 'flex', flexDirection: 'column', gap: '14px', animation: 'fade-in-tooltip 0.25s' }}>
+            {/* Main Header */}
+            <div>
+              <h4 style={{ fontSize: '0.82rem', fontWeight: '800', color: 'var(--accent-cyan)', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                <Activity size={14} /> Etapas del Ciclo de Vida del Equipo
+              </h4>
+              
+              {/* Stages List */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {/* Fallas de Juventud */}
+                <div style={{ background: 'rgba(245, 158, 11, 0.04)', padding: '10px', borderRadius: '8px', border: '1px solid rgba(245, 158, 11, 0.15)' }}>
+                  <strong style={{ color: 'var(--status-inspect)', display: 'block', fontSize: '0.74rem', marginBottom: '4px' }}>
+                    Fallas de Juventud (Mortalidad Infantil):
+                  </strong>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', lineHeight: '1.45' }}>
+                    Ocurren al inicio de la vida del equipo con una alta tasa de fallos. Generalmente son consecuencia de problemas en la instalación, la puesta en marcha, el almacenamiento o el transporte.
+                  </span>
+                </div>
+
+                {/* Vida Util */}
+                <div style={{ background: 'rgba(6, 182, 212, 0.04)', padding: '10px', borderRadius: '8px', border: '1px solid rgba(6, 182, 212, 0.15)' }}>
+                  <strong style={{ color: 'var(--accent-cyan)', display: 'block', fontSize: '0.74rem', marginBottom: '4px' }}>
+                    Vida Útil (Etapa de Estabilidad):
+                  </strong>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', lineHeight: '1.45' }}>
+                    Es el periodo central donde el equipo presenta un comportamiento estable y una tasa de fallos baja. Durante esta fase, el equipo ofrece una alta disponibilidad y sus horas de servicio son predecibles, siempre y cuando se someta a procesos de producción normalizados (sin sobreexigencias) y se respeten sus mantenimientos.
+                  </span>
+                </div>
+
+                {/* Fallas de Vejez */}
+                <div style={{ background: 'rgba(239, 68, 68, 0.04)', padding: '10px', borderRadius: '8px', border: '1px solid rgba(239, 68, 68, 0.15)' }}>
+                  <strong style={{ color: 'var(--status-replace)', display: 'block', fontSize: '0.74rem', marginBottom: '4px' }}>
+                    Fallas de Vejez (Desgaste):
+                  </strong>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', lineHeight: '1.45' }}>
+                    En la etapa final, la tasa de fallos vuelve a aumentar drásticamente. Esto se debe al desgaste natural de los componentes, la fatiga por la operación continua y el historial de mantención del equipo.
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Mantenimiento y Procedimientos Criticos */}
+            <div style={{ borderTop: '1px solid var(--border-glass)', paddingTop: '12px', marginTop: '4px' }}>
+              <h4 style={{ fontSize: '0.82rem', fontWeight: '800', color: 'var(--accent-blue)', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                <Wrench size={14} /> Mantenimiento y Procedimientos Críticos
+              </h4>
+              <p style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', lineHeight: '1.4', marginBottom: '10px' }}>
+                Para prolongar la etapa de "Vida Útil", se establecen ciclos de mantenimiento que varían según el componente:
+              </p>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {/* Inspecciones de Rutina */}
+                <div style={{ paddingLeft: '4px' }}>
+                  <strong style={{ color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.74rem', marginBottom: '4px' }}>
+                    <ClipboardList size={12} style={{ color: 'var(--accent-cyan)' }} /> Inspecciones de Rutina:
+                  </strong>
+                  <p style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', lineHeight: '1.4', marginBottom: '4px' }}>
+                    Tanto en la bomba como en el motor, es vital monitorear variables de manera constante:
+                  </p>
+                  <ul style={{ paddingLeft: '16px', display: 'flex', flexDirection: 'column', gap: '3px', fontSize: '0.72rem', color: 'var(--text-secondary)', listStyleType: 'disc' }}>
+                    <li>Inspección de fugas (especialmente en la bomba).</li>
+                    <li>Detección de ruidos y vibraciones anormales.</li>
+                    <li>Control de temperatura.</li>
+                    <li>Estado de la lubricación y vida remanente de los rodamientos.</li>
+                  </ul>
+                </div>
+
+                {/* Desacople y Alineacion */}
+                <div style={{ paddingLeft: '4px', borderTop: '1px dashed var(--border-glass)', paddingTop: '8px' }}>
+                  <strong style={{ color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.74rem', marginBottom: '4px' }}>
+                    <TrendingUp size={12} style={{ color: 'var(--accent-blue)' }} /> Desacople y Alineación:
+                  </strong>
+                  <p style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', lineHeight: '1.45' }}>
+                    Cuando se realiza una intervención mayor, como el cambio de rodamientos o el reemplazo del motor, el conjunto debe desacoplarse. Al volver a montar, el paso más crítico es la alineación. Esta debe realizarse respetando estrictamente las normativas técnicas para evitar daños prematuros y asegurar que los rodamientos nuevos alcancen la vida útil esperada.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      case 'Replacement':
+        return (
+          <div className="history-chart-container" style={{ background: 'var(--bg-sidebar-header)', padding: '14px', borderRadius: '12px', border: '1px solid var(--border-glass)', display: 'flex', flexDirection: 'column', gap: '8px', animation: 'fade-in-tooltip 0.25s' }}>
+            <h4 style={{ fontSize: '0.8rem', fontWeight: '800', color: 'var(--status-replace)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <AlertTriangle size={14} /> Fallas de Vejez (Desgaste)
+            </h4>
+            <p style={{ fontSize: '0.74rem', color: 'var(--text-secondary)', lineHeight: '1.45' }}>
+              En la etapa final, la tasa de fallos vuelve a aumentar drásticamente. Esto se debe al desgaste natural de los componentes, la fatiga por la operación continua y el historial de mantención del equipo.
+            </p>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
   const renderLifecycleStepper = (stage) => {
     const stages = [
       { key: 'Installation', label: '1. Instalación' },
@@ -348,7 +460,10 @@ const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
 
     return (
       <div style={{ background: 'var(--bg-sidebar-header)', padding: '14px', borderRadius: '12px', border: '1px solid var(--border-glass)', display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '4px' }}>
-        <span className="detail-label" style={{ fontSize: '0.7rem' }}>Etapa del Ciclo de Vida</span>
+        <span className="detail-label" style={{ fontSize: '0.7rem', display: 'flex', justifyContent: 'space-between' }}>
+          <span>Etapa del Ciclo de Vida</span>
+          <span style={{ fontSize: '0.62rem', color: 'var(--accent-cyan)' }}>Clic para más información</span>
+        </span>
         
         <div className="lifecycle-stepper">
           <div className="stepper-track-bg"></div>
@@ -357,17 +472,24 @@ const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
           {stages.map((st, idx) => {
             const isActive = stage === st.key;
             const isCompleted = (stage === 'Maintenance' && idx === 0) || (stage === 'Replacement' && idx <= 1);
+            const isSelected = selectedStageInfo === st.key;
             
             let nodeClass = '';
             if (isActive) nodeClass = 'active';
             else if (isCompleted) nodeClass = 'completed';
+            if (isSelected) nodeClass += ' active'; // highlight selected node
 
             return (
-              <div key={st.key} className={`stepper-node ${nodeClass}`}>
-                <div className="stepper-circle">
+              <div 
+                key={st.key} 
+                className={`stepper-node ${nodeClass}`}
+                onClick={() => setSelectedStageInfo(selectedStageInfo === st.key ? null : st.key)}
+                style={{ cursor: 'pointer' }}
+              >
+                <div className="stepper-circle" style={{ boxShadow: isSelected ? '0 0 10px var(--accent-cyan)' : '' }}>
                   {isCompleted ? '✓' : idx + 1}
                 </div>
-                <span className="stepper-label">
+                <span className="stepper-label" style={{ color: isSelected ? 'var(--accent-cyan)' : '' }}>
                   {st.label}
                 </span>
               </div>
@@ -466,6 +588,9 @@ const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
           
           {/* Lifecycle Stepper (Ciclo de Vida) */}
           {renderLifecycleStepper(lifecycleStage)}
+
+          {/* Render expanded stage info here */}
+          {selectedStageInfo && renderStageInfoContent(selectedStageInfo)}
 
           {/* Radial Life Gauge */}
           {renderRadialGauge(remainingLife, selectedPart.operatingHours, selectedPart.status)}

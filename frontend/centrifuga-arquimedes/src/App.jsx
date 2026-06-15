@@ -27,6 +27,8 @@ function App() {
   });
   const [isCavitating, setIsCavitating] = useState(false);
   const [sidebarMode, setSidebarMode] = useState('simulation'); // 'simulation' or 'inspection'
+  const [sidebarWidth, setSidebarWidth] = useState(380);
+  const [isResizing, setIsResizing] = useState(false);
   
   const {
     explodeFactor,
@@ -54,6 +56,44 @@ function App() {
       setSidebarMode('inspection');
     }
   }, [selectedPartId]);
+
+  const startResizing = (e) => {
+    e.preventDefault();
+    setIsResizing(true);
+  };
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (!isResizing) return;
+      const newWidth = window.innerWidth - e.clientX;
+      const minWidth = 320;
+      const maxWidth = window.innerWidth * 0.5; // Up to 50% of the screen
+      if (newWidth >= minWidth && newWidth <= maxWidth) {
+        setSidebarWidth(newWidth);
+      }
+    };
+
+    const handleMouseUp = () => {
+      setIsResizing(false);
+    };
+
+    if (isResizing) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
+    } else {
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    }
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+  }, [isResizing]);
 
   return (
     <div className="app-container">
@@ -262,7 +302,13 @@ function App() {
             </div>
 
             {/* Sidebar Info Panel */}
-            <aside className="info-sidebar">
+            <aside className="info-sidebar" style={{ width: `${sidebarWidth}px` }}>
+              {/* Drag Resizer Handle */}
+              <div 
+                className="sidebar-resizer" 
+                onMouseDown={startResizing}
+              />
+              
               <div className="sidebar-header" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div>
@@ -282,7 +328,12 @@ function App() {
                     <span>Simulación</span>
                   </button>
                   <button 
-                    onClick={() => setSidebarMode('inspection')}
+                    onClick={() => {
+                      setSidebarMode('inspection');
+                      if (!selectedPartId) {
+                        setSelectedPartId('volute_casing');
+                      }
+                    }}
                     className={`sidebar-tab ${sidebarMode === 'inspection' ? 'active' : ''}`}
                     style={{ flex: 1, justifyContent: 'center' }}
                   >

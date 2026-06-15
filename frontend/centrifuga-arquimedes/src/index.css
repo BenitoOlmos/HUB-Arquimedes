@@ -1365,6 +1365,7 @@ body {
    Sidebar Sizing & Scroll Enhancements
    ========================================================================== */
 .info-sidebar {
+  position: relative;
   width: 380px;
   height: 100%;
   background: var(--bg-secondary);
@@ -1375,6 +1376,38 @@ body {
   z-index: 10;
   overflow: hidden;
   flex-shrink: 0;
+}
+
+.sidebar-resizer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  cursor: col-resize;
+  z-index: 100;
+  background: transparent;
+  transition: background 0.15s, border-left 0.15s;
+  border-left: 1px solid transparent;
+}
+
+.sidebar-resizer:hover {
+  background: rgba(2, 132, 199, 0.08);
+  border-left: 2px solid var(--accent-cyan);
+}
+
+.sidebar-resizer:active {
+  background: rgba(2, 132, 199, 0.15);
+  border-left: 2px solid var(--accent-cyan);
+}
+
+@media (max-width: 1024px) {
+  .info-sidebar {
+    width: 100% !important;
+  }
+  .sidebar-resizer {
+    display: none;
+  }
 }
 
 .sidebar-header {

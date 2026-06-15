@@ -451,6 +451,87 @@ const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
     }
   };
 
+  const renderBathtubCurve = (currentStage) => {
+    let dotX = 160;
+    let dotY = 65;
+    let dotColor = 'var(--accent-cyan)';
+    let stageLabel = 'Vida Útil (Estabilidad)';
+
+    if (currentStage === 'Installation') {
+      dotX = 55;
+      dotY = 40;
+      dotColor = 'var(--status-inspect)';
+      stageLabel = 'Mortalidad Infantil';
+    } else if (currentStage === 'Replacement') {
+      dotX = 265;
+      dotY = 40;
+      dotColor = 'var(--status-replace)';
+      stageLabel = 'Desgaste / Vejez';
+    }
+
+    return (
+      <div className="history-chart-container" style={{ background: 'var(--bg-sidebar-header)', padding: '14px', borderRadius: '12px', border: '1px solid var(--border-glass)', display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '4px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', fontWeight: '700' }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--text-primary)' }}>
+            <Activity size={12} style={{ color: 'var(--accent-cyan)' }} /> Curva de la Bañera (Bathtub Curve)
+          </span>
+          <span style={{ fontSize: '0.68rem', color: dotColor, fontWeight: 'bold' }}>
+            {stageLabel}
+          </span>
+        </div>
+        
+        <svg viewBox="0 0 320 90" width="100%" height="90" style={{ overflow: 'visible' }}>
+          <defs>
+            <linearGradient id="bathtub-line-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="var(--status-inspect)" />
+              <stop offset="50%" stopColor="var(--accent-cyan)" />
+              <stop offset="100%" stopColor="var(--status-replace)" />
+            </linearGradient>
+          </defs>
+          
+          {/* Phase shading backgrounds */}
+          <rect x="20" y="5" width="70" height="75" fill="rgba(245, 158, 11, 0.02)" />
+          <line x1="90" y1="5" x2="90" y2="80" stroke="rgba(15, 23, 42, 0.05)" strokeDasharray="3,3" />
+          
+          <rect x="90" y="5" width="140" height="75" fill="rgba(6, 182, 212, 0.02)" />
+          <line x1="230" y1="5" x2="230" y2="80" stroke="rgba(15, 23, 42, 0.05)" strokeDasharray="3,3" />
+          
+          <rect x="230" y="5" width="70" height="75" fill="rgba(239, 68, 68, 0.02)" />
+          
+          {/* X and Y Axes */}
+          <line x1="20" y1="80" x2="300" y2="80" stroke="var(--border-glass)" strokeWidth="1.5" />
+          <line x1="20" y1="5" x2="20" y2="80" stroke="var(--border-glass)" strokeWidth="1.5" />
+          
+          {/* Bathtub curve path */}
+          <path 
+            d="M 20,15 Q 55,65 90,65 L 230,65 Q 265,65 300,15" 
+            fill="none" 
+            stroke="url(#bathtub-line-grad)" 
+            strokeWidth="3" 
+            strokeLinecap="round"
+          />
+
+          {/* Current State Pulsing Circle Indicator */}
+          <g>
+            <circle cx={dotX} cy={dotY} r="6" fill={dotColor} opacity="0.4">
+              <animate attributeName="r" values="6;12;6" dur="2s" repeatCount="indefinite" />
+              <animate attributeName="opacity" values="0.8;0;0.8" dur="2s" repeatCount="indefinite" />
+            </circle>
+            <circle cx={dotX} cy={dotY} r="4.5" fill={dotColor} stroke="#ffffff" strokeWidth="1.5" />
+          </g>
+
+          {/* Labels */}
+          <text x="55" y="88" fill="var(--text-muted)" fontSize="7" textAnchor="middle" fontWeight="bold">Juventud</text>
+          <text x="160" y="88" fill="var(--text-muted)" fontSize="7" textAnchor="middle" fontWeight="bold">Vida Útil</text>
+          <text x="265" y="88" fill="var(--text-muted)" fontSize="7" textAnchor="middle" fontWeight="bold">Vejez</text>
+          
+          <text x="10" y="45" fill="var(--text-muted)" fontSize="6" textAnchor="middle" transform="rotate(-90 10 45)" fontWeight="bold">Tasa de Fallas</text>
+          <text x="303" y="77" fill="var(--text-muted)" fontSize="6" textAnchor="left" fontWeight="bold">Tiempo</text>
+        </svg>
+      </div>
+    );
+  };
+
   const renderLifecycleStepper = (stage) => {
     const stages = [
       { key: 'Installation', label: '1. Instalación' },
@@ -588,6 +669,9 @@ const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
           
           {/* Lifecycle Stepper (Ciclo de Vida) */}
           {renderLifecycleStepper(lifecycleStage)}
+
+          {/* Bathtub Curve Graphic */}
+          {renderBathtubCurve(lifecycleStage)}
 
           {/* Render expanded stage info here */}
           {selectedStageInfo && renderStageInfoContent(selectedStageInfo)}

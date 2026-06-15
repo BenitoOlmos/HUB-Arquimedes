@@ -209,17 +209,19 @@ const PumpSimulatorPanel = ({
   };
 
   const getSvgYHead = (h) => {
+    const clampedH = Math.min(maxHeadAxis, Math.max(0, h));
     const paddingTop = 20;
     const paddingBottom = 30;
     const chartHeight = 220 - paddingTop - paddingBottom;
-    return 220 - paddingBottom - (h / maxHeadAxis) * chartHeight;
+    return 220 - paddingBottom - (clampedH / maxHeadAxis) * chartHeight;
   };
 
   const getSvgYNPSH = (n) => {
+    const clampedN = Math.min(maxNPSHAxis, Math.max(0, n));
     const paddingTop = 20;
     const paddingBottom = 30;
     const chartHeight = 220 - paddingTop - paddingBottom;
-    return 220 - paddingBottom - (n / maxNPSHAxis) * chartHeight;
+    return 220 - paddingBottom - (clampedN / maxNPSHAxis) * chartHeight;
   };
 
   const generatePathD = (points, yConverter) => {

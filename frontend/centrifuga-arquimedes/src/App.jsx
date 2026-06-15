@@ -126,36 +126,57 @@ function App() {
               <div className="instructions-overlay">
                 <div className="instruction-item">
                   <div className="instruction-dot"></div>
-                  <span>Click + Arrastrar: Orbitar 360º</span>
+                  <span>{selectedModel === 'sketchfab-bomba-centrifuga' ? 'Arrastrar: Rotar 3D' : 'Click + Arrastrar: Orbitar 360º'}</span>
                 </div>
                 <div className="instruction-item">
                   <div className="instruction-dot"></div>
-                  <span>Click Der. + Arrastrar: Desplazar</span>
+                  <span>{selectedModel === 'sketchfab-bomba-centrifuga' ? 'Shift + Arrastrar: Desplazar' : 'Click Der. + Arrastrar: Desplazar'}</span>
                 </div>
                 <div className="instruction-item">
                   <div className="instruction-dot"></div>
-                  <span>Rueda de mouse: Zoom completo</span>
+                  <span>Rueda de mouse: Zoom</span>
                 </div>
-                <div className="instruction-item">
-                  <div className="instruction-dot"></div>
-                  <span>Clic en pieza: Auditar componente</span>
-                </div>
+                {selectedModel !== 'sketchfab-bomba-centrifuga' && (
+                  <div className="instruction-item">
+                    <div className="instruction-dot"></div>
+                    <span>Clic en pieza: Auditar componente</span>
+                  </div>
+                )}
               </div>
 
-              {/* 3D Canvas Visualizer */}
-              <ErrorBoundary>
-                <CanvasViewer
-                  modelName={selectedModel}
-                  explodeFactor={explodeFactor}
-                  autoRotate={autoRotate}
-                  selectedPartId={selectedPartId}
-                  onSelectPart={setSelectedPartId}
-                  onModelLoaded={setModelLoaded}
-                  motorPower={motorPower}
-                  activeDiameter={activeDiameter}
-                  isCavitating={isCavitating}
-                />
-              </ErrorBoundary>
+              {/* 3D Canvas Visualizer or Sketchfab Embed */}
+              {selectedModel === 'sketchfab-bomba-centrifuga' ? (
+                <div className="canvas-container" style={{ position: 'relative', overflow: 'hidden', borderRadius: '12px', background: '#f8fafc', border: '1px solid var(--border-glass)' }}>
+                  <iframe
+                    title="Bomba Centrifuga Anima"
+                    frameBorder="0"
+                    allowFullScreen
+                    mozallowfullscreen="true"
+                    webkitallowfullscreen="true"
+                    allow="autoplay; fullscreen; xr-spatial-tracking"
+                    xr-spatial-tracking
+                    execution-while-out-of-viewport
+                    execution-while-not-rendered
+                    web-share
+                    src="https://sketchfab.com/models/8ba0ed44dfbd480793aa2ac4ce22b287/embed?autospin=1&autostart=1&preload=1&transparent=1&ui_theme=dark"
+                    style={{ width: '100%', height: '100%', minHeight: '400px', border: 'none' }}
+                  />
+                </div>
+              ) : (
+                <ErrorBoundary>
+                  <CanvasViewer
+                    modelName={selectedModel}
+                    explodeFactor={explodeFactor}
+                    autoRotate={autoRotate}
+                    selectedPartId={selectedPartId}
+                    onSelectPart={setSelectedPartId}
+                    onModelLoaded={setModelLoaded}
+                    motorPower={motorPower}
+                    activeDiameter={activeDiameter}
+                    isCavitating={isCavitating}
+                  />
+                </ErrorBoundary>
+              )}
 
               {/* Interactive Overlay controls */}
               <div className="controls-panel">
@@ -175,52 +196,68 @@ function App() {
                   >
                     {models.map((model) => (
                       <option key={model} value={model}>
-                        {model.replace('.glb', '').replace(/_/g, ' ').replace(/-/g, ' ').toUpperCase()}
+                        {model === 'sketchfab-bomba-centrifuga' 
+                          ? 'BOMBA ANIMADA (SKETCHFAB)' 
+                          : model.replace('.glb', '').replace(/_/g, ' ').replace(/-/g, ' ').toUpperCase()}
                       </option>
                     ))}
                   </select>
                 </div>
 
-                <div className="control-row">
-                  <div className="control-label">
-                    <span>Despiece (Exploded View)</span>
-                  </div>
-                  <div className="slider-container">
-                    <input
-                      type="range"
-                      min="0"
-                      max="1"
-                      step="0.01"
-                      value={explodeFactor}
-                      onChange={(e) => setExplodeFactor(parseFloat(e.target.value))}
-                      className="premium-slider"
-                    />
-                    <span className="slider-val">{Math.round(explodeFactor * 100)}%</span>
-                  </div>
-                </div>
-
-                <div className="control-row" style={{ marginTop: '4px' }}>
-                  <div className="btn-group">
-                    <button
-                      className={`btn-secondary ${autoRotate ? 'active' : ''}`}
-                      onClick={() => setAutoRotate(!autoRotate)}
-                    >
-                      {autoRotate ? <EyeOff size={14} /> : <Eye size={14} />}
-                      {autoRotate ? 'Detener Rotación' : 'Auto Rotar'}
-                    </button>
-                    <button className="btn-secondary" onClick={resetView}>
-                      <RotateCcw size={14} />
-                      Restablecer
-                    </button>
-                  </div>
-
-                  {usingFallback && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                      <HelpCircle size={12} color="var(--status-inspect)" />
-                      <span>Modo Sin Servidor (Mock Data)</span>
+                {selectedModel === 'sketchfab-bomba-centrifuga' ? (
+                  <div style={{ padding: '8px 4px', fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--accent-blue)', fontWeight: 'bold' }}>
+                      <HelpCircle size={14} />
+                      <span>Visualizador Externo</span>
                     </div>
-                  )}
-                </div>
+                    <p style={{ margin: 0, lineHeight: '1.4' }}>
+                      Visualizando <strong>Bomba Centrífuga Anima</strong> desde Sketchfab. Las opciones de despiece, simulación e inspección de partes locales están desactivadas para este modelo.
+                    </p>
+                  </div>
+                ) : (
+                  <>
+                    <div className="control-row">
+                      <div className="control-label">
+                        <span>Despiece (Exploded View)</span>
+                      </div>
+                      <div className="slider-container">
+                        <input
+                          type="range"
+                          min="0"
+                          max="1"
+                          step="0.01"
+                          value={explodeFactor}
+                          onChange={(e) => setExplodeFactor(parseFloat(e.target.value))}
+                          className="premium-slider"
+                        />
+                        <span className="slider-val">{Math.round(explodeFactor * 100)}%</span>
+                      </div>
+                    </div>
+
+                    <div className="control-row" style={{ marginTop: '4px' }}>
+                      <div className="btn-group">
+                        <button
+                          className={`btn-secondary ${autoRotate ? 'active' : ''}`}
+                          onClick={() => setAutoRotate(!autoRotate)}
+                        >
+                          {autoRotate ? <EyeOff size={14} /> : <Eye size={14} />}
+                          {autoRotate ? 'Detener Rotación' : 'Auto Rotar'}
+                        </button>
+                        <button className="btn-secondary" onClick={resetView}>
+                          <RotateCcw size={14} />
+                          Restablecer
+                        </button>
+                      </div>
+
+                      {usingFallback && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                          <HelpCircle size={12} color="var(--status-inspect)" />
+                          <span>Modo Sin Servidor (Mock Data)</span>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
               </div>
             </div>
 

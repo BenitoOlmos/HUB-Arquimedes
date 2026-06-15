@@ -259,10 +259,10 @@ export const usePumpSimulation = () => {
         const response = await fetch(`${API_BASE_URL}/parts/models`);
         if (!response.ok) throw new Error('Failed to load models list');
         const data = await response.json();
-        setModels(data);
+        setModels([...data, 'sketchfab-bomba-centrifuga']);
       } catch (error) {
         console.warn('Could not fetch models list from API, using fallbacks.', error.message);
-        setModels(fallbackModels);
+        setModels([...fallbackModels, 'sketchfab-bomba-centrifuga']);
       }
     };
     fetchModels();

@@ -1625,3 +1625,55 @@ body {
   color: var(--status-replace);
   border: 1px solid rgba(239, 68, 68, 0.15);
 }
+
+/* ==========================================================================
+   Pump Simulator Custom Premium Styles
+   ========================================================================== */
+
+/* Interactive Radio Cards for Power and Pipe Diameter */
+.premium-radio-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-glass) !important;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 4px;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  user-select: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.premium-radio-card:hover {
+  border-color: var(--border-glass-active) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.03);
+}
+
+.premium-radio-card.active {
+  background: rgba(14, 165, 233, 0.05) !important;
+  border-color: var(--accent-cyan) !important;
+  box-shadow: 0 0 12px rgba(14, 165, 233, 0.15) !important;
+}
+
+.premium-radio-card.active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent-cyan), var(--accent-blue));
+}
+
+/* Tooltip fade-in animation */
+.history-chart-container {
+  animation: fade-in-tooltip 0.25s ease-out forwards;
+}
+
+@keyframes fade-in-tooltip {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}

@@ -169,6 +169,27 @@ const fallbackPartsData = {
     installationNotes: 'Brida libre de tensiones externas. Tubería de succión soportada independientemente para evitar esfuerzos en carcasa.',
     nextMaintenance: '2026-11-20',
     maintenanceLogs: '[{"id":"sf-01","date":"2025-01-10","tech":"Héctor Gómez","desc":"Reajuste de torque en tornillería de conexión. Reemplazo de junta por una espiralada de EPDM."}]'
+  },
+  motor: {
+    id: 'motor',
+    name: 'Electric Motor',
+    spanishName: 'Motor Eléctrico',
+    description: 'Motor asincrónico trifásico acoplado de inducción. Proporciona la potencia mecánica y el par necesario para accionar la bomba centrífuga a su velocidad nominal de diseño (2900 RPM).',
+    material: 'Carcasa de Aluminio o Hierro Fundido con Bobinado de Cobre',
+    function: 'Convierte la energía eléctrica de entrada en energía rotacional mecánica para accionar el eje del impulsor.',
+    maintenanceInterval: 'Cada 12 meses',
+    status: 'Operational',
+    commonFailures: 'Cortocircuito en bobinado por humedad, sobrecalentamiento por sobrecarga eléctrica, falla de rodamientos del estator.',
+    technicianAlert: 'Medir resistencia de aislamiento (Megger) entre bobinados y carcasa. Inspeccionar temperatura en la carcasa con cámara termográfica.',
+    entryDate: '2024-01-15',
+    operatingHours: 14820,
+    vibrationHistory: '[1.1, 1.2, 1.3, 1.2, 1.4, 1.4, 1.5]',
+    stressHistory: '[30, 35, 33, 38, 42, 40, 45]',
+    remainingLife: 82,
+    lifecycleStage: 'Maintenance',
+    installationNotes: 'Alineación láser de precisión realizada. Megger de bobinados arrojó > 100 Megaohms (Aprobado). Caja de conexiones estanca verificada.',
+    nextMaintenance: '2026-08-25',
+    maintenanceLogs: '[{"id":"mot-01","date":"2025-01-12","tech":"Carlos Mendoza","desc":"Limpieza de aletas de refrigeración y engrase de rodamientos con grasa Mobil Polyrex EM."}]'
   }
 };
 
@@ -210,6 +231,9 @@ const mapMeshIdToPartId = (meshId) => {
   }
   if (name.includes('suction') || name.includes('inlet') || name.includes('aspiracion')) {
     return 'suction_flange';
+  }
+  if (name.includes('motor') || name.includes('stator') || name.includes('moteur')) {
+    return 'motor';
   }
   
   return meshId;

@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import CanvasViewer from './components/3D/CanvasViewer';
 import InfoPanel from './components/UI/InfoPanel';
+import PumpSimulatorPanel from './components/UI/PumpSimulatorPanel';
 import ErrorBoundary from './components/UI/ErrorBoundary';
 import PedagogyPanel from './components/UI/PedagogyPanel';
 import DiagnosisPanel from './components/UI/DiagnosisPanel';
@@ -11,6 +12,10 @@ import { RotateCcw, Activity, HelpCircle, Eye, EyeOff, BookOpen, ClipboardList, 
 
 function App() {
   const [currentView, setCurrentView] = useState('simulator'); // 'simulator', 'pedagogy', 'diagnosis', 'security'
+  const [motorPower, setMotorPower] = useState(2); // Default to 2 HP
+  const [pipeDiameter, setPipeDiameter] = useState(2); // Default to 2 inches
+  const [sidebarMode, setSidebarMode] = useState('simulation'); // 'simulation' or 'inspection'
+  
   const {
     explodeFactor,
     setExplodeFactor,
@@ -30,6 +35,13 @@ function App() {
     handleAddLog,
     resetView
   } = usePumpSimulation();
+
+  // Auto switch sidebar to inspection mode when a part is clicked
+  useEffect(() => {
+    if (selectedPartId) {
+      setSidebarMode('inspection');
+    }
+  }, [selectedPartId]);
 
   return (
     <div className="app-container">
@@ -127,6 +139,8 @@ function App() {
                   selectedPartId={selectedPartId}
                   onSelectPart={setSelectedPartId}
                   onModelLoaded={setModelLoaded}
+                  motorPower={motorPower}
+                  pipeDiameter={pipeDiameter}
                 />
               </ErrorBoundary>
 
@@ -199,17 +213,51 @@ function App() {
 
             {/* Sidebar Info Panel */}
             <aside className="info-sidebar">
-              <div className="sidebar-header">
-                <h2 className="sidebar-title">Detalles Técnicos</h2>
-                <span className="sidebar-subtitle">Control de Mantenimiento</span>
+              <div className="sidebar-header" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <h2 className="sidebar-title">{sidebarMode === 'simulation' ? 'Simulador Dinámico' : 'Detalles Técnicos'}</h2>
+                    <span className="sidebar-subtitle">{sidebarMode === 'simulation' ? 'Curvas de Rendimiento' : 'Control de Mantenimiento'}</span>
+                  </div>
+                </div>
+                
+                {/* Modern Toggle Tabs */}
+                <div className="sidebar-tabs" style={{ width: '100%', marginTop: '4px' }}>
+                  <button 
+                    onClick={() => setSidebarMode('simulation')}
+                    className={`sidebar-tab ${sidebarMode === 'simulation' ? 'active' : ''}`}
+                    style={{ flex: 1, justifyContent: 'center' }}
+                  >
+                    <Activity size={13} />
+                    <span>Simulación</span>
+                  </button>
+                  <button 
+                    onClick={() => setSidebarMode('inspection')}
+                    className={`sidebar-tab ${sidebarMode === 'inspection' ? 'active' : ''}`}
+                    style={{ flex: 1, justifyContent: 'center' }}
+                  >
+                    <ClipboardList size={13} />
+                    <span>Inspección</span>
+                  </button>
+                </div>
               </div>
+              
               <ErrorBoundary>
-                <InfoPanel
-                  selectedPart={selectedPart}
-                  loading={loadingPart}
-                  onStatusChange={handleStatusChange}
-                  onAddLog={handleAddLog}
-                />
+                {sidebarMode === 'simulation' ? (
+                  <PumpSimulatorPanel
+                    motorPower={motorPower}
+                    setMotorPower={setMotorPower}
+                    pipeDiameter={pipeDiameter}
+                    setPipeDiameter={setPipeDiameter}
+                  />
+                ) : (
+                  <InfoPanel
+                    selectedPart={selectedPart}
+                    loading={loadingPart}
+                    onStatusChange={handleStatusChange}
+                    onAddLog={handleAddLog}
+                  />
+                )}
               </ErrorBoundary>
             </aside>
           </div>

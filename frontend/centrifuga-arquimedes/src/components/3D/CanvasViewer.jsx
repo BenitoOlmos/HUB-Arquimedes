@@ -9,7 +9,9 @@ const CanvasViewer = ({
   autoRotate,
   selectedPartId,
   onSelectPart,
-  onModelLoaded
+  onModelLoaded,
+  motorPower,
+  pipeDiameter
 }) => {
   return (
     <div className="canvas-container">
@@ -56,6 +58,8 @@ const CanvasViewer = ({
               selectedPartId={selectedPartId}
               onSelectPart={onSelectPart}
               onModelLoaded={onModelLoaded}
+              motorPower={motorPower}
+              pipeDiameter={pipeDiameter}
             />
           </Center>
         </Suspense>

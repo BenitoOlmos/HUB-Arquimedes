@@ -27,7 +27,7 @@ class ModelErrorBoundary extends React.Component {
 }
 
 // Procedural 3D Centrifugal Pump Component
-const ProceduralPump = ({ explodeFactor, selectedPartId, onSelectPart }) => {
+const ProceduralPump = ({ explodeFactor, selectedPartId, onSelectPart, motorPower = 2, pipeDiameter = 2 }) => {
   const [hoveredId, setHoveredId] = useState(null);
 
   // Helper to construct mesh standard materials with dynamic glowing highlights
@@ -51,49 +51,57 @@ const ProceduralPump = ({ explodeFactor, selectedPartId, onSelectPart }) => {
       id: 'suction_flange',
       name: 'Suction Flange',
       explodeDir: [0, 0, -2.5], // Moves forward along Z
-      render: () => (
-        <group>
-          {/* Suction Pipe Tube - rotated to Z-axis */}
-          <mesh castShadow receiveShadow rotation={[Math.PI / 2, 0, 0]}>
-            <cylinderGeometry args={[0.5, 0.5, 1.2, 32]} />
-            {getMat('suction_flange', '#475569', 0.2, 0.8)}
-          </mesh>
-          {/* Flange Collar - rotated to Z-axis */}
-          <mesh position={[0, 0, -0.5]} castShadow receiveShadow rotation={[Math.PI / 2, 0, 0]}>
-            <cylinderGeometry args={[0.8, 0.8, 0.2, 32]} />
-            {getMat('suction_flange', '#334155', 0.2, 0.8)}
-          </mesh>
-        </group>
-      )
+      render: () => {
+        const diaScale = 0.6 + pipeDiameter * 0.2;
+        return (
+          <group scale={[diaScale, diaScale, 1.0]}>
+            {/* Suction Pipe Tube - rotated to Z-axis */}
+            <mesh castShadow receiveShadow rotation={[Math.PI / 2, 0, 0]}>
+              <cylinderGeometry args={[0.5, 0.5, 1.2, 32]} />
+              {getMat('suction_flange', '#475569', 0.2, 0.8)}
+            </mesh>
+            {/* Flange Collar - rotated to Z-axis */}
+            <mesh position={[0, 0, -0.5]} castShadow receiveShadow rotation={[Math.PI / 2, 0, 0]}>
+              <cylinderGeometry args={[0.8, 0.8, 0.2, 32]} />
+              {getMat('suction_flange', '#334155', 0.2, 0.8)}
+            </mesh>
+          </group>
+        );
+      }
     },
     {
       id: 'volute_casing',
       name: 'Volute Casing',
       explodeDir: [0, 0, 0], // Stays central
-      render: () => (
-        <group>
-          {/* Main Volute Ring */}
-          <mesh castShadow receiveShadow>
-            <torusGeometry args={[1.5, 0.4, 16, 100]} />
-            {getMat('volute_casing', '#1e3a8a', 0.6, 0.3)}
-          </mesh>
-          {/* Backplate - rotated to Z-axis */}
-          <mesh position={[0, 0, 0.2]} castShadow receiveShadow rotation={[Math.PI / 2, 0, 0]}>
-            <cylinderGeometry args={[1.6, 1.6, 0.2, 32]} />
-            {getMat('volute_casing', '#172554', 0.5, 0.5)}
-          </mesh>
-          {/* Discharge Pipe Outward (pointing up in Y) */}
-          <mesh position={[0, 1.5, 0]} castShadow receiveShadow>
-            <cylinderGeometry args={[0.4, 0.4, 1.5, 32]} />
-            {getMat('volute_casing', '#1e3a8a', 0.5, 0.5)}
-          </mesh>
-          {/* Discharge Flange Collar */}
-          <mesh position={[0, 2.2, 0]} castShadow receiveShadow>
-            <cylinderGeometry args={[0.7, 0.7, 0.15, 32]} />
-            {getMat('volute_casing', '#172554', 0.5, 0.5)}
-          </mesh>
-        </group>
-      )
+      render: () => {
+        const diaScale = 0.6 + pipeDiameter * 0.2;
+        return (
+          <group>
+            {/* Main Volute Ring */}
+            <mesh castShadow receiveShadow>
+              <torusGeometry args={[1.5, 0.4, 16, 100]} />
+              {getMat('volute_casing', '#1e3a8a', 0.6, 0.3)}
+            </mesh>
+            {/* Backplate - rotated to Z-axis */}
+            <mesh position={[0, 0, 0.2]} castShadow receiveShadow rotation={[Math.PI / 2, 0, 0]}>
+              <cylinderGeometry args={[1.6, 1.6, 0.2, 32]} />
+              {getMat('volute_casing', '#172554', 0.5, 0.5)}
+            </mesh>
+            {/* Discharge Pipe Outward (pointing up in Y) scaled radially in X and Z */}
+            <group scale={[diaScale, 1.0, diaScale]}>
+              <mesh position={[0, 1.5, 0]} castShadow receiveShadow>
+                <cylinderGeometry args={[0.4, 0.4, 1.5, 32]} />
+                {getMat('volute_casing', '#1e3a8a', 0.5, 0.5)}
+              </mesh>
+              {/* Discharge Flange Collar */}
+              <mesh position={[0, 2.2, 0]} castShadow receiveShadow>
+                <cylinderGeometry args={[0.7, 0.7, 0.15, 32]} />
+                {getMat('volute_casing', '#172554', 0.5, 0.5)}
+              </mesh>
+            </group>
+          </group>
+        );
+      }
     },
     {
       id: 'wear_rings',
@@ -207,6 +215,43 @@ const ProceduralPump = ({ explodeFactor, selectedPartId, onSelectPart }) => {
           {getMat('shaft', '#64748b', 0.9, 0.15)}
         </mesh>
       )
+    },
+    {
+      id: 'motor',
+      name: 'Electric Motor',
+      explodeDir: [0, 0, 5.2], // Slides furthest backward
+      render: () => {
+        const motorLength = 1.6 + (motorPower - 2) * 0.4;
+        const motorRadius = 0.8 + (motorPower - 2) * 0.15;
+        return (
+          <group>
+            {/* Motor Stator Body - rotated to Z-axis */}
+            <mesh castShadow receiveShadow rotation={[Math.PI / 2, 0, 0]}>
+              <cylinderGeometry args={[motorRadius, motorRadius, motorLength, 32]} />
+              {getMat('motor', '#1e293b', 0.7, 0.3)}
+            </mesh>
+            
+            {/* Cooling Fins (ribs around the motor) */}
+            {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, idx) => (
+              <mesh
+                key={idx}
+                rotation={[0, 0, THREE.MathUtils.degToRad(angle)]}
+                position={[0, 0, 0]}
+                castShadow
+              >
+                <boxGeometry args={[motorRadius * 2 + 0.1, 0.04, motorLength - 0.2]} />
+                {getMat('motor', '#334155', 0.6, 0.4)}
+              </mesh>
+            ))}
+            
+            {/* Terminal Connection Box on top */}
+            <mesh position={[0, motorRadius + 0.1, 0]} castShadow>
+              <boxGeometry args={[0.4, 0.3, 0.4]} />
+              {getMat('motor', '#475569', 0.8, 0.2)}
+            </mesh>
+          </group>
+        );
+      }
     }
   ];
 
@@ -269,7 +314,7 @@ const ProceduralPump = ({ explodeFactor, selectedPartId, onSelectPart }) => {
 };
 
 // GLB Loader Component (attempts to load user GLB)
-const GLBPumpModel = ({ modelName, explodeFactor, selectedPartId, onSelectPart, onModelLoaded }) => {
+const GLBPumpModel = ({ modelName, explodeFactor, selectedPartId, onSelectPart, onModelLoaded, motorPower = 2, pipeDiameter = 2 }) => {
   // Try loading the GLB from public directory
   const { scene } = useGLTF(`/models/${modelName}`);
   const [hoveredMeshName, setHoveredMeshName] = useState(null);
@@ -301,7 +346,7 @@ const GLBPumpModel = ({ modelName, explodeFactor, selectedPartId, onSelectPart, 
         
         // Define base directions
         let dir = new THREE.Vector3(0, 0, 0);
-        if (name.includes('suction') || name.includes('inlet')) {
+        if (name.includes('suction') || name.includes('inlet') || name.includes('aspiracion')) {
           dir.set(0, 0, -2.5);
         } else if (name.includes('impeller') || name.includes('rodete') || name.includes('impulseur')) {
           dir.set(0, 0, -1.2);
@@ -311,6 +356,8 @@ const GLBPumpModel = ({ modelName, explodeFactor, selectedPartId, onSelectPart, 
           dir.set(0, 0, 2.5);
         } else if (name.includes('shaft') || name.includes('eje') || name.includes('arbre')) {
           dir.set(0, 0, 3.8);
+        } else if (name.includes('motor') || name.includes('stator') || name.includes('moteur')) {
+          dir.set(0, 0, 5.2);
         } else if (name.includes('casing') || name.includes('carcasa') || name.includes('volute') || name.includes('corps')) {
           dir.set(0, 0, 0.0); // central reference
         } else {
@@ -326,9 +373,33 @@ const GLBPumpModel = ({ modelName, explodeFactor, selectedPartId, onSelectPart, 
           child.userData.basePosition = child.position.clone();
         }
         
+        // Store base scale if not already stored
+        if (!child.userData.baseScale) {
+          child.userData.baseScale = child.scale.clone();
+        }
+        
         // Interpolate position
         const targetPos = child.userData.basePosition.clone().add(dir.multiplyScalar(explodeFactor));
         child.position.lerp(targetPos, 0.1);
+
+        // Dynamic scaling based on simulation parameters
+        if (name.includes('motor') || name.includes('stator') || name.includes('moteur')) {
+          const motorScale = 1.0 + (motorPower - 2) * 0.15;
+          child.scale.copy(child.userData.baseScale).multiplyScalar(motorScale);
+        } else if (name.includes('suction') || name.includes('inlet') || name.includes('aspiracion')) {
+          const pipeScale = 0.7 + pipeDiameter * 0.15;
+          child.scale.copy(child.userData.baseScale);
+          child.scale.x *= pipeScale;
+          child.scale.y *= pipeScale;
+        } else if (name.includes('discharge') || name.includes('outlet') || name.includes('descarga')) {
+          const pipeScale = 0.7 + pipeDiameter * 0.15;
+          child.scale.copy(child.userData.baseScale);
+          child.scale.x *= pipeScale;
+          child.scale.z *= pipeScale;
+        } else {
+          // Reset scale for other parts in case it was modified
+          child.scale.copy(child.userData.baseScale);
+        }
 
         // Manage selection highlight
         const isSelected = selectedPartId === child.name;
@@ -379,7 +450,7 @@ const GLBPumpModel = ({ modelName, explodeFactor, selectedPartId, onSelectPart, 
 };
 
 // Wrapper Component that exports the Error Boundary and switches between GLB & Procedural
-const ExplodedPump = ({ modelName = 'pump.glb', explodeFactor, selectedPartId, onSelectPart, onModelLoaded }) => {
+const ExplodedPump = ({ modelName = 'pump.glb', explodeFactor, selectedPartId, onSelectPart, onModelLoaded, motorPower = 2, pipeDiameter = 2 }) => {
   useEffect(() => {
     // Fallback loading check
     onModelLoaded(true);
@@ -392,6 +463,8 @@ const ExplodedPump = ({ modelName = 'pump.glb', explodeFactor, selectedPartId, o
           explodeFactor={explodeFactor}
           selectedPartId={selectedPartId}
           onSelectPart={onSelectPart}
+          motorPower={motorPower}
+          pipeDiameter={pipeDiameter}
         />
       }
     >
@@ -401,6 +474,8 @@ const ExplodedPump = ({ modelName = 'pump.glb', explodeFactor, selectedPartId, o
         selectedPartId={selectedPartId}
         onSelectPart={onSelectPart}
         onModelLoaded={onModelLoaded}
+        motorPower={motorPower}
+        pipeDiameter={pipeDiameter}
       />
     </ModelErrorBoundary>
   );

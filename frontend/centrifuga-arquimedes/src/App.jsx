@@ -8,10 +8,11 @@ import DiagnosisPanel from './components/UI/DiagnosisPanel';
 import SecurityPanel from './components/UI/SecurityPanel';
 import HistoryPanel from './components/UI/HistoryPanel';
 import { usePumpSimulation } from './hooks/usePumpSimulation';
-import { RotateCcw, Activity, HelpCircle, Eye, EyeOff, BookOpen, ClipboardList, ShieldCheck, BarChart3 } from 'lucide-react';
+import { RotateCcw, Activity, HelpCircle, Eye, EyeOff, BookOpen, ClipboardList, ShieldCheck, BarChart3, Menu, X } from 'lucide-react';
 
 function App() {
   const [currentView, setCurrentView] = useState('simulator'); // 'simulator', 'pedagogy', 'diagnosis', 'security'
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [motorPower, setMotorPower] = useState(2); // Default to 2 HP
   const [geomHeight, setGeomHeight] = useState(10); // m
   const [pipeLength, setPipeLength] = useState(20); // m
@@ -29,6 +30,7 @@ function App() {
   const [sidebarMode, setSidebarMode] = useState('simulation'); // 'simulation' or 'inspection'
   const [sidebarWidth, setSidebarWidth] = useState(380);
   const [isResizing, setIsResizing] = useState(false);
+  const [controlsExpanded, setControlsExpanded] = useState(window.innerWidth > 768);
   
   const {
     explodeFactor,
@@ -103,7 +105,7 @@ function App() {
         <div className="blob blob-2"></div>
         <div className="blob blob-3"></div>
       </div>
-
+      
       {/* Integrated Header Bar (Persistent at Top) */}
       <header className="app-header">
         <div className="header-brand">
@@ -117,8 +119,8 @@ function App() {
           </h1>
         </div>
 
-        {/* Integrated Navigation Tabs */}
-        <nav className="global-navbar">
+        {/* Integrated Navigation Tabs: Desktop-only tabs */}
+        <nav className="global-navbar desktop-only">
           <button 
             className={`nav-tab ${currentView === 'simulator' ? 'active' : ''}`}
             onClick={() => setCurrentView('simulator')}
@@ -155,7 +157,72 @@ function App() {
             <span>Historial e Informes</span>
           </button>
         </nav>
+        
+        {/* Hamburger Menu Toggle Button (Mobile-only) */}
+        <button 
+          className="mobile-menu-toggle mobile-only"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          aria-label="Toggle Navigation Menu"
+        >
+          {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+        </button>
       </header>
+
+      {/* Mobile Navigation Dropdown List */}
+      {mobileMenuOpen && (
+        <nav className="mobile-navbar-menu mobile-only">
+          <button 
+            className={`mobile-nav-item ${currentView === 'simulator' ? 'active' : ''}`}
+            onClick={() => {
+              setCurrentView('simulator');
+              setMobileMenuOpen(false);
+            }}
+          >
+            <Activity size={16} />
+            <span>Simulador 3D</span>
+          </button>
+          <button 
+            className={`mobile-nav-item ${currentView === 'diagnosis' ? 'active' : ''}`}
+            onClick={() => {
+              setCurrentView('diagnosis');
+              setMobileMenuOpen(false);
+            }}
+          >
+            <ClipboardList size={16} />
+            <span>Matriz de Diagnóstico</span>
+          </button>
+          <button 
+            className={`mobile-nav-item ${currentView === 'pedagogy' ? 'active' : ''}`}
+            onClick={() => {
+              setCurrentView('pedagogy');
+              setMobileMenuOpen(false);
+            }}
+          >
+            <BookOpen size={16} />
+            <span>Plan de Trabajo (5W2H)</span>
+          </button>
+          <button 
+            className={`mobile-nav-item ${currentView === 'security' ? 'active' : ''}`}
+            onClick={() => {
+              setCurrentView('security');
+              setMobileMenuOpen(false);
+            }}
+          >
+            <ShieldCheck size={16} />
+            <span>Seguridad e IoT</span>
+          </button>
+          <button 
+            className={`mobile-nav-item ${currentView === 'history' ? 'active' : ''}`}
+            onClick={() => {
+              setCurrentView('history');
+              setMobileMenuOpen(false);
+            }}
+          >
+            <BarChart3 size={16} />
+            <span>Historial e Informes</span>
+          </button>
+        </nav>
+      )}
 
       {/* Main Content Area */}
       <main className="app-main">
@@ -220,7 +287,7 @@ function App() {
 
               {/* Interactive Overlay controls */}
               <div className="controls-panel">
-                {/* Model Selector */}
+                {/* Model Selector - ALWAYS visible on mobile & desktop */}
                 <div className="control-row" style={{ borderBottom: '1px solid var(--border-glass)', paddingBottom: '12px', marginBottom: '8px' }}>
                   <div className="control-label">
                     <span>Modelo 3D Activo</span>
@@ -244,59 +311,87 @@ function App() {
                   </select>
                 </div>
 
-                {selectedModel === 'sketchfab-bomba-centrifuga' ? (
-                  <div style={{ padding: '8px 4px', fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--accent-blue)', fontWeight: 'bold' }}>
-                      <HelpCircle size={14} />
-                      <span>Visualizador Externo</span>
-                    </div>
-                    <p style={{ margin: 0, lineHeight: '1.4' }}>
-                      Visualizando <strong>Bomba Centrífuga Anima</strong> desde Sketchfab. Las opciones de despiece, simulación e inspección de partes locales están desactivadas para este modelo.
-                    </p>
-                  </div>
-                ) : (
-                  <>
-                    <div className="control-row">
-                      <div className="control-label">
-                        <span>Despiece (Exploded View)</span>
-                      </div>
-                      <div className="slider-container">
-                        <input
-                          type="range"
-                          min="0"
-                          max="1"
-                          step="0.01"
-                          value={explodeFactor}
-                          onChange={(e) => setExplodeFactor(parseFloat(e.target.value))}
-                          className="premium-slider"
-                        />
-                        <span className="slider-val">{Math.round(explodeFactor * 100)}%</span>
-                      </div>
-                    </div>
+                {/* Header that can be clicked to toggle expansion of advanced controls */}
+                <div 
+                  className="controls-panel-header" 
+                  onClick={() => setControlsExpanded(!controlsExpanded)}
+                  style={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    alignItems: 'center', 
+                    cursor: 'pointer',
+                    fontWeight: '700',
+                    fontSize: '0.82rem',
+                    color: 'var(--text-primary)',
+                    userSelect: 'none',
+                    marginTop: '4px'
+                  }}
+                >
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    ⚙️ Ajustes Avanzados
+                  </span>
+                  <span style={{ fontSize: '0.7rem', color: 'var(--accent-cyan)' }}>
+                    {controlsExpanded ? 'OCULTAR ▲' : 'MOSTRAR ▼'}
+                  </span>
+                </div>
 
-                    <div className="control-row" style={{ marginTop: '4px' }}>
-                      <div className="btn-group">
-                        <button
-                          className={`btn-secondary ${autoRotate ? 'active' : ''}`}
-                          onClick={() => setAutoRotate(!autoRotate)}
-                        >
-                          {autoRotate ? <EyeOff size={14} /> : <Eye size={14} />}
-                          {autoRotate ? 'Detener Rotación' : 'Auto Rotar'}
-                        </button>
-                        <button className="btn-secondary" onClick={resetView}>
-                          <RotateCcw size={14} />
-                          Restablecer
-                        </button>
-                      </div>
-
-                      {usingFallback && (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                          <HelpCircle size={12} color="var(--status-inspect)" />
-                          <span>Modo Sin Servidor (Mock Data)</span>
+                {controlsExpanded && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '8px', borderTop: '1px solid var(--border-glass)', paddingTop: '10px' }}>
+                    {selectedModel === 'sketchfab-bomba-centrifuga' ? (
+                      <div style={{ padding: '8px 4px', fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--accent-blue)', fontWeight: 'bold' }}>
+                          <HelpCircle size={14} />
+                          <span>Visualizador Externo</span>
                         </div>
-                      )}
-                    </div>
-                  </>
+                        <p style={{ margin: 0, lineHeight: '1.4' }}>
+                          Visualizando <strong>Bomba Centrífuga Anima</strong> desde Sketchfab. Las opciones de despiece, simulación e inspección de partes locales están desactivadas para este modelo.
+                        </p>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="control-row">
+                          <div className="control-label">
+                            <span>Despiece (Exploded View)</span>
+                          </div>
+                          <div className="slider-container">
+                            <input
+                              type="range"
+                              min="0"
+                              max="1"
+                              step="0.01"
+                              value={explodeFactor}
+                              onChange={(e) => setExplodeFactor(parseFloat(e.target.value))}
+                              className="premium-slider"
+                            />
+                            <span className="slider-val">{Math.round(explodeFactor * 100)}%</span>
+                          </div>
+                        </div>
+
+                        <div className="control-row" style={{ marginTop: '4px' }}>
+                          <div className="btn-group">
+                            <button
+                              className={`btn-secondary ${autoRotate ? 'active' : ''}`}
+                              onClick={() => setAutoRotate(!autoRotate)}
+                            >
+                              {autoRotate ? <EyeOff size={14} /> : <Eye size={14} />}
+                              {autoRotate ? 'Detener Rotación' : 'Auto Rotar'}
+                            </button>
+                            <button className="btn-secondary" onClick={resetView}>
+                              <RotateCcw size={14} />
+                              Restablecer
+                            </button>
+                          </div>
+
+                          {usingFallback && (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                              <HelpCircle size={12} color="var(--status-inspect)" />
+                              <span>Modo Sin Servidor (Mock Data)</span>
+                            </div>
+                          )}
+                        </div>
+                      </>
+                    )}
+                  </div>
                 )}
               </div>
             </div>

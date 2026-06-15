@@ -27,20 +27,32 @@ class ModelErrorBoundary extends React.Component {
 }
 
 // Procedural 3D Centrifugal Pump Component
-const ProceduralPump = ({ explodeFactor, selectedPartId, onSelectPart, motorPower = 2, pipeDiameter = 2 }) => {
+const ProceduralPump = ({ explodeFactor, selectedPartId, onSelectPart, motorPower = 2, activeDiameter = 2, isCavitating = false }) => {
   const [hoveredId, setHoveredId] = useState(null);
 
   // Helper to construct mesh standard materials with dynamic glowing highlights
   const getMat = (partId, color, metalness = 0.5, roughness = 0.5) => {
     const isSelected = selectedPartId === partId;
     const isHovered = hoveredId === partId;
+    
+    let activeColor = color;
+    let emissiveColor = isSelected ? "#38bdf8" : (isHovered ? "#22d3ee" : "#000000");
+    let emissiveIntensity = isSelected ? 0.8 : (isHovered ? 0.45 : 0);
+    
+    // Cavitation causes suction and volute to turn red
+    if (isCavitating && (partId === 'suction_flange' || partId === 'volute_casing')) {
+      activeColor = "#ef4444";
+      emissiveColor = "#ef4444";
+      emissiveIntensity = 0.65;
+    }
+
     return (
       <meshStandardMaterial
-        color={color}
+        color={activeColor}
         metalness={metalness}
         roughness={roughness}
-        emissive={isSelected ? "#38bdf8" : (isHovered ? "#22d3ee" : "#000000")}
-        emissiveIntensity={isSelected ? 0.8 : (isHovered ? 0.45 : 0)}
+        emissive={emissiveColor}
+        emissiveIntensity={emissiveIntensity}
       />
     );
   };
@@ -52,7 +64,7 @@ const ProceduralPump = ({ explodeFactor, selectedPartId, onSelectPart, motorPowe
       name: 'Suction Flange',
       explodeDir: [0, 0, -2.5], // Moves forward along Z
       render: () => {
-        const diaScale = 0.6 + pipeDiameter * 0.2;
+        const diaScale = 0.5 + activeDiameter * 0.25;
         return (
           <group scale={[diaScale, diaScale, 1.0]}>
             {/* Suction Pipe Tube - rotated to Z-axis */}
@@ -74,7 +86,7 @@ const ProceduralPump = ({ explodeFactor, selectedPartId, onSelectPart, motorPowe
       name: 'Volute Casing',
       explodeDir: [0, 0, 0], // Stays central
       render: () => {
-        const diaScale = 0.6 + pipeDiameter * 0.2;
+        const diaScale = 0.5 + activeDiameter * 0.25;
         return (
           <group>
             {/* Main Volute Ring */}
@@ -314,7 +326,7 @@ const ProceduralPump = ({ explodeFactor, selectedPartId, onSelectPart, motorPowe
 };
 
 // GLB Loader Component (attempts to load user GLB)
-const GLBPumpModel = ({ modelName, explodeFactor, selectedPartId, onSelectPart, onModelLoaded, motorPower = 2, pipeDiameter = 2 }) => {
+const GLBPumpModel = ({ modelName, explodeFactor, selectedPartId, onSelectPart, onModelLoaded, motorPower = 2, activeDiameter = 2, isCavitating = false }) => {
   // Try loading the GLB from public directory
   const { scene } = useGLTF(`/models/${modelName}`);
   const [hoveredMeshName, setHoveredMeshName] = useState(null);
@@ -387,12 +399,12 @@ const GLBPumpModel = ({ modelName, explodeFactor, selectedPartId, onSelectPart, 
           const motorScale = 1.0 + (motorPower - 2) * 0.15;
           child.scale.copy(child.userData.baseScale).multiplyScalar(motorScale);
         } else if (name.includes('suction') || name.includes('inlet') || name.includes('aspiracion')) {
-          const pipeScale = 0.7 + pipeDiameter * 0.15;
+          const pipeScale = 0.5 + activeDiameter * 0.25;
           child.scale.copy(child.userData.baseScale);
           child.scale.x *= pipeScale;
           child.scale.y *= pipeScale;
         } else if (name.includes('discharge') || name.includes('outlet') || name.includes('descarga')) {
-          const pipeScale = 0.7 + pipeDiameter * 0.15;
+          const pipeScale = 0.5 + activeDiameter * 0.25;
           child.scale.copy(child.userData.baseScale);
           child.scale.x *= pipeScale;
           child.scale.z *= pipeScale;
@@ -401,7 +413,7 @@ const GLBPumpModel = ({ modelName, explodeFactor, selectedPartId, onSelectPart, 
           child.scale.copy(child.userData.baseScale);
         }
 
-        // Manage selection highlight
+        // Manage selection highlight & cavitation
         const isSelected = selectedPartId === child.name;
         const isHovered = hoveredMeshName === child.name;
         
@@ -411,7 +423,10 @@ const GLBPumpModel = ({ modelName, explodeFactor, selectedPartId, onSelectPart, 
             child.userData.originalEmissive = child.material.emissive?.clone() || new THREE.Color(0,0,0);
           }
           
-          if (isSelected) {
+          if (isCavitating && (name.includes('suction') || name.includes('inlet') || name.includes('casing') || name.includes('volute') || name.includes('corps'))) {
+            child.material.emissive?.setHex(0xef4444); // red glow
+            child.material.emissiveIntensity = 0.65;
+          } else if (isSelected) {
             child.material.emissive?.setHex(0x3b82f6); // blue glow
             child.material.emissiveIntensity = 0.6;
           } else if (isHovered) {
@@ -450,7 +465,7 @@ const GLBPumpModel = ({ modelName, explodeFactor, selectedPartId, onSelectPart, 
 };
 
 // Wrapper Component that exports the Error Boundary and switches between GLB & Procedural
-const ExplodedPump = ({ modelName = 'pump.glb', explodeFactor, selectedPartId, onSelectPart, onModelLoaded, motorPower = 2, pipeDiameter = 2 }) => {
+const ExplodedPump = ({ modelName = 'pump.glb', explodeFactor, selectedPartId, onSelectPart, onModelLoaded, motorPower = 2, activeDiameter = 2, isCavitating = false }) => {
   useEffect(() => {
     // Fallback loading check
     onModelLoaded(true);
@@ -464,7 +479,8 @@ const ExplodedPump = ({ modelName = 'pump.glb', explodeFactor, selectedPartId, o
           selectedPartId={selectedPartId}
           onSelectPart={onSelectPart}
           motorPower={motorPower}
-          pipeDiameter={pipeDiameter}
+          activeDiameter={activeDiameter}
+          isCavitating={isCavitating}
         />
       }
     >
@@ -475,7 +491,8 @@ const ExplodedPump = ({ modelName = 'pump.glb', explodeFactor, selectedPartId, o
         onSelectPart={onSelectPart}
         onModelLoaded={onModelLoaded}
         motorPower={motorPower}
-        pipeDiameter={pipeDiameter}
+        activeDiameter={activeDiameter}
+        isCavitating={isCavitating}
       />
     </ModelErrorBoundary>
   );

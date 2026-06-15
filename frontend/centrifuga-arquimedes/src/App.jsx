@@ -13,7 +13,19 @@ import { RotateCcw, Activity, HelpCircle, Eye, EyeOff, BookOpen, ClipboardList, 
 function App() {
   const [currentView, setCurrentView] = useState('simulator'); // 'simulator', 'pedagogy', 'diagnosis', 'security'
   const [motorPower, setMotorPower] = useState(2); // Default to 2 HP
-  const [pipeDiameter, setPipeDiameter] = useState(2); // Default to 2 inches
+  const [geomHeight, setGeomHeight] = useState(10); // m
+  const [pipeLength, setPipeLength] = useState(20); // m
+  const [lossK, setLossK] = useState(5.0); // Coeficiente K
+  const [flowRate, setFlowRate] = useState(15); // Caudal actual (m3/h)
+  const [flowUnit, setFlowUnit] = useState('m3h'); // 'm3h' o 'lh'
+  const [activeDiameter, setActiveDiameter] = useState(2); // Diámetro de operación activo (pulgadas)
+  const [enabledDiameters, setEnabledDiameters] = useState({
+    1: true,
+    1.5: true,
+    2: true,
+    3: true
+  });
+  const [isCavitating, setIsCavitating] = useState(false);
   const [sidebarMode, setSidebarMode] = useState('simulation'); // 'simulation' or 'inspection'
   
   const {
@@ -140,7 +152,8 @@ function App() {
                   onSelectPart={setSelectedPartId}
                   onModelLoaded={setModelLoaded}
                   motorPower={motorPower}
-                  pipeDiameter={pipeDiameter}
+                  activeDiameter={activeDiameter}
+                  isCavitating={isCavitating}
                 />
               </ErrorBoundary>
 
@@ -247,8 +260,21 @@ function App() {
                   <PumpSimulatorPanel
                     motorPower={motorPower}
                     setMotorPower={setMotorPower}
-                    pipeDiameter={pipeDiameter}
-                    setPipeDiameter={setPipeDiameter}
+                    geomHeight={geomHeight}
+                    setGeomHeight={setGeomHeight}
+                    pipeLength={pipeLength}
+                    setPipeLength={setPipeLength}
+                    lossK={lossK}
+                    setLossK={setLossK}
+                    flowRate={flowRate}
+                    setFlowRate={setFlowRate}
+                    flowUnit={flowUnit}
+                    setFlowUnit={setFlowUnit}
+                    activeDiameter={activeDiameter}
+                    setActiveDiameter={setActiveDiameter}
+                    enabledDiameters={enabledDiameters}
+                    setEnabledDiameters={setEnabledDiameters}
+                    setIsCavitating={setIsCavitating}
                   />
                 ) : (
                   <InfoPanel

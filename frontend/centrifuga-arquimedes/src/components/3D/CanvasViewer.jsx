@@ -11,7 +11,8 @@ const CanvasViewer = ({
   onSelectPart,
   onModelLoaded,
   motorPower,
-  pipeDiameter
+  activeDiameter,
+  isCavitating
 }) => {
   return (
     <div className="canvas-container">
@@ -59,7 +60,8 @@ const CanvasViewer = ({
               onSelectPart={onSelectPart}
               onModelLoaded={onModelLoaded}
               motorPower={motorPower}
-              pipeDiameter={pipeDiameter}
+              activeDiameter={activeDiameter}
+              isCavitating={isCavitating}
             />
           </Center>
         </Suspense>

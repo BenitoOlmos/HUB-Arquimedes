@@ -632,8 +632,7 @@ const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
       {/* Title section */}
       <div className="part-title-row">
         <div>
-          <h2 className="part-name">{selectedPart.name}</h2>
-          <h3 className="part-spanish-name">{selectedPart.spanishName}</h3>
+          <h2 className="part-name">{selectedPart.spanishName || selectedPart.name}</h2>
         </div>
         {getStatusBadge(selectedPart.status)}
       </div>
@@ -813,9 +812,9 @@ const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
               onChange={(e) => onStatusChange(selectedPart.id, e.target.value)}
               style={{ padding: '8px', fontSize: '0.85rem' }}
             >
-              <option value="Operational">Operativo (Operational)</option>
-              <option value="Inspect">Requiere Inspección (Inspect)</option>
-              <option value="Replace">Requiere Reemplazo (Replace)</option>
+              <option value="Operational">Operativo</option>
+              <option value="Inspect">Requiere Inspección</option>
+              <option value="Replace">Requiere Reemplazo</option>
             </select>
           </div>
 

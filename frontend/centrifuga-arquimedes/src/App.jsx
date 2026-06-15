@@ -305,7 +305,19 @@ function App() {
                       <option key={model} value={model}>
                         {model === 'sketchfab-bomba-centrifuga' 
                           ? 'BOMBA ANIMADA (SKETCHFAB)' 
-                          : model.replace('.glb', '').replace(/_/g, ' ').replace(/-/g, ' ').toUpperCase()}
+                          : model === 'pump.glb'
+                            ? 'BOMBA CENTRÍFUGA ESTÁNDAR'
+                            : model === 'centrifugal-pump-grantjohnson-vrtraining.glb'
+                              ? 'BOMBA CENTRÍFUGA - ENTRENAMIENTO VR'
+                              : model === 'centrifugal_pump.glb'
+                                ? 'BOMBA CENTRÍFUGA DETALLADA'
+                                : model === 'centrifugal_pump_-_horizontal_end_suction.glb'
+                                  ? 'BOMBA CENTRÍFUGA DE SUCCIÓN EXTREMA HORIZONTAL'
+                                  : model === 'centrifugal_pump_with_a_double_suction.glb'
+                                    ? 'BOMBA CENTRÍFUGA DE DOBLE SUCCIÓN'
+                                    : model.includes('bomba_centrifuga')
+                                      ? `BOMBA CENTRÍFUGA GENERAL${model.includes('(1)') ? ' (VARIANTE 1)' : model.includes('(2)') ? ' (VARIANTE 2)' : ''}`
+                                      : model.replace('.glb', '').replace(/_/g, ' ').replace(/-/g, ' ').toUpperCase()}
                       </option>
                     ))}
                   </select>
@@ -351,7 +363,7 @@ function App() {
                       <>
                         <div className="control-row">
                           <div className="control-label">
-                            <span>Despiece (Exploded View)</span>
+                            <span>Despiece / Vista Explosionada</span>
                           </div>
                           <div className="slider-container">
                             <input
@@ -385,7 +397,7 @@ function App() {
                           {usingFallback && (
                             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                               <HelpCircle size={12} color="var(--status-inspect)" />
-                              <span>Modo Sin Servidor (Mock Data)</span>
+                              <span>Modo Sin Servidor (Datos Simulados)</span>
                             </div>
                           )}
                         </div>

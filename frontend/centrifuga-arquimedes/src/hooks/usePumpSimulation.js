@@ -126,7 +126,7 @@ const fallbackPartsData = {
     lifecycleStage: 'Replacement',
     installationNotes: 'Camisa montada con ajuste deslizante sobre el eje. O-rings internos lubricados con vaselina técnica.',
     nextMaintenance: '2026-05-30',
-    maintenanceLogs: '[{"id":"sl-01","date":"2025-01-12","tech":"Héctor Gómez","desc":"Polished sleeve surface during routine overhaul. Re-installed with new O-rings."}]'
+    maintenanceLogs: '[{"id":"sl-01","date":"2025-01-12","tech":"Héctor Gómez","desc":"Superficie de la camisa pulida durante la revisión de rutina. Reinstalada con nuevas juntas tóricas."}]'
   },
   wear_rings: {
     id: 'wear_rings',

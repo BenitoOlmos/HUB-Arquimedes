@@ -611,7 +611,7 @@ const PumpSimulatorPanel = ({
             {diameters.map(d => enabledDiameters[d] && (
               <span key={d} style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
                 <span style={{ display: 'inline-block', width: '8px', height: '2px', background: diameterColors[d] }}></span>
-                Pump {d}" {d === activeDiameter ? '(Activa)' : ''}
+                Bomba {d}" {d === activeDiameter ? '(Activa)' : ''}
               </span>
             ))}
             <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>

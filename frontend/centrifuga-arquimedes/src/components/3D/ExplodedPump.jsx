@@ -15,7 +15,7 @@ class ModelErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.warn("GLB Model not found or failed to load. Falling back to the procedural 3D model.");
+    console.warn("Modelo GLB no encontrado o error al cargar. Usando modelo 3D procedimental como alternativa.");
   }
 
   render() {

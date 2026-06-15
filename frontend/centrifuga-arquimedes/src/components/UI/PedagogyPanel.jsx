@@ -11,13 +11,13 @@ const PedagogyPanel = () => {
       period: 'Mes 1 a Mes 2',
       summary: 'Creación de un prototipo inicial funcional en VR de la bomba centrífuga para mitigar riesgos tecnológicos y validar la UX.',
       details: [
-        { label: 'Qué (What)', value: 'Creación de un prototipo inicial funcional en VR de la bomba centrífuga.', icon: FileText },
-        { label: 'Por qué (Why)', value: 'Para mitigar riesgos tecnológicos y validar la viabilidad del proyecto de forma temprana.', icon: Target },
-        { label: 'Para qué (What for)', value: 'Para obtener feedback de usuarios (estudiantes/docentes) y validar la experiencia de usuario (UX).', icon: HelpCircle },
-        { label: 'Cuándo (When)', value: 'Mes 1 a Mes 2 del proyecto.', icon: Calendar },
-        { label: 'Dónde (Where)', value: 'Laboratorios de computación de la institución educativa en Chile.', icon: MapPin },
-        { label: 'Quién (Who)', value: 'Equipo de desarrolladores VR, diseñadores 3D y un docente experto en mantenimiento.', icon: User },
-        { label: 'Cómo (How)', value: 'Modelando la bomba en software 3D (Blender) y programando interacciones básicas en un motor gráfico (Unity/Unreal Engine).', icon: CheckCircle2 },
+        { label: 'Qué', value: 'Creación de un prototipo inicial funcional en VR de la bomba centrífuga.', icon: FileText },
+        { label: 'Por qué', value: 'Para mitigar riesgos tecnológicos y validar la viabilidad del proyecto de forma temprana.', icon: Target },
+        { label: 'Para qué', value: 'Para obtener feedback de usuarios (estudiantes/docentes) y validar la experiencia de usuario (UX).', icon: HelpCircle },
+        { label: 'Cuándo', value: 'Mes 1 a Mes 2 del proyecto.', icon: Calendar },
+        { label: 'Dónde', value: 'Laboratorios de computación de la institución educativa en Chile.', icon: MapPin },
+        { label: 'Quién', value: 'Equipo de desarrolladores VR, diseñadores 3D y un docente experto en mantenimiento.', icon: User },
+        { label: 'Cómo', value: 'Modelando la bomba en software 3D (Blender) y programando interacciones básicas en un motor gráfico (Unity/Unreal Engine).', icon: CheckCircle2 },
       ]
     },
     {
@@ -26,13 +26,13 @@ const PedagogyPanel = () => {
       period: 'Mes 3 a Mes 5',
       summary: 'Programación de la plataforma web, base de datos de fichas técnicas, bitácoras digitales y tablas diagnósticas de fallas.',
       details: [
-        { label: 'Qué (What)', value: 'Programación de la plataforma web, base de datos de fichas técnicas, bitácoras y tablas de fallas.', icon: FileText },
-        { label: 'Por qué (Why)', value: 'Porque la práctica en Realidad Virtual debe estar respaldada por teoría técnica y documentación rigurosa.', icon: Target },
-        { label: 'Para qué (What for)', value: 'Para centralizar el material de estudio y el seguimiento del alumno durante los 8 semestres de formación.', icon: HelpCircle },
-        { label: 'Cuándo (When)', value: 'Mes 3 a Mes 5.', icon: Calendar },
-        { label: 'Dónde (Where)', value: 'Entorno Cloud (Servidores en la nube) accesible desde cualquier dispositivo.', icon: MapPin },
-        { label: 'Quién (Who)', value: 'Desarrolladores Full-Stack (Web) y especialistas en currículum de mantenimiento.', icon: User },
-        { label: 'Cómo (How)', value: 'Utilizando frameworks web modernos (React) y bases de datos relacionales (PostgreSQL) para las bitácoras e historial.', icon: CheckCircle2 },
+        { label: 'Qué', value: 'Programación de la plataforma web, base de datos de fichas técnicas, bitácoras y tablas de fallas.', icon: FileText },
+        { label: 'Por qué', value: 'Porque la práctica en Realidad Virtual debe estar respaldada por teoría técnica y documentación rigurosa.', icon: Target },
+        { label: 'Para qué', value: 'Para centralizar el material de estudio y el seguimiento del alumno durante los 8 semestres de formación.', icon: HelpCircle },
+        { label: 'Cuándo', value: 'Mes 3 a Mes 5.', icon: Calendar },
+        { label: 'Dónde', value: 'Entorno Cloud (Servidores en la nube) accesible desde cualquier dispositivo.', icon: MapPin },
+        { label: 'Quién', value: 'Desarrolladores Full-Stack (Web) y especialistas en currículum de mantenimiento.', icon: User },
+        { label: 'Cómo', value: 'Utilizando frameworks web modernos (React) y bases de datos relacionales (PostgreSQL) para las bitácoras e historial.', icon: CheckCircle2 },
       ]
     },
     {
@@ -41,13 +41,13 @@ const PedagogyPanel = () => {
       period: 'Mes 6 a Mes 9',
       summary: 'Conexión bidireccional de parámetros operativos (Presión, Temperatura, Vibración) y simulación inmersiva de fallas complejas.',
       details: [
-        { label: 'Qué (What)', value: 'Conexión de parámetros (Presión, Temperatura, Vibración) al visor VR y programación de simulaciones de fallas complejas.', icon: FileText },
-        { label: 'Por qué (Why)', value: 'Para acercar al estudiante a la realidad de la Industria 4.0 y el mantenimiento predictivo.', icon: Target },
-        { label: 'Para qué (What for)', value: 'Para que el alumno aprenda a tomar decisiones basadas en datos reales simulados, sin riesgo de accidentes.', icon: HelpCircle },
-        { label: 'Cuándo (When)', value: 'Mes 6 a Mes 9.', icon: Calendar },
-        { label: 'Dónde (Where)', value: 'Plataforma web integrada y visores VR en laboratorios de especialidad de la carrera.', icon: MapPin },
-        { label: 'Quién (Who)', value: 'Ingenieros de automatización (IoT), programadores VR avanzados y docentes evaluadores.', icon: User },
-        { label: 'Cómo (How)', value: 'Programando gemelos digitales, simulando telemetría mediante protocolos como WebSockets/MQTT y conectando los scripts de VR con los datos del servidor.', icon: CheckCircle2 },
+        { label: 'Qué', value: 'Conexión de parámetros (Presión, Temperatura, Vibración) al visor VR y programación de simulaciones de fallas complejas.', icon: FileText },
+        { label: 'Por qué', value: 'Para acercar al estudiante a la realidad de la Industria 4.0 y el mantenimiento predictivo.', icon: Target },
+        { label: 'Para qué', value: 'Para que el alumno aprenda a tomar decisiones basadas en datos reales simulados, sin riesgo de accidentes.', icon: HelpCircle },
+        { label: 'Cuándo', value: 'Mes 6 a Mes 9.', icon: Calendar },
+        { label: 'Dónde', value: 'Plataforma web integrada y visores VR en laboratorios de especialidad de la carrera.', icon: MapPin },
+        { label: 'Quién', value: 'Ingenieros de automatización (IoT), programadores VR avanzados y docentes evaluadores.', icon: User },
+        { label: 'Cómo', value: 'Programando gemelos digitales, simulando telemetría mediante protocolos como WebSockets/MQTT y conectando los scripts de VR con los datos del servidor.', icon: CheckCircle2 },
       ]
     }
   ];

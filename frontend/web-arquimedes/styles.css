@@ -20,6 +20,10 @@
     --accent-cyan-muted: #00b4d8;
     --accent-cyan-glow: rgba(0, 229, 255, 0.3);
     
+    --accent-purple: #a855f7;
+    --accent-purple-muted: #c084fc;
+    --accent-purple-glow: rgba(168, 85, 247, 0.3);
+    
     --font-title: 'Cinzel', serif;
     --font-deco: 'Cinzel Decorative', serif;
     --font-body: 'Inter', sans-serif;
@@ -923,6 +927,16 @@ section {
     transform: scale(1.1) rotate(0deg);
 }
 
+.project-card.automotive-card:hover .project-icon {
+    background: rgba(168, 85, 247, 0.05);
+    border-color: var(--accent-purple-muted);
+}
+
+.project-card.automotive-card:hover .project-icon svg {
+    fill: var(--accent-purple);
+    transform: scale(1.1) rotate(-15deg);
+}
+
 .project-name {
     font-family: var(--font-title);
     font-size: 1.6rem;
@@ -976,6 +990,23 @@ section {
     background: var(--accent-cyan);
     color: var(--bg-primary);
     box-shadow: 0 10px 25px var(--accent-cyan-glow);
+}
+
+.project-card.automotive-card .btn-project-link {
+    background: linear-gradient(90deg, rgba(168, 85, 247, 0.1), rgba(255, 255, 255, 0.05));
+    border: 1px solid var(--accent-purple-muted);
+    color: var(--accent-purple-muted);
+}
+
+.project-card.automotive-card:hover .btn-project-link {
+    background: var(--accent-purple);
+    color: var(--bg-primary);
+    box-shadow: 0 10px 25px var(--accent-purple-glow);
+}
+
+.project-card.automotive-card:hover {
+    border-color: rgba(168, 85, 247, 0.3);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6), 0 0 25px rgba(168, 85, 247, 0.03);
 }
 
 .project-card:hover {

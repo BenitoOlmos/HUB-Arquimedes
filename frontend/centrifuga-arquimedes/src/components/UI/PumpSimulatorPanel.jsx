@@ -34,6 +34,8 @@ const PumpSimulatorPanel = ({
   setIsCavitating
 }) => {
   const [hoverQ, setHoverQ] = useState(null);
+  const [showCavitationAlert, setShowCavitationAlert] = useState(false);
+  const [hasDismissedAlert, setHasDismissedAlert] = useState(false);
   const containerRefA = useRef(null);
   const containerRefB = useRef(null);
 
@@ -170,6 +172,18 @@ const PumpSimulatorPanel = ({
     setIsCavitating(isCavitatingActive);
   }, [isCavitatingActive, setIsCavitating]);
 
+  // Handle persistent UI cavitation alert state
+  useEffect(() => {
+    if (isCavitatingActive) {
+      if (!hasDismissedAlert) {
+        setShowCavitationAlert(true);
+      }
+    } else {
+      setShowCavitationAlert(false);
+      setHasDismissedAlert(false);
+    }
+  }, [isCavitatingActive, hasDismissedAlert]);
+
   // Compute maximum flow rate limit (where pump head is 0 for 3" pipe)
   const Q_limit = 100; // fixed X-axis range (m3/h)
 
@@ -305,7 +319,7 @@ const PumpSimulatorPanel = ({
 
       {/* Casos de Uso Preconfigurados */}
       <div style={{ background: 'var(--bg-sidebar-header)', padding: '12px', borderRadius: '10px', border: '1px solid var(--border-glass)' }}>
-        <span className="detail-label" style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px', fontWeight: 'bold' }}>
+        <span className="detail-label" style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px', fontWeight: 'bold', fontSize: '0.9rem' }}>
           <Activity size={14} color="var(--accent-cyan)" /> Casos de Estudio (Presets)
         </span>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -328,10 +342,10 @@ const PumpSimulatorPanel = ({
                 transition: 'all 0.2s'
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '700', fontSize: '0.75rem', color: 'var(--text-primary)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '700', fontSize: '0.9rem', color: 'var(--text-primary)' }}>
                 <Play size={10} style={{ color: 'var(--accent-cyan)' }} /> {p.name}
               </div>
-              <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)' }}>{p.desc}</div>
+              <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{p.desc}</div>
             </button>
           ))}
         </div>
@@ -342,7 +356,7 @@ const PumpSimulatorPanel = ({
         
         {/* Potencia del Motor */}
         <div style={{ background: 'var(--bg-sidebar-header)', padding: '12px', borderRadius: '10px', border: '1px solid var(--border-glass)' }}>
-          <span className="detail-label" style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+          <span className="detail-label" style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px', fontSize: '0.9rem', fontWeight: '700' }}>
             <Zap size={14} color="var(--accent-cyan)" /> Potencia del Motor (HP)
           </span>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
@@ -360,7 +374,7 @@ const PumpSimulatorPanel = ({
                   onChange={() => setMotorPower(powerVal)}
                   style={{ display: 'none' }}
                 />
-                <div style={{ fontSize: '0.85rem', fontWeight: '800', color: motorPower === powerVal ? 'var(--accent-cyan)' : 'var(--text-primary)' }}>
+                <div style={{ fontSize: '1.0rem', fontWeight: '800', color: motorPower === powerVal ? 'var(--accent-cyan)' : 'var(--text-primary)' }}>
                   {powerVal} HP
                 </div>
               </label>
@@ -371,7 +385,7 @@ const PumpSimulatorPanel = ({
         {/* Diámetros de Succión (Selector Múltiple) y Diámetro Activo */}
         <div style={{ background: 'var(--bg-sidebar-header)', padding: '12px', borderRadius: '10px', border: '1px solid var(--border-glass)', display: 'flex', flexDirection: 'column', gap: '10px' }}>
           <div>
-            <span className="detail-label" style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+            <span className="detail-label" style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px', fontSize: '0.9rem', fontWeight: '700' }}>
               <Droplet size={14} color="var(--accent-blue)" /> Diámetros de Succión Habilitados
             </span>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '6px' }}>
@@ -382,7 +396,7 @@ const PumpSimulatorPanel = ({
                   style={{
                     padding: '6px 2px',
                     borderRadius: '6px',
-                    fontSize: '0.75rem',
+                    fontSize: '0.9rem',
                     fontWeight: '800',
                     border: '1px solid',
                     borderColor: enabledDiameters[d] ? diameterColors[d] : 'var(--border-glass)',
@@ -399,14 +413,14 @@ const PumpSimulatorPanel = ({
           </div>
 
           <div style={{ borderTop: '1px solid var(--border-glass)', paddingTop: '8px' }}>
-            <span className="detail-label" style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+            <span className="detail-label" style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px', fontSize: '0.85rem', fontWeight: '700' }}>
               • Instalar Diámetro Operacional Activo
             </span>
             <select
               className="status-select"
               value={activeDiameter}
               onChange={(e) => setActiveDiameter(parseFloat(e.target.value))}
-              style={{ width: '100%', padding: '6px', fontSize: '0.8rem' }}
+              style={{ width: '100%', padding: '6px', fontSize: '0.95rem', fontWeight: '600' }}
             >
               {diameters.map((d) => enabledDiameters[d] && (
                 <option key={d} value={d}>
@@ -420,7 +434,7 @@ const PumpSimulatorPanel = ({
         {/* Parámetros Numéricos del Circuito */}
         <div style={{ background: 'var(--bg-sidebar-header)', padding: '12px', borderRadius: '10px', border: '1px solid var(--border-glass)', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
           <div>
-            <span className="detail-label" style={{ fontSize: '0.65rem' }}>Altura Geométrica (m)</span>
+            <span className="detail-label" style={{ fontSize: '0.82rem', fontWeight: '700' }}>Altura Geométrica (m)</span>
             <input
               type="number"
               min="0"
@@ -428,11 +442,11 @@ const PumpSimulatorPanel = ({
               value={geomHeight}
               onChange={(e) => setGeomHeight(Math.max(0, parseFloat(e.target.value) || 0))}
               className="premium-input"
-              style={{ padding: '6px', fontSize: '0.8rem' }}
+              style={{ padding: '6px', fontSize: '0.95rem' }}
             />
           </div>
           <div>
-            <span className="detail-label" style={{ fontSize: '0.65rem' }}>Largo de Tubería (m)</span>
+            <span className="detail-label" style={{ fontSize: '0.82rem', fontWeight: '700' }}>Largo de Tubería (m)</span>
             <input
               type="number"
               min="1"
@@ -440,11 +454,11 @@ const PumpSimulatorPanel = ({
               value={pipeLength}
               onChange={(e) => setPipeLength(Math.max(1, parseFloat(e.target.value) || 1))}
               className="premium-input"
-              style={{ padding: '6px', fontSize: '0.8rem' }}
+              style={{ padding: '6px', fontSize: '0.95rem' }}
             />
           </div>
           <div style={{ gridColumn: 'span 2' }}>
-            <span className="detail-label" style={{ fontSize: '0.65rem' }}>Pérdidas Singulares Accesorios (K)</span>
+            <span className="detail-label" style={{ fontSize: '0.82rem', fontWeight: '700' }}>Pérdidas Singulares Accesorios (K)</span>
             <input
               type="number"
               min="0.1"
@@ -453,14 +467,14 @@ const PumpSimulatorPanel = ({
               value={lossK}
               onChange={(e) => setLossK(Math.max(0.1, parseFloat(e.target.value) || 0.1))}
               className="premium-input"
-              style={{ padding: '6px', fontSize: '0.8rem' }}
+              style={{ padding: '6px', fontSize: '0.95rem' }}
             />
           </div>
         </div>
 
         {/* Caudal manual y unidad */}
         <div style={{ background: 'var(--bg-sidebar-header)', padding: '12px', borderRadius: '10px', border: '1px solid var(--border-glass)' }}>
-          <span className="detail-label" style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+          <span className="detail-label" style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px', fontSize: '0.9rem', fontWeight: '700' }}>
             <Gauge size={14} color="var(--accent-cyan)" /> Control de Caudal de Trabajo
           </span>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
@@ -471,7 +485,7 @@ const PumpSimulatorPanel = ({
               value={flowRate}
               onChange={(e) => setFlowRate(Math.max(0, parseFloat(e.target.value) || 0))}
               className="premium-input"
-              style={{ flex: 1, padding: '6px', fontSize: '0.8rem' }}
+              style={{ flex: 1, padding: '6px', fontSize: '0.95rem' }}
             />
             <select
               className="premium-select"
@@ -486,7 +500,7 @@ const PumpSimulatorPanel = ({
                   setFlowRate(Math.round(flowRate / 100) / 10);
                 }
               }}
-              style={{ width: '80px', padding: '6px' }}
+              style={{ width: '80px', padding: '6px', fontSize: '0.95rem' }}
             >
               <option value="m3h">m³/h</option>
               <option value="lh">L/h</option>
@@ -744,7 +758,7 @@ const PumpSimulatorPanel = ({
       </div>
 
       {/* Resumen de Trabajo y Alerta de Cavitación */}
-      {isCavitatingActive && (
+      {showCavitationAlert && (
         <div style={{
           background: 'rgba(239, 68, 68, 0.08)',
           border: '1px solid var(--status-replace)',
@@ -752,13 +766,32 @@ const PumpSimulatorPanel = ({
           padding: '12px',
           display: 'flex',
           flexDirection: 'column',
-          gap: '4px',
-          animation: 'pulse-ring 2s infinite'
+          gap: '6px',
+          animation: 'pulse-ring 2s infinite',
+          position: 'relative'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '800', color: 'var(--status-replace)', fontSize: '0.75rem' }}>
-            <AlertTriangle size={16} /> ALERTA: CAVITACIÓN DETECTADA
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '800', color: 'var(--status-replace)', fontSize: '0.85rem' }}>
+              <AlertTriangle size={16} /> ALERTA: CAVITACIÓN DETECTADA
+            </div>
+            <button 
+              onClick={() => setHasDismissedAlert(true)}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: 'var(--status-replace)',
+                cursor: 'pointer',
+                fontSize: '1rem',
+                fontWeight: 'bold',
+                lineHeight: '1',
+                padding: '0 4px'
+              }}
+              title="Ocultar Alerta"
+            >
+              ✕
+            </button>
           </div>
-          <p style={{ fontSize: '0.68rem', color: 'var(--text-primary)', lineHeight: '1.35' }}>
+          <p style={{ fontSize: '0.78rem', color: 'var(--text-primary)', lineHeight: '1.4', margin: 0 }}>
             La presión en la succión (NPSHa: {NPSHa_active.toFixed(2)}m) es menor que el requerimiento físico de la bomba (NPSHr: {NPSHr_active.toFixed(2)}m). 
             <strong> Soluciones:</strong> aumenta el diámetro de succión, acorta el circuito, reduce las pérdidas K, o disminuye el caudal.
           </p>
@@ -775,41 +808,41 @@ const PumpSimulatorPanel = ({
         flexDirection: 'column',
         gap: '10px'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', color: 'var(--accent-blue)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.9rem', fontWeight: '800', textTransform: 'uppercase', color: 'var(--accent-blue)' }}>
           <CheckCircle2 size={14} /> Estado Operacional Activo
         </div>
         
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
           <div style={{ background: 'rgba(255, 255, 255, 0.5)', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--border-glass)' }}>
-            <span className="detail-label" style={{ fontSize: '0.58rem' }}>Altura Entregada</span>
-            <span className="detail-value" style={{ fontSize: '0.85rem', fontWeight: '800', display: 'block', color: 'var(--accent-cyan)' }}>
+            <span className="detail-label" style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--text-secondary)' }}>Altura Entregada</span>
+            <span className="detail-value" style={{ fontSize: '1.05rem', fontWeight: '800', display: 'block', color: 'var(--accent-cyan)' }}>
               {H_pump_active.toFixed(1)} m
             </span>
           </div>
 
           <div style={{ background: 'rgba(255, 255, 255, 0.5)', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--border-glass)' }}>
-            <span className="detail-label" style={{ fontSize: '0.58rem' }}>Pérdida por Fricción</span>
-            <span className="detail-value" style={{ fontSize: '0.85rem', fontWeight: '800', display: 'block', color: '#64748b' }}>
+            <span className="detail-label" style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--text-secondary)' }}>Pérdida por Fricción</span>
+            <span className="detail-value" style={{ fontSize: '1.05rem', fontWeight: '800', display: 'block', color: '#64748b' }}>
               {(H_sys_active - geomHeight).toFixed(1)} m
             </span>
           </div>
 
           <div style={{ background: 'rgba(255, 255, 255, 0.5)', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--border-glass)' }}>
-            <span className="detail-label" style={{ fontSize: '0.58rem' }}>NPSH Disponible</span>
-            <span className="detail-value" style={{ fontSize: '0.85rem', fontWeight: '800', display: 'block', color: 'var(--status-operational)' }}>
+            <span className="detail-label" style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--text-secondary)' }}>NPSH Disponible</span>
+            <span className="detail-value" style={{ fontSize: '1.05rem', fontWeight: '800', display: 'block', color: 'var(--status-operational)' }}>
               {NPSHa_active.toFixed(2)} m
             </span>
           </div>
 
           <div style={{ background: 'rgba(255, 255, 255, 0.5)', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--border-glass)' }}>
-            <span className="detail-label" style={{ fontSize: '0.58rem' }}>NPSH Requerido</span>
-            <span className="detail-value" style={{ fontSize: '0.85rem', fontWeight: '800', display: 'block', color: 'var(--status-replace)' }}>
+            <span className="detail-label" style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--text-secondary)' }}>NPSH Requerido</span>
+            <span className="detail-value" style={{ fontSize: '1.05rem', fontWeight: '800', display: 'block', color: 'var(--status-replace)' }}>
               {NPSHr_active.toFixed(2)} m
             </span>
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: '6px', alignItems: 'flex-start', background: 'rgba(255,255,255,0.3)', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--border-glass)', fontSize: '0.68rem', color: 'var(--text-secondary)' }}>
+        <div style={{ display: 'flex', gap: '6px', alignItems: 'flex-start', background: 'rgba(255,255,255,0.3)', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--border-glass)', fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
           <Info size={13} color="var(--accent-blue)" style={{ flexShrink: 0, marginTop: '1px' }} />
           <div>
             La altura de succión geométrica de este circuito es de <strong>{H_suction.toFixed(1)}m</strong>. 

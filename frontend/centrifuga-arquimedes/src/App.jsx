@@ -265,7 +265,7 @@ function App() {
                     execution-while-out-of-viewport
                     execution-while-not-rendered
                     web-share
-                    src="https://sketchfab.com/models/8ba0ed44dfbd480793aa2ac4ce22b287/embed?autospin=1&autostart=1&preload=1&transparent=1&ui_theme=dark"
+                    src="https://sketchfab.com/models/8ba0ed44dfbd480793aa2ac4ce22b287/embed?autospin=0&autostart=1&preload=1&transparent=1&ui_theme=dark"
                     style={{ width: '100%', height: '100%', minHeight: '400px', border: 'none' }}
                   />
                 </div>

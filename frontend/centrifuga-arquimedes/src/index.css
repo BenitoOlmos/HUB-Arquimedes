@@ -660,6 +660,7 @@ body {
 .pulse-dot.green { background-color: var(--status-operational); color: var(--status-operational); }
 .pulse-dot.orange { background-color: var(--status-inspect); color: var(--status-inspect); }
 .pulse-dot.red { background-color: var(--status-replace); color: var(--status-replace); }
+.pulse-dot.blue { background-color: var(--accent-indigo); color: var(--accent-indigo); }
 
 .pulse-dot::after {
   content: '';
@@ -1798,6 +1799,11 @@ body {
   background: rgba(239, 68, 68, 0.08);
   color: var(--status-replace);
   border: 1px solid rgba(239, 68, 68, 0.15);
+}
+.audit-status-badge.simulated {
+  background: rgba(99, 102, 241, 0.08);
+  color: var(--accent-indigo);
+  border: 1px solid rgba(99, 102, 241, 0.15);
 }
 
 /* ==========================================================================

@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Search, AlertTriangle, ShieldCheck, HelpCircle, ArrowRight, Eye, Play, CheckSquare } from 'lucide-react';
+import { Search, AlertTriangle, ShieldCheck, HelpCircle, ArrowRight, Eye, Play, CheckSquare, Info } from 'lucide-react';
 
 const DiagnosisPanel = () => {
   const [filterType, setFilterType] = useState('all'); // 'all', 'mechanical', 'electrical'
   const [expandedId, setExpandedId] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedVibPower, setSelectedVibPower] = useState(2); // Default to 2 HP
 
   const symptomsData = [
     {
@@ -30,7 +31,7 @@ const DiagnosisPanel = () => {
       typeName: 'Falla Mecánica',
       severity: 'high',
       causes: 'Lubricación insuficiente o contaminada con agua, desalineación angular entre el eje del motor y la bomba, o sobreapriete del sello mecánico.',
-      correction: 'Analizar vibraciones para confirmar desalineación. Realizar lavado del cuerpo de rodamientos e inyectar grasa sintética Mobilith SHC 100.',
+      correction: 'Inyectar grasa recomendada por el fabricante.',
       vrSteps: [
         'Bloquear e identificar el arrancador del motor.',
         'Medir temperatura superficial en carcasa del cojinete con termómetro infrarrojo.',
@@ -45,7 +46,7 @@ const DiagnosisPanel = () => {
       type: 'mechanical',
       typeName: 'Falla Mecánica',
       severity: 'medium',
-      causes: 'Anillos de desgaste con holgura excesiva (recirculación interna), impulsor girando en sentido inverso, o fuga en el sello mecánico.',
+      causes: 'Anillos de desgaste con holgura excesiva (recirculación interna), impulsor girando en sentido inverso o fuga en el sello mecánico. Puntos de verificación en terreno: 1) Verificar obstrucción en succión de la bomba. 2) Si se cuenta con vacuómetro, verificar presión de succión o aspiración.',
       correction: 'Verificar sentido de rotación del motor. Medir holgura diametral de anillos. Reemplazar anillos si superan el doble del valor de diseño (0.56 mm).',
       vrSteps: [
         'Verificar telemetría de presión de succión y descarga en el panel.',
@@ -354,6 +355,93 @@ const DiagnosisPanel = () => {
             );
           })
         )}
+      </div>
+
+      {/* Guía de Referencia Técnica: ISO 10816-1 */}
+      <div style={{
+        background: 'var(--bg-glass)',
+        border: '1px solid var(--border-glass)',
+        borderRadius: '12px',
+        padding: '24px',
+        boxShadow: 'var(--shadow-premium)',
+        marginTop: '32px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '16px'
+      }}>
+        <div style={{ borderBottom: '1px solid var(--border-glass)', paddingBottom: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+          <div>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--accent-cyan)', display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
+              <ShieldCheck size={20} color="var(--accent-cyan)" /> Referencia Técnica: Severidad Vibratoria (ISO 10816-1)
+            </h2>
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Clase I: Máquinas pequeñas de potencia &lt; 15 kW (1 a 20 HP)</span>
+          </div>
+
+          {/* Selector de potencia para consulta */}
+          <div style={{ display: 'flex', gap: '6px', background: 'var(--bg-sidebar-header)', padding: '3px', borderRadius: '16px', border: '1px solid var(--border-glass)' }}>
+            {[1, 2, 3].map((power) => (
+              <button
+                key={power}
+                onClick={() => setSelectedVibPower(power)}
+                className={`btn-secondary ${selectedVibPower === power ? 'active' : ''}`}
+                style={{ padding: '4px 12px', borderRadius: '12px', fontSize: '0.75rem', border: 'none', boxShadow: 'none' }}
+              >
+                {power} HP
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: '1.5', margin: 0 }}>
+          La norma <strong>ISO 10816-1</strong> establece pautas globales para evaluar la vibración mecánica de máquinas en sus soportes. Para motores de <strong>{selectedVibPower} HP</strong> (aproximadamente {(selectedVibPower * 0.746).toFixed(2)} kW), la vibración se mide en velocidad eficaz (RMS) en mm/s en el rango de 10 Hz a 1000 Hz.
+        </p>
+
+        {/* Severity Table */}
+        <div style={{ overflowX: 'auto', border: '1px solid var(--border-glass)', borderRadius: '8px' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.82rem' }}>
+            <thead>
+              <tr style={{ background: 'var(--bg-sidebar-header)', borderBottom: '1px solid var(--border-glass)' }}>
+                <th style={{ padding: '10px 14px', fontWeight: 'bold' }}>Zona de Severidad</th>
+                <th style={{ padding: '10px 14px', fontWeight: 'bold' }}>Rango Vibratorio (mm/s RMS)</th>
+                <th style={{ padding: '10px 14px', fontWeight: 'bold' }}>Evaluación del Estado</th>
+                <th style={{ padding: '10px 14px', fontWeight: 'bold' }}>Acción Recomendada</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style={{ borderBottom: '1px solid var(--border-glass)', background: 'rgba(16, 185, 129, 0.02)' }}>
+                <td style={{ padding: '10px 14px', fontWeight: 'bold', color: 'var(--status-operational)' }}>Zona A (Bueno)</td>
+                <td style={{ padding: '10px 14px', fontFamily: 'monospace' }}>0.00 a 0.71</td>
+                <td style={{ padding: '10px 14px' }}>Excelente. Comportamiento óptimo.</td>
+                <td style={{ padding: '10px 14px' }}>Mantener lubricación y monitoreo de rutina.</td>
+              </tr>
+              <tr style={{ borderBottom: '1px solid var(--border-glass)', background: 'rgba(6, 182, 212, 0.02)' }}>
+                <td style={{ padding: '10px 14px', fontWeight: 'bold', color: 'var(--accent-cyan)' }}>Zona B (Satisfactorio)</td>
+                <td style={{ padding: '10px 14px', fontFamily: 'monospace' }}>0.71 a 1.80</td>
+                <td style={{ padding: '10px 14px' }}>Aceptable. Operación continua sin restricciones.</td>
+                <td style={{ padding: '10px 14px' }}>No requiere intervención correctiva inmediata.</td>
+              </tr>
+              <tr style={{ borderBottom: '1px solid var(--border-glass)', background: 'rgba(245, 158, 11, 0.02)' }}>
+                <td style={{ padding: '10px 14px', fontWeight: 'bold', color: 'var(--status-inspect)' }}>Zona C (Alerta)</td>
+                <td style={{ padding: '10px 14px', fontFamily: 'monospace' }}>1.80 a 4.50</td>
+                <td style={{ padding: '10px 14px' }}>Insatisfactorio. Desgaste o desalineación leve.</td>
+                <td style={{ padding: '10px 14px' }}>Programar mantenimiento preventivo a corto plazo.</td>
+              </tr>
+              <tr style={{ background: 'rgba(239, 68, 68, 0.02)' }}>
+                <td style={{ padding: '10px 14px', fontWeight: 'bold', color: 'var(--status-replace)' }}>Zona D (Peligro)</td>
+                <td style={{ padding: '10px 14px', fontFamily: 'monospace' }}>&gt; 4.50</td>
+                <td style={{ padding: '10px 14px' }}>Inaceptable. Daño destructivo inminente.</td>
+                <td style={{ padding: '10px 14px', fontWeight: 'bold', color: 'var(--status-replace)' }}>Detención de emergencia del motor. Aplicar LOTO.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', background: 'var(--bg-sidebar-header)', padding: '10px 12px', borderRadius: '6px', border: '1px solid var(--border-glass)', fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
+          <Info size={14} color="var(--accent-cyan)" style={{ flexShrink: 0, marginTop: '2px' }} />
+          <div>
+            <strong>Consejo Operativo para {selectedVibPower} HP:</strong> Si en el Simulador 3D la vibración del eje excede los <strong>1.80 mm/s RMS</strong>, estarás operando en la <strong>Zona C (Alerta)</strong>. Si superas los <strong>4.50 mm/s RMS</strong>, ingresarás en la <strong>Zona D (Peligro)</strong>. Utiliza la alineación láser y el balanceo dinámico de álabes en tu matriz de diagnóstico para retornar la vibración a la Zona A.
+          </div>
+        </div>
       </div>
 
     </div>

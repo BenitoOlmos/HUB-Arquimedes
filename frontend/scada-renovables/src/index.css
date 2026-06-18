@@ -4,29 +4,29 @@
 
 :root {
   /* HMI Color Palette */
-  --hmi-bg: #090b10;
-  --hmi-panel: #141722;
-  --hmi-panel-light: #1f2334;
-  --hmi-border: #2b3047;
-  --hmi-border-glow: #3e4668;
+  --hmi-bg: #f1f5f9;
+  --hmi-panel: #ffffff;
+  --hmi-panel-light: #f8fafc;
+  --hmi-border: rgba(15, 23, 42, 0.08);
+  --hmi-border-glow: rgba(15, 23, 42, 0.18);
 
   /* HMI Indicator Colors (Wonderware / Ignition Standards) */
-  --hmi-online: #00ff66; /* Normal / Connected */
-  --hmi-offline: #718096; /* Grayed out / Disconnected */
-  --hmi-maintenance: #ffcc00; /* Warning / Under repair */
-  --hmi-fault: #ff0055; /* Critical alarm / Fault */
+  --hmi-online: #10b981; /* Normal / Connected */
+  --hmi-offline: #94a3b8; /* Grayed out / Disconnected */
+  --hmi-maintenance: #f59e0b; /* Warning / Under repair */
+  --hmi-fault: #ef4444; /* Critical alarm / Fault */
 
   /* Telemetry Cyan Highlight */
-  --hmi-cyan: #00f0ff;
-  --hmi-yellow: #ffdf00;
+  --hmi-cyan: #0284c7;
+  --hmi-yellow: #f59e0b;
 
   /* Text */
-  --text-muted: #7f8fa4;
-  --text-normal: #c5d1e0;
-  --text-bright: #ffffff;
+  --text-muted: #94a3b8;
+  --text-normal: #475569;
+  --text-bright: #0f172a;
 
   /* Typography */
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 }
 
@@ -106,7 +106,7 @@ body {
 
 .scada-nav {
   display: flex;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(15, 23, 42, 0.04);
   border: 1px solid var(--hmi-border);
   border-radius: 4px;
   padding: 2px;
@@ -206,7 +206,7 @@ body {
 
 /* Technical instrumentation values */
 .instrument-gauge {
-  background: rgba(0, 0, 0, 0.35);
+  background: rgba(15, 23, 42, 0.02);
   border: 1px solid var(--hmi-border);
   border-radius: 4px;
   padding: 8px 12px;
@@ -474,7 +474,7 @@ body {
 .viewer-3d-container {
   width: 100%;
   height: 480px;
-  background: #040508;
+  background: #ffffff;
   border-radius: 4px;
   border: 1px solid var(--hmi-border);
   position: relative;

@@ -1,13 +1,12 @@
-/* HSL variables for Cyber-Agricultural dark theme */
 :root {
-  --bg-darker: #020604;
-  --bg-dark: #05140b;
-  --bg-glass: rgba(5, 20, 11, 0.75);
-  --border-glass: rgba(255, 255, 255, 0.08);
+  --bg-darker: #f1f5f9;
+  --bg-dark: #ffffff;
+  --bg-glass: rgba(255, 255, 255, 0.85);
+  --border-glass: rgba(15, 23, 42, 0.08);
 
-  --text-primary: #f0fdf4;
-  --text-secondary: #86efac;
-  --text-muted: #3f624c;
+  --text-primary: #0f172a;
+  --text-secondary: #0284c7;
+  --text-muted: #64748b;
 
   /* AgroTech Specific Colors */
   --color-moisture: #0ea5e9; /* Moisture Cyan-Blue */
@@ -20,11 +19,11 @@
 
   /* Accents */
   --accent-emerald: #10b981;
-  --accent-emerald-glow: rgba(16, 185, 129, 0.35);
+  --accent-emerald-glow: rgba(16, 185, 129, 0.15);
   --accent-lime: #84cc16;
 
   --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-family: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 * {
@@ -115,7 +114,7 @@ body::after {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(4, 12, 7, 0.85);
+  background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border-glass);
@@ -150,7 +149,7 @@ body::after {
   font-size: 1.15rem;
   font-weight: 800;
   letter-spacing: 0.5px;
-  background: linear-gradient(135deg, #fff, var(--text-secondary));
+  background: linear-gradient(135deg, #0f172a, var(--text-secondary));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -225,7 +224,7 @@ body::after {
 
 /* Master KPIs banner */
 .master-kpis-banner {
-  background: rgba(3, 10, 6, 0.5);
+  background: rgba(255, 255, 255, 0.5);
   border-bottom: 1px solid var(--border-glass);
   padding: 0.75rem 2rem;
 }
@@ -380,7 +379,7 @@ body::after {
 
 .form-select,
 .form-input {
-  background: rgba(2, 6, 4, 0.85);
+  background: #ffffff;
   border: 1px solid var(--border-glass);
   border-radius: 6px;
   color: var(--text-primary);
@@ -412,7 +411,7 @@ body::after {
   position: absolute;
   top: 1rem;
   left: 1rem;
-  background: rgba(2, 8, 4, 0.85);
+  background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(8px);
   border: 1px solid var(--border-glass);
   padding: 1rem;
@@ -442,7 +441,7 @@ body::after {
 /* Micro Log feed */
 .event-log-container {
   height: 100px;
-  background: rgba(2, 6, 3, 0.5);
+  background: rgba(255, 255, 255, 0.8);
   border: 1px solid var(--border-glass);
   border-radius: 8px;
   padding: 0.6rem;
@@ -477,7 +476,7 @@ body::after {
 .app-footer {
   margin-top: auto;
   border-top: 1px solid var(--border-glass);
-  background: rgba(2, 6, 4, 0.9);
+  background: #ffffff;
   padding: 1rem 2rem;
   text-align: center;
   font-size: 0.72rem;

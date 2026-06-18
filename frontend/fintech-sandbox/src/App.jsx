@@ -233,7 +233,7 @@ export default function App() {
             className={`nav-tab ${activeTab === 'graph' ? 'active' : ''}`}
             onClick={() => setActiveTab('graph')}
           >
-            <Activity size={16} /> GRAFO WEBGL 3D
+            <Activity size={16} /> GRAFO DE TRANSACCIONES
           </button>
           <button
             className={`nav-tab ${activeTab === 'credit' ? 'active' : ''}`}

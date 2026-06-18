@@ -1,30 +1,29 @@
-/* CSS Variables for Dark Cyber-Maritime Theme */
 :root {
-  --bg-darker: #040810;
-  --bg-dark: #081020;
-  --bg-glass: rgba(10, 20, 40, 0.7);
-  --border-glass: rgba(255, 255, 255, 0.08);
+  --bg-darker: #f1f5f9;
+  --bg-dark: #ffffff;
+  --bg-glass: rgba(255, 255, 255, 0.85);
+  --border-glass: rgba(15, 23, 42, 0.08);
 
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --text-muted: #475569;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
 
   /* Logistical / Maritime Colors */
-  --color-route: #06b6d4; /* Route Cyan */
-  --color-detour: #a855f7; /* Detour Purple */
-  --color-anchor: #eab308; /* Anchor Yellow */
+  --color-route: #0284c7; /* Route Blue */
+  --color-detour: #8b5cf6; /* Detour Purple */
+  --color-anchor: #f59e0b; /* Anchor Yellow */
   --color-held: #ef4444; /* Customs Held Red */
   --color-approved: #10b981; /* Customs Approved Green */
 
   /* Accent Colors */
-  --accent-blue: #2563eb;
+  --accent-blue: #0284c7;
   --accent-cyan: #06b6d4;
-  --accent-cyan-glow: rgba(6, 182, 212, 0.35);
+  --accent-cyan-glow: rgba(6, 182, 212, 0.15);
   --accent-purple: #8b5cf6;
-  --accent-purple-glow: rgba(139, 92, 246, 0.3);
+  --accent-purple-glow: rgba(139, 92, 246, 0.15);
 
   --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-family: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 /* Base resets */
@@ -117,7 +116,7 @@ body::after {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(8, 16, 32, 0.8);
+  background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border-glass);
@@ -152,7 +151,7 @@ body::after {
   font-size: 1.15rem;
   font-weight: 800;
   letter-spacing: 0.5px;
-  background: linear-gradient(135deg, #fff, var(--text-secondary));
+  background: linear-gradient(135deg, #0f172a, var(--text-secondary));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -227,7 +226,7 @@ body::after {
 
 /* Master KPIs banner */
 .master-kpis-banner {
-  background: rgba(8, 14, 28, 0.5);
+  background: rgba(255, 255, 255, 0.5);
   border-bottom: 1px solid var(--border-glass);
   padding: 0.75rem 2rem;
 }
@@ -388,7 +387,7 @@ body::after {
 
 .form-select,
 .form-input {
-  background: rgba(5, 7, 12, 0.8);
+  background: #ffffff;
   border: 1px solid var(--border-glass);
   border-radius: 6px;
   color: var(--text-primary);
@@ -414,7 +413,7 @@ body::after {
 }
 
 .kanban-column {
-  background: rgba(255, 255, 255, 0.01);
+  background: rgba(15, 23, 42, 0.02);
   border: 1px solid var(--border-glass);
   border-radius: 12px;
   padding: 1rem;
@@ -459,7 +458,7 @@ body::after {
 }
 
 .kanban-card {
-  background: rgba(255, 255, 255, 0.02);
+  background: #ffffff;
   border: 1px solid var(--border-glass);
   border-radius: 8px;
   padding: 0.85rem;
@@ -468,8 +467,8 @@ body::after {
 }
 .kanban-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(255, 255, 255, 0.15);
-  background: rgba(255, 255, 255, 0.03);
+  border-color: var(--border-glass-active);
+  background: #ffffff;
 }
 
 .kanban-card-title {
@@ -502,7 +501,7 @@ body::after {
 /* Real-time event log feed */
 .event-log-container {
   height: 100px;
-  background: rgba(5, 7, 15, 0.5);
+  background: rgba(255, 255, 255, 0.8);
   border: 1px solid var(--border-glass);
   border-radius: 8px;
   padding: 0.6rem;
@@ -528,18 +527,17 @@ body::after {
 .globe-visualizer-container {
   width: 100%;
   height: 480px;
-  background: radial-gradient(circle, #081224 0%, #03060c 100%);
+  background: rgba(255, 255, 255, 0.5);
   border: 1px solid var(--border-glass);
   border-radius: 14px;
   overflow: hidden;
   position: relative;
 }
-
 .globe-overlay-hud {
   position: absolute;
   top: 1rem;
   left: 1rem;
-  background: rgba(5, 10, 20, 0.85);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(8px);
   border: 1px solid var(--border-glass);
   padding: 1rem;
@@ -555,7 +553,7 @@ body::after {
 .app-footer {
   margin-top: auto;
   border-top: 1px solid var(--border-glass);
-  background: rgba(4, 8, 16, 0.9);
+  background: #ffffff;
   padding: 1rem 2rem;
   text-align: center;
   font-size: 0.72rem;

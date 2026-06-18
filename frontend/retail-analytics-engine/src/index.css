@@ -1,21 +1,21 @@
 :root {
-  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-sans: 'Outfit', 'Inter', system-ui, sans-serif;
   --font-heading: 'Outfit', system-ui, sans-serif;
 
-  /* SaaS Dark Theme Palette */
-  --bg-primary: #080a10;
-  --bg-secondary: #0f131f;
-  --bg-card: #151b2d;
-  --bg-card-hover: #1e263d;
-  --border-color: #222c48;
-  --border-color-focus: #3b82f6;
+  /* SaaS Light Theme Palette */
+  --bg-primary: #f1f5f9;
+  --bg-secondary: #ffffff;
+  --bg-card: #ffffff;
+  --bg-card-hover: rgba(15, 23, 42, 0.02);
+  --border-color: rgba(15, 23, 42, 0.08);
+  --border-color-focus: #0284c7;
 
-  --text-primary: #f3f4f6;
-  --text-secondary: #9ca3af;
-  --text-muted: #6b7280;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
 
-  --color-indigo: #6366f1;
-  --color-indigo-glow: rgba(99, 102, 241, 0.15);
+  --color-indigo: #0284c7;
+  --color-indigo-glow: rgba(2, 132, 199, 0.15);
 
   --color-success: #10b981; /* Shopify Green */
   --color-success-glow: rgba(16, 185, 129, 0.15);
@@ -23,21 +23,21 @@
   --color-warning: #f59e0b; /* Amber */
   --color-warning-glow: rgba(245, 158, 11, 0.15);
 
-  --color-danger: #f43f5e; /* Rose */
-  --color-danger-glow: rgba(244, 63, 94, 0.15);
+  --color-danger: #ef4444; /* Rose */
+  --color-danger-glow: rgba(239, 68, 68, 0.15);
 
   --color-cyan: #06b6d4;
 
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
-  --shadow-glow: 0 0 15px rgba(99, 102, 241, 0.4);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.02);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.08);
+  --shadow-glow: 0 0 15px rgba(2, 132, 199, 0.15);
 
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 16px;
 
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 * {
@@ -323,13 +323,13 @@ h6 {
 
 /* Inventory Map SVG specific classes */
 .map-bg {
-  fill: #0c0f1a;
-  stroke: #182035;
+  fill: #ffffff;
+  stroke: #e2e8f0;
   stroke-width: 2;
 }
 
 .map-road {
-  stroke: #222b44;
+  stroke: #cbd5e1;
   stroke-width: 4;
   fill: none;
   stroke-dasharray: 4 4;

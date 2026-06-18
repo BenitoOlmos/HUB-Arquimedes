@@ -1,9 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
-import * as THREE from 'three';
+import React, { useEffect, useState } from 'react';
 import { Droplet, Thermometer, Sun, Activity, Settings, Eye } from 'lucide-react';
 
 const FarmGlobe = ({ zones, onToggleValve, onTriggerAlert }) => {
-  const containerRef = useRef(null);
   const [selectedZone, setSelectedZone] = useState(null);
 
   // Auto-select first zone if none selected
@@ -11,196 +9,17 @@ const FarmGlobe = ({ zones, onToggleValve, onTriggerAlert }) => {
     if (zones.length > 0 && !selectedZone) {
       setSelectedZone(zones[0]);
     } else if (zones.length > 0 && selectedZone) {
-      // Keep selected zone updated with live data
       const updated = zones.find((z) => z.id === selectedZone.id);
       if (updated) setSelectedZone(updated);
     }
   }, [zones]);
 
-  useEffect(() => {
-    if (!containerRef.current) return;
-
-    const width = containerRef.current.clientWidth;
-    const height = containerRef.current.clientHeight;
-
-    // 1. Scene, Camera, Renderer
-    const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x020804, 0.01);
-
-    const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 1000);
-    camera.position.set(0, 75, 110);
-    camera.lookAt(0, 0, 0);
-
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(window.devicePixelRatio);
-    containerRef.current.appendChild(renderer.domElement);
-
-    // 2. Add Lights
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
-    scene.add(ambientLight);
-
-    const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    dirLight.position.set(20, 40, 20);
-    scene.add(dirLight);
-
-    // 3. Draw Farm Quadrants
-    // 4 quadrants arranged in a 2x2 grid
-    // Zone A (-15, -15), Zone B (15, -15), Zone C (-15, 15), Zone D (15, 15)
-    const quadrantsGroup = new THREE.Group();
-    scene.add(quadrantsGroup);
-
-    const quadrantMeshes = [];
-
-    const getMoistureColor = (val) => {
-      // Red/Brown (dry) -> Yellow (moderate) -> Emerald Green (wet)
-      if (val < 20) return 0xef4444; // Dry red
-      if (val < 40) return 0xeab308; // Normal amber
-      return 0x10b981; // Healthy green
-    };
-
-    zones.forEach((zone, index) => {
-      // Determine offsets
-      const xOffset = index % 2 === 0 ? -22 : 22;
-      const zOffset = index < 2 ? -22 : 22;
-
-      // Base quadrant ground mesh
-      const qGeom = new THREE.BoxGeometry(38, 3, 38);
-      const moistureSensor = zone.sensors.find((s) => s.type === 'SOIL_MOISTURE');
-      const moistureVal = moistureSensor ? moistureSensor.currentValue : 40;
-      const qMat = new THREE.MeshStandardMaterial({
-        color: getMoistureColor(moistureVal),
-        roughness: 0.8,
-        metalness: 0.1
-      });
-      const qMesh = new THREE.Mesh(qGeom, qMat);
-      qMesh.position.set(xOffset, -1.5, zOffset);
-      qMesh.userData = { zoneId: zone.id };
-      quadrantsGroup.add(qMesh);
-      quadrantMeshes.push(qMesh);
-
-      // Render simple procedural plant model
-      // Stem
-      const stemGeom = new THREE.CylinderGeometry(0.5, 0.8, 12, 8);
-      const stemMat = new THREE.MeshStandardMaterial({ color: 0x5c4033 }); // Brown stem
-      const stem = new THREE.Mesh(stemGeom, stemMat);
-      stem.position.set(xOffset, 6, zOffset);
-      quadrantsGroup.add(stem);
-
-      // Foliage (Leaves)
-      // Size scales with crop health (simulated via soil moisture health)
-      const leavesGeom = new THREE.SphereGeometry(6, 12, 12);
-      const leavesMat = new THREE.MeshStandardMaterial({
-        color: moistureVal < 20 ? 0x854d0e : 0x22c55e, // Wilted brown or green
-        roughness: 0.6
-      });
-      const leaves = new THREE.Mesh(leavesGeom, leavesMat);
-      leaves.position.set(xOffset, 12, zOffset);
-      quadrantsGroup.add(leaves);
-
-      // Sprinkler model
-      const sprinklerGeom = new THREE.CylinderGeometry(0.8, 0.8, 4, 8);
-      const sprinklerMat = new THREE.MeshStandardMaterial({ color: 0x64748b });
-      const sprinkler = new THREE.Mesh(sprinklerGeom, sprinklerMat);
-      sprinkler.position.set(xOffset + 12, 2, zOffset + 12);
-      quadrantsGroup.add(sprinkler);
-
-      // Sprinkler water spray lines (rendered if valve status is ABIERTA)
-      const valve = zone.valves[0];
-      if (valve && valve.status === 'ABIERTA') {
-        const sprayGroup = new THREE.Group();
-        const sprayMat = new THREE.LineBasicMaterial({
-          color: 0x0ea5e9,
-          transparent: true,
-          opacity: 0.6
-        });
-
-        for (let i = 0; i < 8; i++) {
-          const angle = (i / 8) * Math.PI * 2;
-          const points = [];
-          points.push(new THREE.Vector3(xOffset + 12, 4, zOffset + 12));
-          points.push(
-            new THREE.Vector3(xOffset + Math.cos(angle) * 12, 1, zOffset + Math.sin(angle) * 12)
-          );
-
-          const curve = new THREE.CatmullRomCurve3(points);
-          const sprayGeom = new THREE.BufferGeometry().setFromPoints(curve.getPoints(10));
-          const sprayLine = new THREE.Line(sprayGeom, sprayMat);
-          sprayGroup.add(sprayLine);
-        }
-        quadrantsGroup.add(sprayGroup);
-      }
-    });
-
-    // 4. Grid helper over quadrants
-    const gridHelper = new THREE.GridHelper(90, 15, 0x10b981, 0x10b981);
-    gridHelper.position.y = 0.1;
-    gridHelper.material.opacity = 0.15;
-    gridHelper.material.transparent = true;
-    scene.add(gridHelper);
-
-    // 5. Interactive Raycaster for quadrant clicks
-    const raycaster = new THREE.Raycaster();
-    const mouse = new THREE.Vector2();
-
-    const handleCanvasClick = (event) => {
-      const rect = renderer.domElement.getBoundingClientRect();
-      mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-      mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-
-      raycaster.setFromCamera(mouse, camera);
-      const intersects = raycaster.intersectObjects(quadrantMeshes);
-
-      if (intersects.length > 0) {
-        const clickedMesh = intersects[0].object;
-        const clickedZoneId = clickedMesh.userData.zoneId;
-        const matchedZone = zones.find((z) => z.id === clickedZoneId);
-        if (matchedZone) {
-          setSelectedZone(matchedZone);
-          onTriggerAlert(`Predio Seleccionado: ${matchedZone.name}`);
-        }
-      }
-    };
-
-    renderer.domElement.addEventListener('click', handleCanvasClick);
-
-    // 6. Animation and rotation loop
-    let animationFrameId;
-    let angle = 0;
-    const animate = () => {
-      animationFrameId = requestAnimationFrame(animate);
-
-      // Rotate scene slowly
-      angle += 0.0015;
-      quadrantsGroup.rotation.y = Math.sin(angle) * 0.18;
-
-      renderer.render(scene, camera);
-    };
-    animate();
-
-    // Resize handler
-    const handleResize = () => {
-      if (!containerRef.current) return;
-      const w = containerRef.current.clientWidth;
-      const h = containerRef.current.clientHeight;
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
-    };
-    window.addEventListener('resize', handleResize);
-
-    // Cleanup
-    return () => {
-      cancelAnimationFrame(animationFrameId);
-      window.removeEventListener('resize', handleResize);
-      if (renderer.domElement) {
-        renderer.domElement.removeEventListener('click', handleCanvasClick);
-      }
-      if (containerRef.current && renderer.domElement) {
-        containerRef.current.removeChild(renderer.domElement);
-      }
-    };
-  }, [zones]);
+  const getMoistureColor = (val) => {
+    if (val < 20)
+      return { bg: '#fee2e2', border: '#ef4444', text: '#b91c1c', label: 'Seco (Estrés)' };
+    if (val < 40) return { bg: '#fef3c7', border: '#f59e0b', text: '#d97706', label: 'Moderado' };
+    return { bg: '#dcfce7', border: '#10b981', text: '#15803d', label: 'Óptimo' };
+  };
 
   const handleToggleValveState = (valveId, currentStatus) => {
     const nextStatus = currentStatus === 'ABIERTA' ? 'CERRADA' : 'ABIERTA';
@@ -209,94 +28,286 @@ const FarmGlobe = ({ zones, onToggleValve, onTriggerAlert }) => {
   };
 
   const getSensorIcon = (type) => {
-    if (type === 'SOIL_MOISTURE') return <Droplet size={14} color="var(--color-moisture)" />;
-    if (type === 'PH') return <Activity size={14} color="var(--color-ph)" />;
-    if (type === 'TEMPERATURE') return <Thermometer size={14} color="var(--color-temp)" />;
-    return <Sun size={14} color="var(--color-radiation)" />;
+    if (type === 'SOIL_MOISTURE') return <Droplet size={14} color="#0ea5e9" />;
+    if (type === 'PH') return <Activity size={14} color="#a855f7" />;
+    if (type === 'TEMPERATURE') return <Thermometer size={14} color="#f59e0b" />;
+    return <Sun size={14} color="#f97316" />;
   };
 
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '2.2fr 1fr', gap: '1.5rem' }}>
-      {/* 3D Topographical Heatmap viewport */}
-      <div className="glass-panel" style={{ padding: 0, position: 'relative' }}>
-        <div className="topography-container" ref={containerRef}>
-          <div className="map-overlay-hud">
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px',
-                fontWeight: 'bold',
-                color: 'var(--accent-emerald)'
-              }}
-            >
-              <Eye size={14} /> Gemelo Digital de Suelo (3D)
-            </div>
-            <div>
-              <span
-                style={{
-                  width: '8px',
-                  height: '8px',
-                  borderRadius: '50%',
-                  backgroundColor: '#ef4444',
-                  display: 'inline-block',
-                  marginRight: '4px'
-                }}
-              ></span>
-              Estrés Hídrico (&lt;20%)
-            </div>
-            <div>
-              <span
-                style={{
-                  width: '8px',
-                  height: '8px',
-                  borderRadius: '50%',
-                  backgroundColor: '#eab308',
-                  display: 'inline-block',
-                  marginRight: '4px'
-                }}
-              ></span>
-              Humedad Normal (20% - 40%)
-            </div>
-            <div>
-              <span
-                style={{
-                  width: '8px',
-                  height: '8px',
-                  borderRadius: '50%',
-                  backgroundColor: '#10b981',
-                  display: 'inline-block',
-                  marginRight: '4px'
-                }}
-              ></span>
-              Humedad Óptima (&gt;40%)
-            </div>
-            <div style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
-              * Haz clic en los cuadrantes 3D para inspeccionar telemetrías y aspersores.
-            </div>
+      {/* 2D Landscape Grid */}
+      <div
+        className="glass-panel"
+        style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              fontWeight: 'bold',
+              color: 'var(--accent-blue)'
+            }}
+          >
+            <Eye size={18} />
+            <span>Plano 2D del Terreno Agrícola</span>
           </div>
+          <div style={{ display: 'flex', gap: '10px', fontSize: '0.75rem' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span
+                style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#ef4444' }}
+              ></span>
+              Estrés (&lt;20%)
+            </span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span
+                style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#f59e0b' }}
+              ></span>
+              Humedad (20%-40%)
+            </span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span
+                style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#10b981' }}
+              ></span>
+              Óptimo (&gt;40%)
+            </span>
+          </div>
+        </div>
+
+        {/* Interactive 2x2 map grid */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: '1.25rem',
+            flexGrow: 1,
+            minHeight: '380px',
+            background: 'rgba(15, 23, 42, 0.02)',
+            border: '1px solid var(--border-glass)',
+            borderRadius: '12px',
+            padding: '1.25rem'
+          }}
+        >
+          {zones.map((zone) => {
+            const moistureSensor = zone.sensors.find((s) => s.type === 'SOIL_MOISTURE');
+            const moistureVal = moistureSensor ? moistureSensor.currentValue : 40;
+            const statusStyle = getMoistureColor(moistureVal);
+            const isSelected = selectedZone?.id === zone.id;
+            const isValveOpen = zone.valves.some((v) => v.status === 'ABIERTA');
+
+            return (
+              <div
+                key={zone.id}
+                onClick={() => {
+                  setSelectedZone(zone);
+                  onTriggerAlert(`Predio Seleccionado: ${zone.name}`);
+                }}
+                style={{
+                  background: isSelected ? '#ffffff' : 'rgba(255, 255, 255, 0.8)',
+                  border: isSelected
+                    ? '2px solid var(--accent-blue)'
+                    : '1px solid var(--border-glass)',
+                  boxShadow: isSelected ? 'var(--shadow-hover)' : 'var(--shadow-premium)',
+                  borderRadius: '12px',
+                  padding: '1rem',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  transition: 'all 0.25s ease'
+                }}
+              >
+                {/* Visual moisture level border overlay */}
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: '4px',
+                    backgroundColor: statusStyle.border
+                  }}
+                />
+
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-start'
+                  }}
+                >
+                  <div>
+                    <h4
+                      style={{
+                        margin: 0,
+                        fontWeight: 800,
+                        fontSize: '0.95rem',
+                        color: 'var(--text-primary)'
+                      }}
+                    >
+                      {zone.name}
+                    </h4>
+                    <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+                      Cultivo: {zone.cropType}
+                    </span>
+                  </div>
+                  <span
+                    style={{
+                      fontSize: '0.65rem',
+                      fontWeight: 'bold',
+                      padding: '2px 6px',
+                      borderRadius: '20px',
+                      backgroundColor: statusStyle.bg,
+                      color: statusStyle.text,
+                      border: `1px solid ${statusStyle.border}`
+                    }}
+                  >
+                    {statusStyle.label}
+                  </span>
+                </div>
+
+                {/* Center plant/field visual */}
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    margin: '1rem 0',
+                    flexGrow: 1,
+                    position: 'relative'
+                  }}
+                >
+                  <svg
+                    width="60"
+                    height="60"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    {/* Dirt base */}
+                    <path
+                      d="M2 20C6 21 18 21 22 20"
+                      stroke="#78350f"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                    />
+                    {/* Plant stem */}
+                    <path
+                      d="M12 20C12 15 11 11 12 6"
+                      stroke={moistureVal < 20 ? '#854d0e' : '#10b981'}
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                    />
+                    {/* Leaves */}
+                    <path
+                      d="M12 14C14 13 16 11 17 12C18 13 15 15 12 16"
+                      fill={moistureVal < 20 ? 'rgba(133, 77, 14, 0.4)' : 'rgba(34, 197, 94, 0.4)'}
+                      stroke={moistureVal < 20 ? '#854d0e' : '#22c55e'}
+                      strokeWidth="1.2"
+                    />
+                    <path
+                      d="M12 10C10 9 8 7 7 8C6 9 9 11 12 12"
+                      fill={moistureVal < 20 ? 'rgba(133, 77, 14, 0.4)' : 'rgba(34, 197, 94, 0.4)'}
+                      stroke={moistureVal < 20 ? '#854d0e' : '#22c55e'}
+                      strokeWidth="1.2"
+                    />
+                  </svg>
+
+                  {/* Sprinkler system visual indicator */}
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: '5px',
+                      right: '5px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center'
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: '24px',
+                        height: '24px',
+                        borderRadius: '50%',
+                        background: isValveOpen
+                          ? 'rgba(14, 165, 233, 0.1)'
+                          : 'rgba(148, 163, 184, 0.1)',
+                        border: `1px solid ${isValveOpen ? '#0ea5e9' : 'rgba(148, 163, 184, 0.3)'}`,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}
+                    >
+                      <Droplet
+                        size={12}
+                        color={isValveOpen ? '#0ea5e9' : '#94a3b8'}
+                        className={isValveOpen ? 'animate-pulse' : ''}
+                      />
+                    </div>
+                    {isValveOpen && (
+                      <span
+                        className="spray-drizzle"
+                        style={{
+                          fontSize: '0.55rem',
+                          fontWeight: 'bold',
+                          color: '#0ea5e9',
+                          marginTop: '2px',
+                          animation: 'flash-text 1s infinite alternate'
+                        }}
+                      >
+                        RIEGO
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    fontSize: '0.72rem',
+                    color: 'var(--text-secondary)'
+                  }}
+                >
+                  <span>
+                    Humedad: <strong>{moistureVal.toFixed(1)}%</strong>
+                  </span>
+                  <span>
+                    Aspersor:{' '}
+                    <strong style={{ color: isValveOpen ? '#10b981' : '#ef4444' }}>
+                      {isValveOpen ? 'ON' : 'OFF'}
+                    </strong>
+                  </span>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 
-      {/* Selected quadrant sensors detail */}
+      {/* Selected zone details */}
       <div
         className="glass-panel"
         style={{ display: 'flex', flexDirection: 'column', height: '480px' }}
       >
         {selectedZone ? (
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-            <div className="panel-header" style={{ marginBottom: '0.8rem' }}>
+            <div
+              className="panel-header"
+              style={{ marginBottom: '0.8rem', paddingBottom: '0.5rem' }}
+            >
               <div className="panel-title" style={{ fontSize: '1rem' }}>
-                <Settings size={18} color="var(--accent-emerald)" /> {selectedZone.name}
+                <Settings size={18} color="var(--accent-blue)" />
+                <span>{selectedZone.name}</span>
               </div>
             </div>
 
             <div
-              style={{
-                fontSize: '0.72rem',
-                color: 'var(--text-secondary)',
-                marginBottom: '0.75rem'
-              }}
+              style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}
             >
               Variedad de Cultivo: <strong>{selectedZone.cropType}</strong>
             </div>
@@ -306,21 +317,22 @@ const FarmGlobe = ({ zones, onToggleValve, onTriggerAlert }) => {
               style={{
                 display: 'grid',
                 gridTemplateColumns: '1fr 1fr',
-                gap: '0.6rem',
-                marginBottom: '1rem'
+                gap: '0.75rem',
+                marginBottom: '1.25rem'
               }}
             >
               {selectedZone.sensors.map((sensor) => (
                 <div
                   key={sensor.id}
                   style={{
-                    background: 'rgba(255, 255, 255, 0.01)',
+                    background: 'rgba(15, 23, 42, 0.02)',
                     border: '1px solid var(--border-glass)',
-                    borderRadius: '6px',
-                    padding: '0.6rem',
+                    borderRadius: '8px',
+                    padding: '0.75rem',
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: '2px'
+                    gap: '4px',
+                    boxShadow: 'var(--shadow-premium)'
                   }}
                 >
                   <div
@@ -329,13 +341,21 @@ const FarmGlobe = ({ zones, onToggleValve, onTriggerAlert }) => {
                       alignItems: 'center',
                       gap: '4px',
                       fontSize: '0.68rem',
-                      color: 'var(--text-muted)'
+                      color: 'var(--text-muted)',
+                      fontWeight: 'bold'
                     }}
                   >
                     {getSensorIcon(sensor.type)}
                     {sensor.type.replace('_', ' ')}
                   </div>
-                  <span style={{ fontSize: '1rem', fontWeight: 'bold', fontFamily: 'monospace' }}>
+                  <span
+                    style={{
+                      fontSize: '1.15rem',
+                      fontWeight: 800,
+                      color: 'var(--text-primary)',
+                      fontFamily: 'monospace'
+                    }}
+                  >
                     {sensor.currentValue.toFixed(1)}
                     {sensor.type === 'SOIL_MOISTURE' && '%'}
                     {sensor.type === 'TEMPERATURE' && '°C'}
@@ -353,29 +373,36 @@ const FarmGlobe = ({ zones, onToggleValve, onTriggerAlert }) => {
                 style={{
                   marginTop: 'auto',
                   borderTop: '1px solid var(--border-glass)',
-                  paddingTop: '0.8rem',
+                  paddingTop: '1rem',
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: '0.6rem'
+                  gap: '0.75rem'
                 }}
               >
                 <div
                   style={{
                     display: 'flex',
+                    justifySelf: 'flex-end',
                     justifyContent: 'space-between',
                     alignItems: 'center',
                     fontSize: '0.8rem'
                   }}
                 >
-                  <span>Aspersores Domóticos:</span>
+                  <span style={{ fontWeight: 600, color: 'var(--text-secondary)' }}>
+                    Aspersores Domóticos:
+                  </span>
                   <span
                     style={{
-                      fontWeight: 'bold',
-                      color:
+                      fontWeight: 800,
+                      color: valve.status === 'ABIERTA' ? '#10b981' : '#ef4444',
+                      fontSize: '0.8rem',
+                      backgroundColor:
                         valve.status === 'ABIERTA'
-                          ? 'var(--color-valve-open)'
-                          : 'var(--color-valve-closed)',
-                      fontSize: '0.75rem'
+                          ? 'rgba(16, 185, 129, 0.1)'
+                          : 'rgba(239, 68, 68, 0.1)',
+                      padding: '2px 8px',
+                      borderRadius: '20px',
+                      border: `1px solid ${valve.status === 'ABIERTA' ? '#10b981' : '#ef4444'}`
                     }}
                   >
                     {valve.status}
@@ -384,7 +411,7 @@ const FarmGlobe = ({ zones, onToggleValve, onTriggerAlert }) => {
 
                 <button
                   className={valve.status === 'ABIERTA' ? 'btn-danger' : 'btn-primary'}
-                  style={{ justifyContent: 'center' }}
+                  style={{ justifyContent: 'center', width: '100%' }}
                   onClick={() => handleToggleValveState(valve.id, valve.status)}
                 >
                   {valve.status === 'ABIERTA' ? 'Cerrar Electroválvula' : 'Abrir Electroválvula'}
@@ -398,7 +425,7 @@ const FarmGlobe = ({ zones, onToggleValve, onTriggerAlert }) => {
               textAlign: 'center',
               color: 'var(--text-muted)',
               padding: '6rem 0',
-              fontSize: '0.8rem'
+              fontSize: '0.85rem'
             }}
           >
             Cargando cuadrantes del terreno...

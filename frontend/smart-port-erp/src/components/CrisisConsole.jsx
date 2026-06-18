@@ -328,10 +328,10 @@ const CrisisConsole = ({ activeCrises, onTriggerEvent, onResolveAll, onTriggerAl
           </strong>
           <p style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', lineHeight: '1.3' }}>
             Cuando inyectas un bloqueo en el <strong>Canal de Suez</strong>, la simulación del
-            backend detendrá los barcos cercanos. Los alumnos deberán usar la interfaz de
-            3D/Telemetría para <strong>Desviar el Buque</strong> hacia la ruta alterna (Cabo de
-            Buena Esperanza), lo que aumentará su costo diario en un 35% pero mantendrá la carga en
-            movimiento para evitar multas por demora.
+            backend detendrá los barcos cercanos. Los alumnos deberán usar la interfaz de Telemetría
+            para <strong>Desviar el Buque</strong> hacia la ruta alterna (Cabo de Buena Esperanza),
+            lo que aumentará su costo diario en un 35% pero mantendrá la carga en movimiento para
+            evitar multas por demora.
           </p>
         </div>
       </div>

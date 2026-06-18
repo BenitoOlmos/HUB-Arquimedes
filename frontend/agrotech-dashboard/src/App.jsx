@@ -249,7 +249,7 @@ function App() {
               onClick={() => setActiveTab('telemetry')}
             >
               <Activity size={14} />
-              <span>Gemelo 3D</span>
+              <span>Mapa de Suelo</span>
             </button>
             <button
               className={`role-btn ${activeTab === 'rules' ? 'active rules' : ''}`}

@@ -490,7 +490,7 @@ const App = () => {
           }`}
         >
           <Layers size={14} />
-          <span>MAPA 3D HABITACIONES</span>
+          <span>MONITOREO DE HABITACIONES</span>
         </button>
 
         <button
@@ -682,7 +682,7 @@ const App = () => {
                 <div className="p-5 rounded-xl border border-slate-850 bg-slate-900/40 text-center text-slate-500 font-mono text-xxs h-44 flex flex-col items-center justify-center space-y-2">
                   <Cpu size={24} className="text-slate-650" />
                   <p>
-                    Selecciona una habitación en el visor 3D para desplegar su estado de recepción y
+                    Selecciona una habitación en el plano para desplegar su estado de recepción y
                     realizar check-in de huéspedes.
                   </p>
                 </div>

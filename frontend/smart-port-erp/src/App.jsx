@@ -251,7 +251,7 @@ function App() {
               onClick={() => setActiveTab('tracking')}
             >
               <Compass size={14} />
-              <span>Telemetría 3D</span>
+              <span>Telemetría de Flota</span>
             </button>
             <button
               className={`role-btn ${activeTab === 'customs' ? 'active customs' : ''}`}

@@ -9,7 +9,6 @@ import {
   Eye,
   Layers
 } from 'lucide-react';
-import Hospital3DViewer from './Hospital3DViewer';
 
 const BedManagementPanel = ({
   beds,
@@ -21,7 +20,7 @@ const BedManagementPanel = ({
   const [selectedPatientId, setSelectedPatientId] = useState('');
   const [selectedBedId, setSelectedBedId] = useState('');
   const [activeTabWing, setActiveTabWing] = useState('ALL');
-  const [viewMode, setViewMode] = useState('3D'); // 3D or 2D
+  const [viewMode, setViewMode] = useState('2D'); // Locked to 2D
 
   // Filter beds by wing for visual sub-tabs
   const wings = {
@@ -254,7 +253,7 @@ const BedManagementPanel = ({
 
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: '1.5rem' }}>
-      {/* Interactive Map (2D or 3D) */}
+      {/* Interactive Map (2D) */}
       <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column' }}>
         <div className="panel-header">
           <div className="panel-title">
@@ -263,161 +262,96 @@ const BedManagementPanel = ({
           </div>
 
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-            {/* View Mode Toggle */}
-            <div
-              style={{
-                display: 'flex',
-                background: 'rgba(255, 255, 255, 0.03)',
-                border: '1px solid var(--border-glass)',
-                borderRadius: '20px',
-                padding: '2px',
-                marginRight: '8px'
-              }}
-            >
-              <button
-                onClick={() => setViewMode('3D')}
-                className={`role-btn ${viewMode === '3D' ? 'active' : ''}`}
-                style={{
-                  padding: '0.25rem 0.75rem',
-                  fontSize: '0.68rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                  border: 'none',
-                  background: viewMode === '3D' ? 'var(--accent-cyan)' : 'transparent',
-                  color: viewMode === '3D' ? '#000' : 'var(--text-secondary)'
-                }}
-              >
-                <Eye size={12} /> 3D Digital Twin
-              </button>
-              <button
-                onClick={() => setViewMode('2D')}
-                className={`role-btn ${viewMode === '2D' ? 'active' : ''}`}
-                style={{
-                  padding: '0.25rem 0.75rem',
-                  fontSize: '0.68rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                  border: 'none',
-                  background: viewMode === '2D' ? 'var(--accent-cyan)' : 'transparent',
-                  color: viewMode === '2D' ? '#000' : 'var(--text-secondary)'
-                }}
-              >
-                <Layers size={12} /> Plano 2D
-              </button>
+            {/* Ward filters */}
+            <div style={{ display: 'flex', gap: '4px' }}>
+              {Object.keys(wings).map((wKey) => (
+                <button
+                  key={wKey}
+                  onClick={() => setActiveTabWing(wKey)}
+                  style={{
+                    background: activeTabWing === wKey ? 'rgba(15, 23, 42, 0.08)' : 'transparent',
+                    border: '1px solid',
+                    borderColor: activeTabWing === wKey ? 'var(--border-glass)' : 'transparent',
+                    color: activeTabWing === wKey ? 'var(--accent-cyan)' : 'var(--text-secondary)',
+                    padding: '0.25rem 0.5rem',
+                    fontSize: '0.65rem',
+                    fontWeight: 'bold',
+                    borderRadius: '4px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {wKey}
+                </button>
+              ))}
             </div>
-
-            {/* Ward filters (only active in 2D mode) */}
-            {viewMode === '2D' && (
-              <div style={{ display: 'flex', gap: '4px' }}>
-                {Object.keys(wings).map((wKey) => (
-                  <button
-                    key={wKey}
-                    onClick={() => setActiveTabWing(wKey)}
-                    style={{
-                      background:
-                        activeTabWing === wKey ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
-                      border: '1px solid',
-                      borderColor: activeTabWing === wKey ? 'var(--border-glass)' : 'transparent',
-                      color:
-                        activeTabWing === wKey ? 'var(--accent-cyan)' : 'var(--text-secondary)',
-                      padding: '0.25rem 0.5rem',
-                      fontSize: '0.65rem',
-                      fontWeight: 'bold',
-                      borderRadius: '4px',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    {wKey}
-                  </button>
-                ))}
-              </div>
-            )}
           </div>
         </div>
 
         {/* View rendering */}
-        {viewMode === '3D' ? (
-          <Hospital3DViewer
-            beds={beds}
-            onTransferPatient={handleDragTransfer}
-            onDischargePatient={onDischargePatient}
-            onTriggerAlert={onTriggerAlert}
-            selectedPatientId={selectedPatientId}
-            setSelectedPatientId={setSelectedPatientId}
-            selectedBedId={selectedBedId}
-            setSelectedBedId={setSelectedBedId}
-            waitingPatients={waitingPatients}
-          />
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-            {/* UCI Wing */}
-            {(activeTabWing === 'ALL' || activeTabWing === 'UCI') && (
-              <div className="hospital-wing">
-                <div className="wing-header">
-                  <span>Unidad de Cuidados Intensivos (UCI)</span>
-                  <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
-                    Camas Críticas
-                  </span>
-                </div>
-                <div className="wing-beds-grid">{uciBeds.map(renderBedBox)}</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          {/* UCI Wing */}
+          {(activeTabWing === 'ALL' || activeTabWing === 'UCI') && (
+            <div className="hospital-wing">
+              <div className="wing-header">
+                <span>Unidad de Cuidados Intensivos (UCI)</span>
+                <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+                  Camas Críticas
+                </span>
               </div>
-            )}
+              <div className="wing-beds-grid">{uciBeds.map(renderBedBox)}</div>
+            </div>
+          )}
 
-            {/* UTI Wing */}
-            {(activeTabWing === 'ALL' || activeTabWing === 'UTI') && (
-              <div className="hospital-wing">
-                <div className="wing-header">
-                  <span>Unidad de Tratamiento Intermedio (UTI)</span>
-                  <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
-                    Camas Medias
-                  </span>
-                </div>
-                <div className="wing-beds-grid">{utiBeds.map(renderBedBox)}</div>
+          {/* UTI Wing */}
+          {(activeTabWing === 'ALL' || activeTabWing === 'UTI') && (
+            <div className="hospital-wing">
+              <div className="wing-header">
+                <span>Unidad de Tratamiento Intermedio (UTI)</span>
+                <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Camas Medias</span>
               </div>
-            )}
+              <div className="wing-beds-grid">{utiBeds.map(renderBedBox)}</div>
+            </div>
+          )}
 
-            {/* General Medicine Wing */}
-            {(activeTabWing === 'ALL' || activeTabWing === 'MED') && (
-              <div className="hospital-wing">
-                <div className="wing-header">
-                  <span>Medicina General</span>
-                  <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
-                    Adultos Comunes
-                  </span>
-                </div>
-                <div className="wing-beds-grid">{medBeds.map(renderBedBox)}</div>
+          {/* General Medicine Wing */}
+          {(activeTabWing === 'ALL' || activeTabWing === 'MED') && (
+            <div className="hospital-wing">
+              <div className="wing-header">
+                <span>Medicina General</span>
+                <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+                  Adultos Comunes
+                </span>
               </div>
-            )}
+              <div className="wing-beds-grid">{medBeds.map(renderBedBox)}</div>
+            </div>
+          )}
 
-            {/* Pediatrics Wing */}
-            {(activeTabWing === 'ALL' || activeTabWing === 'PED') && (
-              <div className="hospital-wing">
-                <div className="wing-header">
-                  <span>Pediatría</span>
-                  <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
-                    Menores de 14 años
-                  </span>
-                </div>
-                <div className="wing-beds-grid">{pedBeds.map(renderBedBox)}</div>
+          {/* Pediatrics Wing */}
+          {(activeTabWing === 'ALL' || activeTabWing === 'PED') && (
+            <div className="hospital-wing">
+              <div className="wing-header">
+                <span>Pediatría</span>
+                <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+                  Menores de 14 años
+                </span>
               </div>
-            )}
+              <div className="wing-beds-grid">{pedBeds.map(renderBedBox)}</div>
+            </div>
+          )}
 
-            {/* Isolation Wing */}
-            {(activeTabWing === 'ALL' || activeTabWing === 'AIS') && (
-              <div className="hospital-wing">
-                <div className="wing-header">
-                  <span>Aislamiento Infeccioso</span>
-                  <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
-                    Presión Negativa / Contagio
-                  </span>
-                </div>
-                <div className="wing-beds-grid">{aisBeds.map(renderBedBox)}</div>
+          {/* Isolation Wing */}
+          {(activeTabWing === 'ALL' || activeTabWing === 'AIS') && (
+            <div className="hospital-wing">
+              <div className="wing-header">
+                <span>Aislamiento Infeccioso</span>
+                <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+                  Presión Negativa / Contagio
+                </span>
               </div>
-            )}
-          </div>
-        )}
+              <div className="wing-beds-grid">{aisBeds.map(renderBedBox)}</div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Bed Assignment, Draggable Cards and Rules */}
@@ -603,7 +537,7 @@ const BedManagementPanel = ({
                   marginBottom: '3px'
                 }}
               >
-                Cama Destino (Clica una en 2D/3D)
+                Cama Destino (Clica una en el Plano)
               </label>
               <input
                 type="text"

@@ -228,7 +228,7 @@ export default function App() {
             className={`scada-nav-btn ${activeTab === 'gemelo' ? 'active' : ''}`}
             onClick={() => setActiveTab('gemelo')}
           >
-            <Compass size={14} /> GEMELO 3D
+            <Compass size={14} /> ESTADO EQUIPOS
           </button>
           <button
             className={`scada-nav-btn ${activeTab === 'trends' ? 'active' : ''}`}

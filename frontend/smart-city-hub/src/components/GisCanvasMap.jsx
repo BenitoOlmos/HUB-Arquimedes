@@ -73,11 +73,11 @@ export default function GisCanvasMap({ routes, intersections, kpis, activeEvent 
     const height = canvas.height;
 
     // Clear background
-    ctx.fillStyle = '#060913';
+    ctx.fillStyle = '#f8fafc';
     ctx.fillRect(0, 0, width, height);
 
     // Draw background grid lines
-    ctx.strokeStyle = '#121b2d';
+    ctx.strokeStyle = 'rgba(15, 23, 42, 0.04)';
     ctx.lineWidth = 1;
     for (let x = 0; x < width; x += 40) {
       ctx.beginPath();
@@ -107,13 +107,13 @@ export default function GisCanvasMap({ routes, intersections, kpis, activeEvent 
         ctx.strokeStyle = '#ef4444'; // Red jam
         ctx.lineWidth = 8;
       } else {
-        ctx.strokeStyle = '#1e2d4a'; // normal dark-blue transit path
+        ctx.strokeStyle = '#cbd5e1'; // normal light-blue transit path
         ctx.lineWidth = 6;
       }
       ctx.stroke();
 
       // Draw dashed inner divider
-      ctx.strokeStyle = '#2c416b';
+      ctx.strokeStyle = '#94a3b8';
       ctx.lineWidth = 1.5;
       ctx.setLineDash([4, 4]);
       ctx.stroke();
@@ -133,20 +133,20 @@ export default function GisCanvasMap({ routes, intersections, kpis, activeEvent 
       // Draw light halo glow
       ctx.beginPath();
       ctx.arc(coords.x, coords.y, 14, 0, 2 * Math.PI);
-      ctx.fillStyle = isGreen ? 'rgba(16, 185, 129, 0.15)' : 'rgba(244, 63, 94, 0.15)';
+      ctx.fillStyle = isGreen ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)';
       ctx.fill();
 
       // Draw light center circle
       ctx.beginPath();
       ctx.arc(coords.x, coords.y, 7, 0, 2 * Math.PI);
-      ctx.fillStyle = isGreen ? '#10b981' : '#f43f5e';
+      ctx.fillStyle = isGreen ? '#10b981' : '#ef4444';
       ctx.fill();
       ctx.strokeStyle = '#ffffff';
       ctx.lineWidth = 1.5;
       ctx.stroke();
 
       // Intersection labels
-      ctx.fillStyle = '#9ca3af';
+      ctx.fillStyle = '#475569';
       ctx.font = '9px sans-serif';
       ctx.fillText(inter.name.split('/')[1] || inter.name, coords.x - 20, coords.y - 18);
     });
@@ -162,20 +162,20 @@ export default function GisCanvasMap({ routes, intersections, kpis, activeEvent 
         // Draw bus particle glow
         ctx.beginPath();
         ctx.arc(coords.x, coords.y, 8, 0, 2 * Math.PI);
-        ctx.fillStyle = 'rgba(6, 182, 212, 0.25)';
+        ctx.fillStyle = 'rgba(2, 132, 199, 0.2)';
         ctx.fill();
 
         // Draw bus dot center
         ctx.beginPath();
         ctx.arc(coords.x, coords.y, 5, 0, 2 * Math.PI);
-        ctx.fillStyle = '#22d3ee'; // Cyan glow
+        ctx.fillStyle = '#0284c7'; // Cyan glow
         ctx.fill();
-        ctx.strokeStyle = '#04060b';
+        ctx.strokeStyle = '#ffffff';
         ctx.lineWidth = 1.5;
         ctx.stroke();
 
         // Route code Label next to bus
-        ctx.fillStyle = '#ffffff';
+        ctx.fillStyle = '#0f172a';
         ctx.font = 'bold 9px sans-serif';
         ctx.fillText(route.routeCode, coords.x + 8, coords.y + 3);
       });
@@ -184,18 +184,18 @@ export default function GisCanvasMap({ routes, intersections, kpis, activeEvent 
     // 4. Draw Marathon blocked area if active
     if (activeEvent === 'MARATON_ALAMEDA') {
       const midCoords = getCanvasCoords(-33.444, -70.647, width, height);
-      ctx.fillStyle = 'rgba(244, 63, 94, 0.1)';
+      ctx.fillStyle = 'rgba(239, 68, 68, 0.1)';
       ctx.beginPath();
       ctx.arc(midCoords.x, midCoords.y, 60, 0, 2 * Math.PI);
       ctx.fill();
 
-      ctx.strokeStyle = 'rgba(244, 63, 94, 0.5)';
+      ctx.strokeStyle = 'rgba(239, 68, 68, 0.5)';
       ctx.lineWidth = 2;
       ctx.setLineDash([6, 3]);
       ctx.stroke();
       ctx.setLineDash([]);
 
-      ctx.fillStyle = '#fb7185';
+      ctx.fillStyle = '#ef4444';
       ctx.font = 'bold 10px sans-serif';
       ctx.fillText('🚫 ALAMEDA CERRADA (MARATÓN)', midCoords.x - 70, midCoords.y + 4);
     }

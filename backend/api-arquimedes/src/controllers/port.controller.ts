@@ -5,7 +5,6 @@ import { z } from 'zod';
 const portService = new PortService();
 
 export class PortController {
-
   // Get consolidated state for Solver scripts (Python, Excel, Solver)
   async getConsolidatedState(req: Request, res: Response, next: NextFunction) {
     try {
@@ -89,7 +88,11 @@ export class PortController {
         affectedRegion: z.string()
       });
       const parsed = schema.parse(req.body);
-      const event = await portService.triggerGlobalEvent(parsed.eventType, parsed.affectedRegion, parsed.severity);
+      const event = await portService.triggerGlobalEvent(
+        parsed.eventType,
+        parsed.affectedRegion,
+        parsed.severity
+      );
       res.status(201).json({ success: true, event });
     } catch (error) {
       next(error);

@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { 
-  Activity, 
-  Settings, 
-  HelpCircle, 
-  TrendingUp, 
+import {
+  Activity,
+  Settings,
+  HelpCircle,
+  TrendingUp,
   Info,
   Droplet,
   Gauge,
@@ -43,8 +43,8 @@ const PumpSimulatorPanel = ({
   // 1. Presets / Casos de Estudio Preconfigurados
   const presets = [
     {
-      name: "Pozo Profundo (Cavitación)",
-      desc: "Aspiración profunda de 6.7m con tubería estrecha. Causa severa caída de presión de entrada.",
+      name: 'Pozo Profundo (Cavitación)',
+      desc: 'Aspiración profunda de 6.7m con tubería estrecha. Causa severa caída de presión de entrada.',
       config: {
         motorPower: 2,
         geomHeight: 15,
@@ -57,8 +57,8 @@ const PumpSimulatorPanel = ({
       }
     },
     {
-      name: "Transferencia Corta (Óptimo)",
-      desc: "Circuito corto de 8m, poca altura y tubería de 3\". Trabajo seguro sin fricción ni riesgo.",
+      name: 'Transferencia Corta (Óptimo)',
+      desc: 'Circuito corto de 8m, poca altura y tubería de 3". Trabajo seguro sin fricción ni riesgo.',
       config: {
         motorPower: 2,
         geomHeight: 5,
@@ -71,8 +71,8 @@ const PumpSimulatorPanel = ({
       }
     },
     {
-      name: "Alta Fricción (Obstruido)",
-      desc: "Línea muy larga (75m) y alta pérdida singular K. La curva del sistema se vuelve muy empinada.",
+      name: 'Alta Fricción (Obstruido)',
+      desc: 'Línea muy larga (75m) y alta pérdida singular K. La curva del sistema se vuelve muy empinada.',
       config: {
         motorPower: 3,
         geomHeight: 12,
@@ -107,32 +107,32 @@ const PumpSimulatorPanel = ({
 
   // Suction lift (altura de aspiración): assumed 45% of geometric height
   const H_suction = 0.45 * geomHeight;
-  
+
   // Calculate C_friction factor for active diameter
   const D_meters = diameterValues[activeDiameter];
   const Area = (Math.PI / 4) * D_meters * D_meters;
-  
+
   // h_friction = (f * L / D + K) * v^2 / 2g
   // v = Q_m3s / Area = (Q_calc / 3600) / Area
   // h_friction = (0.02 * L / D + K) * (Q_calc / (3600 * Area))^2 / (2 * 9.81)
   const getFrictionLoss = (q, dInch) => {
     const dM = diameterValues[dInch] || 0.0508;
     const aM = (Math.PI / 4) * dM * dM;
-    const velocity = (q / 3600) / aM;
+    const velocity = q / 3600 / aM;
     const f_coef = 0.02; // friction factor
-    return (f_coef * (pipeLength / dM) + lossK) * (velocity * velocity) / (2 * 9.81);
+    return ((f_coef * (pipeLength / dM) + lossK) * (velocity * velocity)) / (2 * 9.81);
   };
 
   // Suction-side friction loss for NPSH Available
   const getSuctionFrictionLoss = (q, dInch) => {
     const dM = diameterValues[dInch] || 0.0508;
     const aM = (Math.PI / 4) * dM * dM;
-    const velocity = (q / 3600) / aM;
+    const velocity = q / 3600 / aM;
     const f_coef = 0.02;
     // Suction pipe is 30% of total length and has 45% of singular losses K
     const L_suction = 0.3 * pipeLength;
     const K_suction = 0.45 * lossK;
-    return (f_coef * (L_suction / dM) + K_suction) * (velocity * velocity) / (2 * 9.81);
+    return ((f_coef * (L_suction / dM) + K_suction) * (velocity * velocity)) / (2 * 9.81);
   };
 
   // Pump Head: H_pump = H_max - a * Q^2
@@ -149,7 +149,7 @@ const PumpSimulatorPanel = ({
 
   // NPSH Required: rising curve
   const getNPSHRequired = (q) => {
-    return 1.2 + (0.8 / motorPower) + (0.0016 / motorPower) * q * q;
+    return 1.2 + 0.8 / motorPower + (0.0016 / motorPower) * q * q;
   };
 
   // NPSH Available: falling curve
@@ -199,7 +199,7 @@ const PumpSimulatorPanel = ({
 
     const mouseX = e.clientX - rect.left;
     const chartX = mouseX * (svgWidth / rect.width) - paddingLeft;
-    
+
     if (chartX >= 0 && chartX <= chartWidth) {
       const qVal = (chartX / chartWidth) * Q_limit;
       setHoverQ(qVal);
@@ -213,8 +213,8 @@ const PumpSimulatorPanel = ({
   };
 
   // 5. SVG Coordinate Conversions
-  const maxHeadAxis = 50;  // Y-axis limit for Head (m)
-  const maxNPSHAxis = 10;  // Y-axis limit for NPSH (m)
+  const maxHeadAxis = 50; // Y-axis limit for Head (m)
+  const maxNPSHAxis = 10; // Y-axis limit for NPSH (m)
 
   const getSvgX = (q) => {
     const paddingLeft = 40;
@@ -250,7 +250,7 @@ const PumpSimulatorPanel = ({
   // Generate curves arrays
   const steps = 40;
   const pumpCurvesData = {};
-  diameters.forEach(d => {
+  diameters.forEach((d) => {
     if (enabledDiameters[d]) {
       pumpCurvesData[d] = [];
     }
@@ -261,7 +261,7 @@ const PumpSimulatorPanel = ({
 
   for (let i = 0; i <= steps; i++) {
     const q = (i / steps) * Q_limit;
-    diameters.forEach(d => {
+    diameters.forEach((d) => {
       if (enabledDiameters[d]) {
         pumpCurvesData[d].push({ q, y: getPumpHead(q, d) });
       }
@@ -273,10 +273,10 @@ const PumpSimulatorPanel = ({
 
   // Color mapping for diameter curves
   const diameterColors = {
-    1: '#eab308',   // Yellow
+    1: '#eab308', // Yellow
     1.5: '#f97316', // Orange
-    2: '#06b6d4',   // Cyan
-    3: '#3b82f6'    // Blue
+    2: '#06b6d4', // Cyan
+    3: '#3b82f6' // Blue
   };
 
   const flowDisplayVal = (q) => {
@@ -284,12 +284,12 @@ const PumpSimulatorPanel = ({
   };
 
   const toggleDiameter = (dia) => {
-    setEnabledDiameters(prev => {
+    setEnabledDiameters((prev) => {
       const next = { ...prev, [dia]: !prev[dia] };
       // Make sure at least one is enabled
-      const enabledList = Object.keys(next).filter(k => next[k]);
+      const enabledList = Object.keys(next).filter((k) => next[k]);
       if (enabledList.length === 0) return prev;
-      
+
       // If active diameter was disabled, switch active to another enabled one
       if (!next[activeDiameter]) {
         setActiveDiameter(parseFloat(enabledList[0]));
@@ -299,8 +299,10 @@ const PumpSimulatorPanel = ({
   };
 
   return (
-    <div className="sidebar-content" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-      
+    <div
+      className="sidebar-content"
+      style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
+    >
       {/* Header Info */}
       <div className="part-title-row">
         <div>
@@ -319,8 +321,25 @@ const PumpSimulatorPanel = ({
       </div>
 
       {/* Casos de Uso Preconfigurados */}
-      <div style={{ background: 'var(--bg-sidebar-header)', padding: '12px', borderRadius: '10px', border: '1px solid var(--border-glass)' }}>
-        <span className="detail-label" style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px', fontWeight: 'bold', fontSize: '0.9rem' }}>
+      <div
+        style={{
+          background: 'var(--bg-sidebar-header)',
+          padding: '12px',
+          borderRadius: '10px',
+          border: '1px solid var(--border-glass)'
+        }}
+      >
+        <span
+          className="detail-label"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            marginBottom: '8px',
+            fontWeight: 'bold',
+            fontSize: '0.9rem'
+          }}
+        >
           <Activity size={14} color="var(--accent-cyan)" /> Casos de Estudio (Presets)
         </span>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -343,7 +362,16 @@ const PumpSimulatorPanel = ({
                 transition: 'all 0.2s'
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '700', fontSize: '0.9rem', color: 'var(--text-primary)' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  fontWeight: '700',
+                  fontSize: '0.9rem',
+                  color: 'var(--text-primary)'
+                }}
+              >
                 <Play size={10} style={{ color: 'var(--accent-cyan)' }} /> {p.name}
               </div>
               <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{p.desc}</div>
@@ -354,15 +382,31 @@ const PumpSimulatorPanel = ({
 
       {/* 2.1. Panel Izquierdo: Inputs de Parámetros */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        
         {/* Potencia del Motor */}
-        <div style={{ background: 'var(--bg-sidebar-header)', padding: '12px', borderRadius: '10px', border: '1px solid var(--border-glass)' }}>
-          <span className="detail-label" style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px', fontSize: '0.9rem', fontWeight: '700' }}>
+        <div
+          style={{
+            background: 'var(--bg-sidebar-header)',
+            padding: '12px',
+            borderRadius: '10px',
+            border: '1px solid var(--border-glass)'
+          }}
+        >
+          <span
+            className="detail-label"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              marginBottom: '8px',
+              fontSize: '0.9rem',
+              fontWeight: '700'
+            }}
+          >
             <Zap size={14} color="var(--accent-cyan)" /> Potencia del Motor (HP)
           </span>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
             {[1, 2, 3].map((powerVal) => (
-              <label 
+              <label
                 key={powerVal}
                 className={`premium-radio-card ${motorPower === powerVal ? 'active' : ''}`}
                 style={{ cursor: 'pointer', textAlign: 'center', padding: '8px 2px' }}
@@ -375,7 +419,13 @@ const PumpSimulatorPanel = ({
                   onChange={() => setMotorPower(powerVal)}
                   style={{ display: 'none' }}
                 />
-                <div style={{ fontSize: '1.0rem', fontWeight: '800', color: motorPower === powerVal ? 'var(--accent-cyan)' : 'var(--text-primary)' }}>
+                <div
+                  style={{
+                    fontSize: '1.0rem',
+                    fontWeight: '800',
+                    color: motorPower === powerVal ? 'var(--accent-cyan)' : 'var(--text-primary)'
+                  }}
+                >
                   {powerVal} HP
                 </div>
               </label>
@@ -384,9 +434,29 @@ const PumpSimulatorPanel = ({
         </div>
 
         {/* Diámetros de Succión (Selector Múltiple) y Diámetro Activo */}
-        <div style={{ background: 'var(--bg-sidebar-header)', padding: '12px', borderRadius: '10px', border: '1px solid var(--border-glass)', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        <div
+          style={{
+            background: 'var(--bg-sidebar-header)',
+            padding: '12px',
+            borderRadius: '10px',
+            border: '1px solid var(--border-glass)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '10px'
+          }}
+        >
           <div>
-            <span className="detail-label" style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px', fontSize: '0.9rem', fontWeight: '700' }}>
+            <span
+              className="detail-label"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                marginBottom: '8px',
+                fontSize: '0.9rem',
+                fontWeight: '700'
+              }}
+            >
               <Droplet size={14} color="var(--accent-blue)" /> Diámetros de Succión Habilitados
             </span>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '6px' }}>
@@ -414,7 +484,17 @@ const PumpSimulatorPanel = ({
           </div>
 
           <div style={{ borderTop: '1px solid var(--border-glass)', paddingTop: '8px' }}>
-            <span className="detail-label" style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px', fontSize: '0.85rem', fontWeight: '700' }}>
+            <span
+              className="detail-label"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                marginBottom: '6px',
+                fontSize: '0.85rem',
+                fontWeight: '700'
+              }}
+            >
               • Instalar Diámetro Operacional Activo
             </span>
             <select
@@ -423,19 +503,35 @@ const PumpSimulatorPanel = ({
               onChange={(e) => setActiveDiameter(parseFloat(e.target.value))}
               style={{ width: '100%', padding: '6px', fontSize: '0.95rem', fontWeight: '600' }}
             >
-              {diameters.map((d) => enabledDiameters[d] && (
-                <option key={d} value={d}>
-                  Tubería de {d} pulgada{d > 1 ? 's' : ''} (Color: {d === 1 ? 'Amarillo' : d === 1.5 ? 'Naranja' : d === 2 ? 'Cian' : 'Azul'})
-                </option>
-              ))}
+              {diameters.map(
+                (d) =>
+                  enabledDiameters[d] && (
+                    <option key={d} value={d}>
+                      Tubería de {d} pulgada{d > 1 ? 's' : ''} (Color:{' '}
+                      {d === 1 ? 'Amarillo' : d === 1.5 ? 'Naranja' : d === 2 ? 'Cian' : 'Azul'})
+                    </option>
+                  )
+              )}
             </select>
           </div>
         </div>
 
         {/* Parámetros Numéricos del Circuito */}
-        <div style={{ background: 'var(--bg-sidebar-header)', padding: '12px', borderRadius: '10px', border: '1px solid var(--border-glass)', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+        <div
+          style={{
+            background: 'var(--bg-sidebar-header)',
+            padding: '12px',
+            borderRadius: '10px',
+            border: '1px solid var(--border-glass)',
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: '10px'
+          }}
+        >
           <div>
-            <span className="detail-label" style={{ fontSize: '0.82rem', fontWeight: '700' }}>Altura Geométrica (m)</span>
+            <span className="detail-label" style={{ fontSize: '0.82rem', fontWeight: '700' }}>
+              Altura Geométrica (m)
+            </span>
             <input
               type="number"
               min="0"
@@ -447,7 +543,9 @@ const PumpSimulatorPanel = ({
             />
           </div>
           <div>
-            <span className="detail-label" style={{ fontSize: '0.82rem', fontWeight: '700' }}>Largo de Tubería (m)</span>
+            <span className="detail-label" style={{ fontSize: '0.82rem', fontWeight: '700' }}>
+              Largo de Tubería (m)
+            </span>
             <input
               type="number"
               min="1"
@@ -459,7 +557,9 @@ const PumpSimulatorPanel = ({
             />
           </div>
           <div style={{ gridColumn: 'span 2' }}>
-            <span className="detail-label" style={{ fontSize: '0.82rem', fontWeight: '700' }}>Pérdidas Singulares Accesorios (K)</span>
+            <span className="detail-label" style={{ fontSize: '0.82rem', fontWeight: '700' }}>
+              Pérdidas Singulares Accesorios (K)
+            </span>
             <input
               type="number"
               min="0.1"
@@ -474,8 +574,25 @@ const PumpSimulatorPanel = ({
         </div>
 
         {/* Caudal manual y unidad */}
-        <div style={{ background: 'var(--bg-sidebar-header)', padding: '12px', borderRadius: '10px', border: '1px solid var(--border-glass)' }}>
-          <span className="detail-label" style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px', fontSize: '0.9rem', fontWeight: '700' }}>
+        <div
+          style={{
+            background: 'var(--bg-sidebar-header)',
+            padding: '12px',
+            borderRadius: '10px',
+            border: '1px solid var(--border-glass)'
+          }}
+        >
+          <span
+            className="detail-label"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              marginBottom: '8px',
+              fontSize: '0.9rem',
+              fontWeight: '700'
+            }}
+          >
             <Gauge size={14} color="var(--accent-cyan)" /> Control de Caudal de Trabajo
           </span>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
@@ -512,67 +629,94 @@ const PumpSimulatorPanel = ({
 
       {/* 2.2. Panel Derecho: Gráficas Interactivas */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        
         {/* GRÁFICO 1: CURVAS DE SERVICIO */}
-        <div 
+        <div
           ref={containerRefA}
           className="zoomable-graph-container"
-          style={{ background: 'var(--bg-sidebar-header)', padding: '12px', borderRadius: '10px', border: '1px solid var(--border-glass)', position: 'relative' }}
+          style={{
+            background: 'var(--bg-sidebar-header)',
+            padding: '12px',
+            borderRadius: '10px',
+            border: '1px solid var(--border-glass)',
+            position: 'relative'
+          }}
           onMouseMove={(e) => handleMouseMove(e, containerRefA)}
           onMouseLeave={handleMouseLeave}
           onClick={() => setFullscreenGraph('service')}
         >
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              fontSize: '0.7rem',
+              color: 'var(--text-secondary)',
+              marginBottom: '4px'
+            }}
+          >
             <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 'bold' }}>
               <Gauge size={12} color="var(--accent-cyan)" /> Gráfico 1: Curvas de Servicio
             </span>
-            <span style={{ fontFamily: 'monospace', color: 'var(--accent-cyan)' }}>H [m] vs Q [{flowUnit === 'lh' ? 'L/h' : 'm³/h'}]</span>
+            <span style={{ fontFamily: 'monospace', color: 'var(--accent-cyan)' }}>
+              H [m] vs Q [{flowUnit === 'lh' ? 'L/h' : 'm³/h'}]
+            </span>
           </div>
 
           <svg viewBox="0 0 400 220" width="100%" height="150" style={{ overflow: 'visible' }}>
             {/* Grid lines */}
             {[0, 20, 40, 60, 80, 100].map((tickQ) => (
               <g key={tickQ}>
-                <line 
-                  x1={getSvgX(tickQ)} 
-                  y1={getSvgYHead(0)} 
-                  x2={getSvgX(tickQ)} 
-                  y2={getSvgYHead(50)} 
-                  stroke="rgba(15, 23, 42, 0.04)" 
-                  strokeDasharray="3,3" 
+                <line
+                  x1={getSvgX(tickQ)}
+                  y1={getSvgYHead(0)}
+                  x2={getSvgX(tickQ)}
+                  y2={getSvgYHead(50)}
+                  stroke="rgba(15, 23, 42, 0.04)"
+                  strokeDasharray="3,3"
                 />
-                <text x={getSvgX(tickQ)} y={212} fill="var(--text-muted)" fontSize="8" textAnchor="middle">
+                <text
+                  x={getSvgX(tickQ)}
+                  y={212}
+                  fill="var(--text-muted)"
+                  fontSize="8"
+                  textAnchor="middle"
+                >
                   {flowDisplayVal(tickQ)}
                 </text>
               </g>
             ))}
             {[0, 10, 20, 30, 40, 50].map((tickH) => (
               <g key={tickH}>
-                <line 
-                  x1={getSvgX(0)} 
-                  y1={getSvgYHead(tickH)} 
-                  x2={getSvgX(100)} 
-                  y2={getSvgYHead(tickH)} 
-                  stroke="rgba(15, 23, 42, 0.04)" 
-                  strokeDasharray="3,3" 
+                <line
+                  x1={getSvgX(0)}
+                  y1={getSvgYHead(tickH)}
+                  x2={getSvgX(100)}
+                  y2={getSvgYHead(tickH)}
+                  stroke="rgba(15, 23, 42, 0.04)"
+                  strokeDasharray="3,3"
                 />
-                <text x={32} y={getSvgYHead(tickH) + 3} fill="var(--text-muted)" fontSize="8" textAnchor="end">
+                <text
+                  x={32}
+                  y={getSvgYHead(tickH) + 3}
+                  fill="var(--text-muted)"
+                  fontSize="8"
+                  textAnchor="end"
+                >
                   {tickH}
                 </text>
               </g>
             ))}
 
             {/* Families of Pump curves */}
-            {diameters.map(d => {
+            {diameters.map((d) => {
               if (enabledDiameters[d]) {
                 const pathStr = generatePathD(pumpCurvesData[d], getSvgYHead);
                 return (
-                  <path 
-                    key={d} 
-                    d={pathStr} 
-                    fill="none" 
-                    stroke={diameterColors[d]} 
-                    strokeWidth={d === activeDiameter ? '2.5' : '1.2'} 
+                  <path
+                    key={d}
+                    d={pathStr}
+                    fill="none"
+                    stroke={diameterColors[d]}
+                    strokeWidth={d === activeDiameter ? '2.5' : '1.2'}
                     opacity={d === activeDiameter ? 1.0 : 0.45}
                   />
                 );
@@ -581,7 +725,13 @@ const PumpSimulatorPanel = ({
             })}
 
             {/* Resistant system curve */}
-            <path d={generatePathD(sysPoints, getSvgYHead)} fill="none" stroke="#64748b" strokeWidth="2" strokeDasharray="3,2" />
+            <path
+              d={generatePathD(sysPoints, getSvgYHead)}
+              fill="none"
+              stroke="#64748b"
+              strokeWidth="2"
+              strokeDasharray="3,2"
+            />
 
             {/* Axes */}
             <line x1={40} y1={190} x2={380} y2={190} stroke="var(--text-muted)" strokeWidth="1.2" />
@@ -590,98 +740,188 @@ const PumpSimulatorPanel = ({
             {/* Operating Point (Manual flow rate marker) */}
             {Q_calc <= Q_limit && (
               <g>
-                <line 
-                  x1={getSvgX(Q_calc)} 
-                  y1={getSvgYHead(0)} 
-                  x2={getSvgX(Q_calc)} 
-                  y2={getSvgYHead(H_pump_active)} 
-                  stroke="var(--text-muted)" 
+                <line
+                  x1={getSvgX(Q_calc)}
+                  y1={getSvgYHead(0)}
+                  x2={getSvgX(Q_calc)}
+                  y2={getSvgYHead(H_pump_active)}
+                  stroke="var(--text-muted)"
                   strokeWidth="0.8"
-                  strokeDasharray="2,2" 
+                  strokeDasharray="2,2"
                 />
-                <line 
-                  x1={getSvgX(0)} 
-                  y1={getSvgYHead(H_pump_active)} 
-                  x2={getSvgX(Q_calc)} 
-                  y2={getSvgYHead(H_pump_active)} 
-                  stroke="var(--text-muted)" 
+                <line
+                  x1={getSvgX(0)}
+                  y1={getSvgYHead(H_pump_active)}
+                  x2={getSvgX(Q_calc)}
+                  y2={getSvgYHead(H_pump_active)}
+                  stroke="var(--text-muted)"
                   strokeWidth="0.8"
-                  strokeDasharray="2,2" 
+                  strokeDasharray="2,2"
                 />
-                <circle cx={getSvgX(Q_calc)} cy={getSvgYHead(H_pump_active)} r="4.5" fill={diameterColors[activeDiameter]} stroke="#ffffff" strokeWidth="1" />
-                <circle cx={getSvgX(Q_calc)} cy={getSvgYHead(H_sys_active)} r="4.5" fill="#64748b" stroke="#ffffff" strokeWidth="1" />
+                <circle
+                  cx={getSvgX(Q_calc)}
+                  cy={getSvgYHead(H_pump_active)}
+                  r="4.5"
+                  fill={diameterColors[activeDiameter]}
+                  stroke="#ffffff"
+                  strokeWidth="1"
+                />
+                <circle
+                  cx={getSvgX(Q_calc)}
+                  cy={getSvgYHead(H_sys_active)}
+                  r="4.5"
+                  fill="#64748b"
+                  stroke="#ffffff"
+                  strokeWidth="1"
+                />
               </g>
             )}
 
             {/* Synchronized Hover line */}
             {hoverQ !== null && (
               <g>
-                <line x1={getSvgX(hoverQ)} y1={20} x2={getSvgX(hoverQ)} y2={190} stroke="var(--accent-blue)" strokeWidth="1.2" strokeDasharray="3,3" />
-                <circle cx={getSvgX(hoverQ)} cy={getSvgYHead(getPumpHead(hoverQ, activeDiameter))} r="3.5" fill="var(--accent-cyan)" stroke="#ffffff" />
-                <circle cx={getSvgX(hoverQ)} cy={getSvgYHead(getSystemHead(hoverQ))} r="3.5" fill="#64748b" stroke="#ffffff" />
+                <line
+                  x1={getSvgX(hoverQ)}
+                  y1={20}
+                  x2={getSvgX(hoverQ)}
+                  y2={190}
+                  stroke="var(--accent-blue)"
+                  strokeWidth="1.2"
+                  strokeDasharray="3,3"
+                />
+                <circle
+                  cx={getSvgX(hoverQ)}
+                  cy={getSvgYHead(getPumpHead(hoverQ, activeDiameter))}
+                  r="3.5"
+                  fill="var(--accent-cyan)"
+                  stroke="#ffffff"
+                />
+                <circle
+                  cx={getSvgX(hoverQ)}
+                  cy={getSvgYHead(getSystemHead(hoverQ))}
+                  r="3.5"
+                  fill="#64748b"
+                  stroke="#ffffff"
+                />
               </g>
             )}
           </svg>
 
           {/* Legend */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', justifyContent: 'center', fontSize: '0.62rem', marginTop: '6px', color: 'var(--text-secondary)' }}>
-            {diameters.map(d => enabledDiameters[d] && (
-              <span key={d} style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-                <span style={{ display: 'inline-block', width: '8px', height: '2px', background: diameterColors[d] }}></span>
-                Bomba {d}" {d === activeDiameter ? '(Activa)' : ''}
-              </span>
-            ))}
+          <div
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '8px',
+              justifyContent: 'center',
+              fontSize: '0.62rem',
+              marginTop: '6px',
+              color: 'var(--text-secondary)'
+            }}
+          >
+            {diameters.map(
+              (d) =>
+                enabledDiameters[d] && (
+                  <span key={d} style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
+                    <span
+                      style={{
+                        display: 'inline-block',
+                        width: '8px',
+                        height: '2px',
+                        background: diameterColors[d]
+                      }}
+                    ></span>
+                    Bomba {d}" {d === activeDiameter ? '(Activa)' : ''}
+                  </span>
+                )
+            )}
             <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-              <span style={{ display: 'inline-block', width: '8px', height: '2px', borderBottom: '2px dashed #64748b' }}></span>
+              <span
+                style={{
+                  display: 'inline-block',
+                  width: '8px',
+                  height: '2px',
+                  borderBottom: '2px dashed #64748b'
+                }}
+              ></span>
               Sistema
             </span>
           </div>
         </div>
 
         {/* GRÁFICO 2: CURVA NPSH */}
-        <div 
+        <div
           ref={containerRefB}
           className="zoomable-graph-container"
-          style={{ background: 'var(--bg-sidebar-header)', padding: '12px', borderRadius: '10px', border: '1px solid var(--border-glass)', position: 'relative' }}
+          style={{
+            background: 'var(--bg-sidebar-header)',
+            padding: '12px',
+            borderRadius: '10px',
+            border: '1px solid var(--border-glass)',
+            position: 'relative'
+          }}
           onMouseMove={(e) => handleMouseMove(e, containerRefB)}
           onMouseLeave={handleMouseLeave}
           onClick={() => setFullscreenGraph('npsh')}
         >
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              fontSize: '0.7rem',
+              color: 'var(--text-secondary)',
+              marginBottom: '4px'
+            }}
+          >
             <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 'bold' }}>
-              <Activity size={12} color="var(--accent-indigo)" /> Gráfico 2: Márgenes de Cavitación (NPSH)
+              <Activity size={12} color="var(--accent-indigo)" /> Gráfico 2: Márgenes de Cavitación
+              (NPSH)
             </span>
-            <span style={{ fontFamily: 'monospace', color: 'var(--accent-indigo)' }}>NPSH [m] vs Q [{flowUnit === 'lh' ? 'L/h' : 'm³/h'}]</span>
+            <span style={{ fontFamily: 'monospace', color: 'var(--accent-indigo)' }}>
+              NPSH [m] vs Q [{flowUnit === 'lh' ? 'L/h' : 'm³/h'}]
+            </span>
           </div>
 
           <svg viewBox="0 0 400 220" width="100%" height="150" style={{ overflow: 'visible' }}>
             {/* Grid lines */}
             {[0, 20, 40, 60, 80, 100].map((tickQ) => (
               <g key={tickQ}>
-                <line 
-                  x1={getSvgX(tickQ)} 
-                  y1={getSvgYNPSH(0)} 
-                  x2={getSvgX(tickQ)} 
-                  y2={getSvgYNPSH(10)} 
-                  stroke="rgba(15, 23, 42, 0.04)" 
-                  strokeDasharray="3,3" 
+                <line
+                  x1={getSvgX(tickQ)}
+                  y1={getSvgYNPSH(0)}
+                  x2={getSvgX(tickQ)}
+                  y2={getSvgYNPSH(10)}
+                  stroke="rgba(15, 23, 42, 0.04)"
+                  strokeDasharray="3,3"
                 />
-                <text x={getSvgX(tickQ)} y={212} fill="var(--text-muted)" fontSize="8" textAnchor="middle">
+                <text
+                  x={getSvgX(tickQ)}
+                  y={212}
+                  fill="var(--text-muted)"
+                  fontSize="8"
+                  textAnchor="middle"
+                >
                   {flowDisplayVal(tickQ)}
                 </text>
               </g>
             ))}
             {[0, 2, 4, 6, 8, 10].map((tickN) => (
               <g key={tickN}>
-                <line 
-                  x1={getSvgX(0)} 
-                  y1={getSvgYNPSH(tickN)} 
-                  x2={getSvgX(100)} 
-                  y2={getSvgYNPSH(tickN)} 
-                  stroke="rgba(15, 23, 42, 0.04)" 
-                  strokeDasharray="3,3" 
+                <line
+                  x1={getSvgX(0)}
+                  y1={getSvgYNPSH(tickN)}
+                  x2={getSvgX(100)}
+                  y2={getSvgYNPSH(tickN)}
+                  stroke="rgba(15, 23, 42, 0.04)"
+                  strokeDasharray="3,3"
                 />
-                <text x={32} y={getSvgYNPSH(tickN) + 3} fill="var(--text-muted)" fontSize="8" textAnchor="end">
+                <text
+                  x={32}
+                  y={getSvgYNPSH(tickN) + 3}
+                  fill="var(--text-muted)"
+                  fontSize="8"
+                  textAnchor="end"
+                >
                   {tickN}
                 </text>
               </g>
@@ -689,13 +929,23 @@ const PumpSimulatorPanel = ({
 
             {/* Curves */}
             {/* NPSHr (Required) - Red ascending */}
-            <path d={generatePathD(npshrPoints, getSvgYNPSH)} fill="none" stroke="var(--status-replace)" strokeWidth="2" />
+            <path
+              d={generatePathD(npshrPoints, getSvgYNPSH)}
+              fill="none"
+              stroke="var(--status-replace)"
+              strokeWidth="2"
+            />
             {/* NPSHa (Available) - Green/Blue descending */}
-            <path d={generatePathD(npshaPoints, getSvgYNPSH)} fill="none" stroke="var(--status-operational)" strokeWidth="2" />
+            <path
+              d={generatePathD(npshaPoints, getSvgYNPSH)}
+              fill="none"
+              stroke="var(--status-operational)"
+              strokeWidth="2"
+            />
 
             {/* Cavitation warning overlay shading */}
             {/* We shade the area where Q makes NPSHa < NPSHr */}
-            <path 
+            <path
               d={`${generatePathD(npshrPoints, getSvgYNPSH)} L ${getSvgX(100)} ${getSvgYNPSH(0)} L ${getSvgX(0)} ${getSvgYNPSH(0)} Z`}
               fill="rgba(239, 68, 68, 0.02)"
               pointerEvents="none"
@@ -708,38 +958,95 @@ const PumpSimulatorPanel = ({
             {/* Operating Point */}
             {Q_calc <= Q_limit && (
               <g>
-                <line 
-                  x1={getSvgX(Q_calc)} 
-                  y1={getSvgYNPSH(0)} 
-                  x2={getSvgX(Q_calc)} 
-                  y2={getSvgYNPSH(Math.max(NPSHa_active, NPSHr_active))} 
-                  stroke="var(--text-muted)" 
+                <line
+                  x1={getSvgX(Q_calc)}
+                  y1={getSvgYNPSH(0)}
+                  x2={getSvgX(Q_calc)}
+                  y2={getSvgYNPSH(Math.max(NPSHa_active, NPSHr_active))}
+                  stroke="var(--text-muted)"
                   strokeWidth="0.8"
-                  strokeDasharray="2,2" 
+                  strokeDasharray="2,2"
                 />
-                <circle cx={getSvgX(Q_calc)} cy={getSvgYNPSH(NPSHa_active)} r="4.5" fill="var(--status-operational)" stroke="#ffffff" strokeWidth="1" />
-                <circle cx={getSvgX(Q_calc)} cy={getSvgYNPSH(NPSHr_active)} r="4.5" fill="var(--status-replace)" stroke="#ffffff" strokeWidth="1" />
+                <circle
+                  cx={getSvgX(Q_calc)}
+                  cy={getSvgYNPSH(NPSHa_active)}
+                  r="4.5"
+                  fill="var(--status-operational)"
+                  stroke="#ffffff"
+                  strokeWidth="1"
+                />
+                <circle
+                  cx={getSvgX(Q_calc)}
+                  cy={getSvgYNPSH(NPSHr_active)}
+                  r="4.5"
+                  fill="var(--status-replace)"
+                  stroke="#ffffff"
+                  strokeWidth="1"
+                />
               </g>
             )}
 
             {/* Synchronized Hover line */}
             {hoverQ !== null && (
               <g>
-                <line x1={getSvgX(hoverQ)} y1={20} x2={getSvgX(hoverQ)} y2={190} stroke="var(--accent-blue)" strokeWidth="1.2" strokeDasharray="3,3" />
-                <circle cx={getSvgX(hoverQ)} cy={getSvgYNPSH(getNPSHAvailable(hoverQ))} r="3.5" fill="var(--status-operational)" stroke="#ffffff" />
-                <circle cx={getSvgX(hoverQ)} cy={getSvgYNPSH(getNPSHRequired(hoverQ))} r="3.5" fill="var(--status-replace)" stroke="#ffffff" />
+                <line
+                  x1={getSvgX(hoverQ)}
+                  y1={20}
+                  x2={getSvgX(hoverQ)}
+                  y2={190}
+                  stroke="var(--accent-blue)"
+                  strokeWidth="1.2"
+                  strokeDasharray="3,3"
+                />
+                <circle
+                  cx={getSvgX(hoverQ)}
+                  cy={getSvgYNPSH(getNPSHAvailable(hoverQ))}
+                  r="3.5"
+                  fill="var(--status-operational)"
+                  stroke="#ffffff"
+                />
+                <circle
+                  cx={getSvgX(hoverQ)}
+                  cy={getSvgYNPSH(getNPSHRequired(hoverQ))}
+                  r="3.5"
+                  fill="var(--status-replace)"
+                  stroke="#ffffff"
+                />
               </g>
             )}
           </svg>
 
           {/* Legend */}
-          <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', fontSize: '0.62rem', marginTop: '6px', color: 'var(--text-secondary)' }}>
+          <div
+            style={{
+              display: 'flex',
+              gap: '16px',
+              justifyContent: 'center',
+              fontSize: '0.62rem',
+              marginTop: '6px',
+              color: 'var(--text-secondary)'
+            }}
+          >
             <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-              <span style={{ display: 'inline-block', width: '8px', height: '2px', background: 'var(--status-operational)' }}></span>
+              <span
+                style={{
+                  display: 'inline-block',
+                  width: '8px',
+                  height: '2px',
+                  background: 'var(--status-operational)'
+                }}
+              ></span>
               NPSH Disponible (NPSHa)
             </span>
             <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-              <span style={{ display: 'inline-block', width: '8px', height: '2px', background: 'var(--status-replace)' }}></span>
+              <span
+                style={{
+                  display: 'inline-block',
+                  width: '8px',
+                  height: '2px',
+                  background: 'var(--status-replace)'
+                }}
+              ></span>
               NPSH Requerido (NPSHr)
             </span>
           </div>
@@ -747,16 +1054,61 @@ const PumpSimulatorPanel = ({
 
         {/* Hover Tooltip */}
         {hoverQ !== null && (
-          <div className="history-chart-container" style={{ background: 'rgba(15, 23, 42, 0.95)', border: '1px solid var(--accent-blue)', color: '#ffffff', padding: '10px 14px', borderRadius: '8px', display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.75rem', zIndex: 10 }}>
-            <div style={{ fontWeight: 'bold', borderBottom: '1px solid rgba(255, 255, 255, 0.15)', paddingBottom: '4px', color: 'var(--accent-cyan)', display: 'flex', justifyContent: 'space-between' }}>
+          <div
+            className="history-chart-container"
+            style={{
+              background: 'rgba(15, 23, 42, 0.95)',
+              border: '1px solid var(--accent-blue)',
+              color: '#ffffff',
+              padding: '10px 14px',
+              borderRadius: '8px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '6px',
+              fontSize: '0.75rem',
+              zIndex: 10
+            }}
+          >
+            <div
+              style={{
+                fontWeight: 'bold',
+                borderBottom: '1px solid rgba(255, 255, 255, 0.15)',
+                paddingBottom: '4px',
+                color: 'var(--accent-cyan)',
+                display: 'flex',
+                justifyContent: 'space-between'
+              }}
+            >
               <span>Lectura del Sensor</span>
-              <span>Q = {flowDisplayVal(hoverQ).toFixed(0)} {flowUnit === 'lh' ? 'L/h' : 'm³/h'}</span>
+              <span>
+                Q = {flowDisplayVal(hoverQ).toFixed(0)} {flowUnit === 'lh' ? 'L/h' : 'm³/h'}
+              </span>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
-              <div>• Altura Bomba: <strong style={{ color: 'var(--accent-cyan)' }}>{getPumpHead(hoverQ, activeDiameter).toFixed(1)} m</strong></div>
-              <div>• Pérdida Sistema: <strong style={{ color: '#64748b' }}>{getFrictionLoss(hoverQ, activeDiameter).toFixed(1)} m</strong></div>
-              <div>• NPSH Disponible: <strong style={{ color: 'var(--status-operational)' }}>{getNPSHAvailable(hoverQ).toFixed(2)} m</strong></div>
-              <div>• NPSH Requerido: <strong style={{ color: 'var(--status-replace)' }}>{getNPSHRequired(hoverQ).toFixed(2)} m</strong></div>
+              <div>
+                • Altura Bomba:{' '}
+                <strong style={{ color: 'var(--accent-cyan)' }}>
+                  {getPumpHead(hoverQ, activeDiameter).toFixed(1)} m
+                </strong>
+              </div>
+              <div>
+                • Pérdida Sistema:{' '}
+                <strong style={{ color: '#64748b' }}>
+                  {getFrictionLoss(hoverQ, activeDiameter).toFixed(1)} m
+                </strong>
+              </div>
+              <div>
+                • NPSH Disponible:{' '}
+                <strong style={{ color: 'var(--status-operational)' }}>
+                  {getNPSHAvailable(hoverQ).toFixed(2)} m
+                </strong>
+              </div>
+              <div>
+                • NPSH Requerido:{' '}
+                <strong style={{ color: 'var(--status-replace)' }}>
+                  {getNPSHRequired(hoverQ).toFixed(2)} m
+                </strong>
+              </div>
             </div>
           </div>
         )}
@@ -764,27 +1116,43 @@ const PumpSimulatorPanel = ({
 
       {/* Resumen de Trabajo y Alerta de Cavitación */}
       {showCavitationAlert && (
-        <div style={{
-          background: 'linear-gradient(135deg, #b91c1c 0%, #7f1d1d 100%)',
-          border: '3px solid #f59e0b',
-          borderRadius: '12px',
-          padding: '20px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '12px',
-          animation: 'pulse-ring 3s infinite',
-          position: 'relative',
-          boxShadow: '0 10px 25px rgba(220, 38, 38, 0.45)',
-          backdropFilter: 'blur(8px)',
-          color: '#ffffff',
-          zIndex: 100
-        }}>
+        <div
+          style={{
+            background: 'linear-gradient(135deg, #b91c1c 0%, #7f1d1d 100%)',
+            border: '3px solid #f59e0b',
+            borderRadius: '12px',
+            padding: '20px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '12px',
+            animation: 'pulse-ring 3s infinite',
+            position: 'relative',
+            boxShadow: '0 10px 25px rgba(220, 38, 38, 0.45)',
+            backdropFilter: 'blur(8px)',
+            color: '#ffffff',
+            zIndex: 100
+          }}
+        >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontWeight: '950', color: '#fef08a', fontSize: '1.25rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-              <AlertTriangle size={24} style={{ color: '#fef08a', animation: 'bounce 1s infinite' }} /> 
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                fontWeight: '950',
+                color: '#fef08a',
+                fontSize: '1.25rem',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px'
+              }}
+            >
+              <AlertTriangle
+                size={24}
+                style={{ color: '#fef08a', animation: 'bounce 1s infinite' }}
+              />
               <span>¡ALARMA CRÍTICA: CAVITACIÓN DETECTADA!</span>
             </div>
-            <button 
+            <button
               onClick={() => setHasDismissedAlert(true)}
               style={{
                 background: 'rgba(255, 255, 255, 0.2)',
@@ -803,82 +1171,215 @@ const PumpSimulatorPanel = ({
               ✕ Cerrar
             </button>
           </div>
-          
-          <p style={{ fontSize: '0.98rem', color: '#f3f4f6', lineHeight: '1.5', margin: 0, fontWeight: '600' }}>
-            La presión absoluta disponible en la brida de succión (NPSHa: <strong style={{ color: '#fef08a', fontSize: '1.1rem' }}>{NPSHa_active.toFixed(2)}m</strong>) ha caído por debajo de la presión mínima requerida por el impulsor (NPSHr: <strong style={{ color: '#fca5a5', fontSize: '1.1rem' }}>{NPSHr_active.toFixed(2)}m</strong>). 
-            Esto provocará la vaporización del fluido con formación y colapso violento de burbujas, generando vibraciones destructivas, ruido y erosión por picaduras en los álabes.
+
+          <p
+            style={{
+              fontSize: '0.98rem',
+              color: '#f3f4f6',
+              lineHeight: '1.5',
+              margin: 0,
+              fontWeight: '600'
+            }}
+          >
+            La presión absoluta disponible en la brida de succión (NPSHa:{' '}
+            <strong style={{ color: '#fef08a', fontSize: '1.1rem' }}>
+              {NPSHa_active.toFixed(2)}m
+            </strong>
+            ) ha caído por debajo de la presión mínima requerida por el impulsor (NPSHr:{' '}
+            <strong style={{ color: '#fca5a5', fontSize: '1.1rem' }}>
+              {NPSHr_active.toFixed(2)}m
+            </strong>
+            ). Esto provocará la vaporización del fluido con formación y colapso violento de
+            burbujas, generando vibraciones destructivas, ruido y erosión por picaduras en los
+            álabes.
           </p>
-          
-          <div style={{ 
-            fontSize: '0.88rem', 
-            background: 'rgba(0, 0, 0, 0.35)', 
-            padding: '12px 16px', 
-            borderRadius: '8px', 
-            borderLeft: '4px solid #f59e0b', 
-            color: '#fef08a', 
-            marginTop: '4px',
-            lineHeight: '1.4'
-          }}>
-            <strong style={{ display: 'block', marginBottom: '4px', textTransform: 'uppercase', color: '#ffffff' }}>💡 Recomendaciones de Mitigación en Terreno:</strong>
+
+          <div
+            style={{
+              fontSize: '0.88rem',
+              background: 'rgba(0, 0, 0, 0.35)',
+              padding: '12px 16px',
+              borderRadius: '8px',
+              borderLeft: '4px solid #f59e0b',
+              color: '#fef08a',
+              marginTop: '4px',
+              lineHeight: '1.4'
+            }}
+          >
+            <strong
+              style={{
+                display: 'block',
+                marginBottom: '4px',
+                textTransform: 'uppercase',
+                color: '#ffffff'
+              }}
+            >
+              💡 Recomendaciones de Mitigación en Terreno:
+            </strong>
             <ul style={{ margin: 0, paddingLeft: '16px', listStyleType: 'disc' }}>
-              <li>Incrementar el diámetro de la tubería de succión para reducir pérdidas por fricción.</li>
+              <li>
+                Incrementar el diámetro de la tubería de succión para reducir pérdidas por fricción.
+              </li>
               <li>Estrangular la válvula de descarga para disminuir el caudal de operación.</li>
               <li>Acortar la longitud de la tubería de succión o eliminar codos innecesarios.</li>
-              <li>Reducir la altura geométrica de aspiración (acercar la bomba al nivel del pozo).</li>
+              <li>
+                Reducir la altura geométrica de aspiración (acercar la bomba al nivel del pozo).
+              </li>
             </ul>
           </div>
         </div>
       )}
 
       {/* Resumen Numérico */}
-      <div style={{ 
-        background: 'linear-gradient(135deg, rgba(14, 165, 233, 0.08) 0%, rgba(2, 132, 199, 0.08) 100%)', 
-        border: '1px solid var(--border-glass-active)', 
-        borderRadius: '10px', 
-        padding: '12px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '10px'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.9rem', fontWeight: '800', textTransform: 'uppercase', color: 'var(--accent-blue)' }}>
+      <div
+        style={{
+          background:
+            'linear-gradient(135deg, rgba(14, 165, 233, 0.08) 0%, rgba(2, 132, 199, 0.08) 100%)',
+          border: '1px solid var(--border-glass-active)',
+          borderRadius: '10px',
+          padding: '12px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '10px'
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            fontSize: '0.9rem',
+            fontWeight: '800',
+            textTransform: 'uppercase',
+            color: 'var(--accent-blue)'
+          }}
+        >
           <CheckCircle2 size={14} /> Estado Operacional Activo
         </div>
-        
+
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-          <div style={{ background: 'rgba(255, 255, 255, 0.5)', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--border-glass)' }}>
-            <span className="detail-label" style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--text-secondary)' }}>Altura Entregada</span>
-            <span className="detail-value" style={{ fontSize: '1.05rem', fontWeight: '800', display: 'block', color: 'var(--accent-cyan)' }}>
+          <div
+            style={{
+              background: 'rgba(255, 255, 255, 0.5)',
+              padding: '6px 8px',
+              borderRadius: '6px',
+              border: '1px solid var(--border-glass)'
+            }}
+          >
+            <span
+              className="detail-label"
+              style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--text-secondary)' }}
+            >
+              Altura Entregada
+            </span>
+            <span
+              className="detail-value"
+              style={{
+                fontSize: '1.05rem',
+                fontWeight: '800',
+                display: 'block',
+                color: 'var(--accent-cyan)'
+              }}
+            >
               {H_pump_active.toFixed(1)} m
             </span>
           </div>
 
-          <div style={{ background: 'rgba(255, 255, 255, 0.5)', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--border-glass)' }}>
-            <span className="detail-label" style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--text-secondary)' }}>Pérdida por Fricción</span>
-            <span className="detail-value" style={{ fontSize: '1.05rem', fontWeight: '800', display: 'block', color: '#64748b' }}>
+          <div
+            style={{
+              background: 'rgba(255, 255, 255, 0.5)',
+              padding: '6px 8px',
+              borderRadius: '6px',
+              border: '1px solid var(--border-glass)'
+            }}
+          >
+            <span
+              className="detail-label"
+              style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--text-secondary)' }}
+            >
+              Pérdida por Fricción
+            </span>
+            <span
+              className="detail-value"
+              style={{ fontSize: '1.05rem', fontWeight: '800', display: 'block', color: '#64748b' }}
+            >
               {(H_sys_active - geomHeight).toFixed(1)} m
             </span>
           </div>
 
-          <div style={{ background: 'rgba(255, 255, 255, 0.5)', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--border-glass)' }}>
-            <span className="detail-label" style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--text-secondary)' }}>NPSH Disponible</span>
-            <span className="detail-value" style={{ fontSize: '1.05rem', fontWeight: '800', display: 'block', color: 'var(--status-operational)' }}>
+          <div
+            style={{
+              background: 'rgba(255, 255, 255, 0.5)',
+              padding: '6px 8px',
+              borderRadius: '6px',
+              border: '1px solid var(--border-glass)'
+            }}
+          >
+            <span
+              className="detail-label"
+              style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--text-secondary)' }}
+            >
+              NPSH Disponible
+            </span>
+            <span
+              className="detail-value"
+              style={{
+                fontSize: '1.05rem',
+                fontWeight: '800',
+                display: 'block',
+                color: 'var(--status-operational)'
+              }}
+            >
               {NPSHa_active.toFixed(2)} m
             </span>
           </div>
 
-          <div style={{ background: 'rgba(255, 255, 255, 0.5)', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--border-glass)' }}>
-            <span className="detail-label" style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--text-secondary)' }}>NPSH Requerido</span>
-            <span className="detail-value" style={{ fontSize: '1.05rem', fontWeight: '800', display: 'block', color: 'var(--status-replace)' }}>
+          <div
+            style={{
+              background: 'rgba(255, 255, 255, 0.5)',
+              padding: '6px 8px',
+              borderRadius: '6px',
+              border: '1px solid var(--border-glass)'
+            }}
+          >
+            <span
+              className="detail-label"
+              style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--text-secondary)' }}
+            >
+              NPSH Requerido
+            </span>
+            <span
+              className="detail-value"
+              style={{
+                fontSize: '1.05rem',
+                fontWeight: '800',
+                display: 'block',
+                color: 'var(--status-replace)'
+              }}
+            >
               {NPSHr_active.toFixed(2)} m
             </span>
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: '6px', alignItems: 'flex-start', background: 'rgba(255,255,255,0.3)', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--border-glass)', fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
+        <div
+          style={{
+            display: 'flex',
+            gap: '6px',
+            alignItems: 'flex-start',
+            background: 'rgba(255,255,255,0.3)',
+            padding: '6px 8px',
+            borderRadius: '6px',
+            border: '1px solid var(--border-glass)',
+            fontSize: '0.82rem',
+            color: 'var(--text-secondary)'
+          }}
+        >
           <Info size={13} color="var(--accent-blue)" style={{ flexShrink: 0, marginTop: '1px' }} />
           <div>
-            La altura de succión geométrica de este circuito es de <strong>{H_suction.toFixed(1)}m</strong>. 
-            El caudal regulado exige una presión mínima de entrada que disminuye al ensanchar la tubería.
+            La altura de succión geométrica de este circuito es de{' '}
+            <strong>{H_suction.toFixed(1)}m</strong>. El caudal regulado exige una presión mínima de
+            entrada que disminuye al ensanchar la tubería.
           </div>
         </div>
       </div>
@@ -889,58 +1390,83 @@ const PumpSimulatorPanel = ({
           <div className="fullscreen-overlay-card" onClick={(e) => e.stopPropagation()}>
             <div className="fullscreen-overlay-header">
               <h3 className="fullscreen-overlay-title">
-                {fullscreenGraph === 'service' ? 'Gráfico 1: Curvas de Servicio (H-Q)' : 'Gráfico 2: Márgenes de Cavitación (NPSH)'}
+                {fullscreenGraph === 'service'
+                  ? 'Gráfico 1: Curvas de Servicio (H-Q)'
+                  : 'Gráfico 2: Márgenes de Cavitación (NPSH)'}
               </h3>
-              <button className="fullscreen-overlay-close-btn" onClick={() => setFullscreenGraph(null)}>
+              <button
+                className="fullscreen-overlay-close-btn"
+                onClick={() => setFullscreenGraph(null)}
+              >
                 ✕ Cerrar
               </button>
             </div>
-            <div className="fullscreen-graph-body" style={{ background: 'var(--bg-sidebar-header)' }}>
+            <div
+              className="fullscreen-graph-body"
+              style={{ background: 'var(--bg-sidebar-header)' }}
+            >
               {fullscreenGraph === 'service' ? (
-                <svg viewBox="0 0 400 220" width="100%" height="100%" style={{ maxHeight: '500px', overflow: 'visible' }}>
+                <svg
+                  viewBox="0 0 400 220"
+                  width="100%"
+                  height="100%"
+                  style={{ maxHeight: '500px', overflow: 'visible' }}
+                >
                   {/* Grid lines */}
                   {[0, 20, 40, 60, 80, 100].map((tickQ) => (
                     <g key={tickQ}>
-                      <line 
-                        x1={getSvgX(tickQ)} 
-                        y1={getSvgYHead(0)} 
-                        x2={getSvgX(tickQ)} 
-                        y2={getSvgYHead(50)} 
-                        stroke="rgba(15, 23, 42, 0.04)" 
-                        strokeDasharray="3,3" 
+                      <line
+                        x1={getSvgX(tickQ)}
+                        y1={getSvgYHead(0)}
+                        x2={getSvgX(tickQ)}
+                        y2={getSvgYHead(50)}
+                        stroke="rgba(15, 23, 42, 0.04)"
+                        strokeDasharray="3,3"
                       />
-                      <text x={getSvgX(tickQ)} y={212} fill="var(--text-muted)" fontSize="8" textAnchor="middle">
+                      <text
+                        x={getSvgX(tickQ)}
+                        y={212}
+                        fill="var(--text-muted)"
+                        fontSize="8"
+                        textAnchor="middle"
+                      >
                         {flowDisplayVal(tickQ)}
                       </text>
                     </g>
                   ))}
                   {[0, 10, 20, 30, 40, 50].map((tickH) => (
                     <g key={tickH}>
-                      <line 
-                        x1={getSvgX(0)} 
-                        y1={getSvgYHead(tickH)} 
-                        x2={getSvgX(100)} 
-                        y2={getSvgYHead(tickH)} 
-                        stroke="rgba(15, 23, 42, 0.04)" 
-                        strokeDasharray="3,3" 
+                      <line
+                        x1={getSvgX(0)}
+                        y1={getSvgYHead(tickH)}
+                        x2={getSvgX(100)}
+                        y2={getSvgYHead(tickH)}
+                        stroke="rgba(15, 23, 42, 0.04)"
+                        strokeDasharray="3,3"
                       />
-                      <text x={32} y={getSvgYHead(tickH) + 3} fill="var(--text-muted)" fontSize="8" textAnchor="end">
+                      <text
+                        x={32}
+                        y={getSvgYHead(tickH) + 3}
+                        fill="var(--text-muted)"
+                        fontSize="8"
+                        textAnchor="end"
+                      >
                         {tickH}
                       </text>
                     </g>
                   ))}
 
                   {/* Families of Pump curves */}
-                  {diameters.map(d => {
+                  {diameters.map((d) => {
                     if (enabledDiameters[d]) {
                       const pathStr = generatePathD(pumpCurvesData[d], getSvgYHead);
                       return (
-                        <path 
-                          key={d} 
-                          d={pathStr} 
-                          fill="none" 
-                          stroke={diameterColors[d]} 
-                          strokeWidth={d === activeDiameter ? '2.5' : '1.2'} 
+                        <path
+                          key={d}
+                          d={pathStr}
+                          fill="none"
+                          stroke={diameterColors[d]}
+                          strokeWidth={d === activeDiameter ? '2.5' : '1.2'}
                           opacity={d === activeDiameter ? 1.0 : 0.45}
                         />
                       );
@@ -949,134 +1475,282 @@ const PumpSimulatorPanel = ({
                   })}
 
                   {/* Resistant system curve */}
-                  <path d={generatePathD(sysPoints, getSvgYHead)} fill="none" stroke="#64748b" strokeWidth="2" strokeDasharray="3,2" />
+                  <path
+                    d={generatePathD(sysPoints, getSvgYHead)}
+                    fill="none"
+                    stroke="#64748b"
+                    strokeWidth="2"
+                    strokeDasharray="3,2"
+                  />
 
                   {/* Axes */}
-                  <line x1={40} y1={190} x2={380} y2={190} stroke="var(--text-muted)" strokeWidth="1.2" />
-                  <line x1={40} y1={20} x2={40} y2={190} stroke="var(--text-muted)" strokeWidth="1.2" />
+                  <line
+                    x1={40}
+                    y1={190}
+                    x2={380}
+                    y2={190}
+                    stroke="var(--text-muted)"
+                    strokeWidth="1.2"
+                  />
+                  <line
+                    x1={40}
+                    y1={20}
+                    x2={40}
+                    y2={190}
+                    stroke="var(--text-muted)"
+                    strokeWidth="1.2"
+                  />
 
                   {/* Operating Point */}
                   {Q_calc <= Q_limit && (
                     <g>
-                      <line 
-                        x1={getSvgX(Q_calc)} 
-                        y1={getSvgYHead(0)} 
-                        x2={getSvgX(Q_calc)} 
-                        y2={getSvgYHead(H_pump_active)} 
-                        stroke="var(--text-muted)" 
+                      <line
+                        x1={getSvgX(Q_calc)}
+                        y1={getSvgYHead(0)}
+                        x2={getSvgX(Q_calc)}
+                        y2={getSvgYHead(H_pump_active)}
+                        stroke="var(--text-muted)"
                         strokeWidth="0.8"
-                        strokeDasharray="2,2" 
+                        strokeDasharray="2,2"
                       />
-                      <line 
-                        x1={getSvgX(0)} 
-                        y1={getSvgYHead(H_pump_active)} 
-                        x2={getSvgX(Q_calc)} 
-                        y2={getSvgYHead(H_pump_active)} 
-                        stroke="var(--text-muted)" 
+                      <line
+                        x1={getSvgX(0)}
+                        y1={getSvgYHead(H_pump_active)}
+                        x2={getSvgX(Q_calc)}
+                        y2={getSvgYHead(H_pump_active)}
+                        stroke="var(--text-muted)"
                         strokeWidth="0.8"
-                        strokeDasharray="2,2" 
+                        strokeDasharray="2,2"
                       />
-                      <circle cx={getSvgX(Q_calc)} cy={getSvgYHead(H_pump_active)} r="5.5" fill={diameterColors[activeDiameter]} stroke="#ffffff" strokeWidth="1.5" />
-                      <circle cx={getSvgX(Q_calc)} cy={getSvgYHead(H_sys_active)} r="5.5" fill="#64748b" stroke="#ffffff" strokeWidth="1.5" />
+                      <circle
+                        cx={getSvgX(Q_calc)}
+                        cy={getSvgYHead(H_pump_active)}
+                        r="5.5"
+                        fill={diameterColors[activeDiameter]}
+                        stroke="#ffffff"
+                        strokeWidth="1.5"
+                      />
+                      <circle
+                        cx={getSvgX(Q_calc)}
+                        cy={getSvgYHead(H_sys_active)}
+                        r="5.5"
+                        fill="#64748b"
+                        stroke="#ffffff"
+                        strokeWidth="1.5"
+                      />
                     </g>
                   )}
 
                   {/* Synchronized Hover line */}
                   {hoverQ !== null && (
                     <g>
-                      <line x1={getSvgX(hoverQ)} y1={20} x2={getSvgX(hoverQ)} y2={190} stroke="var(--accent-blue)" strokeWidth="1.2" strokeDasharray="3,3" />
-                      <circle cx={getSvgX(hoverQ)} cy={getSvgYHead(getPumpHead(hoverQ, activeDiameter))} r="4.5" fill="var(--accent-cyan)" stroke="#ffffff" />
-                      <circle cx={getSvgX(hoverQ)} cy={getSvgYHead(getSystemHead(hoverQ))} r="4.5" fill="#64748b" stroke="#ffffff" />
+                      <line
+                        x1={getSvgX(hoverQ)}
+                        y1={20}
+                        x2={getSvgX(hoverQ)}
+                        y2={190}
+                        stroke="var(--accent-blue)"
+                        strokeWidth="1.2"
+                        strokeDasharray="3,3"
+                      />
+                      <circle
+                        cx={getSvgX(hoverQ)}
+                        cy={getSvgYHead(getPumpHead(hoverQ, activeDiameter))}
+                        r="4.5"
+                        fill="var(--accent-cyan)"
+                        stroke="#ffffff"
+                      />
+                      <circle
+                        cx={getSvgX(hoverQ)}
+                        cy={getSvgYHead(getSystemHead(hoverQ))}
+                        r="4.5"
+                        fill="#64748b"
+                        stroke="#ffffff"
+                      />
                     </g>
                   )}
                 </svg>
               ) : (
-                <svg viewBox="0 0 400 220" width="100%" height="100%" style={{ maxHeight: '500px', overflow: 'visible' }}>
+                <svg
+                  viewBox="0 0 400 220"
+                  width="100%"
+                  height="100%"
+                  style={{ maxHeight: '500px', overflow: 'visible' }}
+                >
                   {/* Grid lines */}
                   {[0, 20, 40, 60, 80, 100].map((tickQ) => (
                     <g key={tickQ}>
-                      <line 
-                        x1={getSvgX(tickQ)} 
-                        y1={getSvgYNPSH(0)} 
-                        x2={getSvgX(tickQ)} 
-                        y2={getSvgYNPSH(10)} 
-                        stroke="rgba(15, 23, 42, 0.04)" 
-                        strokeDasharray="3,3" 
+                      <line
+                        x1={getSvgX(tickQ)}
+                        y1={getSvgYNPSH(0)}
+                        x2={getSvgX(tickQ)}
+                        y2={getSvgYNPSH(10)}
+                        stroke="rgba(15, 23, 42, 0.04)"
+                        strokeDasharray="3,3"
                       />
-                      <text x={getSvgX(tickQ)} y={212} fill="var(--text-muted)" fontSize="8" textAnchor="middle">
+                      <text
+                        x={getSvgX(tickQ)}
+                        y={212}
+                        fill="var(--text-muted)"
+                        fontSize="8"
+                        textAnchor="middle"
+                      >
                         {flowDisplayVal(tickQ)}
                       </text>
                     </g>
                   ))}
                   {[0, 2, 4, 6, 8, 10].map((tickN) => (
                     <g key={tickN}>
-                      <line 
-                        x1={getSvgX(0)} 
-                        y1={getSvgYNPSH(tickN)} 
-                        x2={getSvgX(100)} 
-                        y2={getSvgYNPSH(tickN)} 
-                        stroke="rgba(15, 23, 42, 0.04)" 
-                        strokeDasharray="3,3" 
+                      <line
+                        x1={getSvgX(0)}
+                        y1={getSvgYNPSH(tickN)}
+                        x2={getSvgX(100)}
+                        y2={getSvgYNPSH(tickN)}
+                        stroke="rgba(15, 23, 42, 0.04)"
+                        strokeDasharray="3,3"
                       />
-                      <text x={32} y={getSvgYNPSH(tickN) + 3} fill="var(--text-muted)" fontSize="8" textAnchor="end">
+                      <text
+                        x={32}
+                        y={getSvgYNPSH(tickN) + 3}
+                        fill="var(--text-muted)"
+                        fontSize="8"
+                        textAnchor="end"
+                      >
                         {tickN}
                       </text>
                     </g>
                   ))}
 
                   {/* Curves */}
-                  <path d={generatePathD(npshrPoints, getSvgYNPSH)} fill="none" stroke="var(--status-replace)" strokeWidth="2.5" />
-                  <path d={generatePathD(npshaPoints, getSvgYNPSH)} fill="none" stroke="var(--status-operational)" strokeWidth="2.5" />
+                  <path
+                    d={generatePathD(npshrPoints, getSvgYNPSH)}
+                    fill="none"
+                    stroke="var(--status-replace)"
+                    strokeWidth="2.5"
+                  />
+                  <path
+                    d={generatePathD(npshaPoints, getSvgYNPSH)}
+                    fill="none"
+                    stroke="var(--status-operational)"
+                    strokeWidth="2.5"
+                  />
 
-                  <path 
+                  <path
                     d={`${generatePathD(npshrPoints, getSvgYNPSH)} L ${getSvgX(100)} ${getSvgYNPSH(0)} L ${getSvgX(0)} ${getSvgYNPSH(0)} Z`}
                     fill="rgba(239, 68, 68, 0.02)"
                     pointerEvents="none"
                   />
 
                   {/* Axes */}
-                  <line x1={40} y1={190} x2={380} y2={190} stroke="var(--text-muted)" strokeWidth="1.2" />
-                  <line x1={40} y1={20} x2={40} y2={190} stroke="var(--text-muted)" strokeWidth="1.2" />
+                  <line
+                    x1={40}
+                    y1={190}
+                    x2={380}
+                    y2={190}
+                    stroke="var(--text-muted)"
+                    strokeWidth="1.2"
+                  />
+                  <line
+                    x1={40}
+                    y1={20}
+                    x2={40}
+                    y2={190}
+                    stroke="var(--text-muted)"
+                    strokeWidth="1.2"
+                  />
 
                   {/* Operating Point */}
                   {Q_calc <= Q_limit && (
                     <g>
-                      <line 
-                        x1={getSvgX(Q_calc)} 
-                        y1={getSvgYNPSH(0)} 
-                        x2={getSvgX(Q_calc)} 
-                        y2={getSvgYNPSH(Math.max(NPSHa_active, NPSHr_active))} 
-                        stroke="var(--text-muted)" 
+                      <line
+                        x1={getSvgX(Q_calc)}
+                        y1={getSvgYNPSH(0)}
+                        x2={getSvgX(Q_calc)}
+                        y2={getSvgYNPSH(Math.max(NPSHa_active, NPSHr_active))}
+                        stroke="var(--text-muted)"
                         strokeWidth="0.8"
-                        strokeDasharray="2,2" 
+                        strokeDasharray="2,2"
                       />
-                      <circle cx={getSvgX(Q_calc)} cy={getSvgYNPSH(NPSHa_active)} r="5.5" fill="var(--status-operational)" stroke="#ffffff" strokeWidth="1.5" />
-                      <circle cx={getSvgX(Q_calc)} cy={getSvgYNPSH(NPSHr_active)} r="5.5" fill="var(--status-replace)" stroke="#ffffff" strokeWidth="1.5" />
+                      <circle
+                        cx={getSvgX(Q_calc)}
+                        cy={getSvgYNPSH(NPSHa_active)}
+                        r="5.5"
+                        fill="var(--status-operational)"
+                        stroke="#ffffff"
+                        strokeWidth="1.5"
+                      />
+                      <circle
+                        cx={getSvgX(Q_calc)}
+                        cy={getSvgYNPSH(NPSHr_active)}
+                        r="5.5"
+                        fill="var(--status-replace)"
+                        stroke="#ffffff"
+                        strokeWidth="1.5"
+                      />
                     </g>
                   )}
 
                   {/* Synchronized Hover line */}
                   {hoverQ !== null && (
                     <g>
-                      <line x1={getSvgX(hoverQ)} y1={20} x2={getSvgX(hoverQ)} y2={190} stroke="var(--accent-blue)" strokeWidth="1.2" strokeDasharray="3,3" />
-                      <circle cx={getSvgX(hoverQ)} cy={getSvgYNPSH(getNPSHAvailable(hoverQ))} r="4.5" fill="var(--status-operational)" stroke="#ffffff" />
-                      <circle cx={getSvgX(hoverQ)} cy={getSvgYNPSH(getNPSHRequired(hoverQ))} r="4.5" fill="var(--status-replace)" stroke="#ffffff" />
+                      <line
+                        x1={getSvgX(hoverQ)}
+                        y1={20}
+                        x2={getSvgX(hoverQ)}
+                        y2={190}
+                        stroke="var(--accent-blue)"
+                        strokeWidth="1.2"
+                        strokeDasharray="3,3"
+                      />
+                      <circle
+                        cx={getSvgX(hoverQ)}
+                        cy={getSvgYNPSH(getNPSHAvailable(hoverQ))}
+                        r="4.5"
+                        fill="var(--status-operational)"
+                        stroke="#ffffff"
+                      />
+                      <circle
+                        cx={getSvgX(hoverQ)}
+                        cy={getSvgYNPSH(getNPSHRequired(hoverQ))}
+                        r="4.5"
+                        fill="var(--status-replace)"
+                        stroke="#ffffff"
+                      />
                     </g>
                   )}
                 </svg>
               )}
             </div>
             {/* Context details */}
-            <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', background: 'rgba(255,255,255,0.05)', padding: '12px', borderRadius: '8px' }}>
+            <div
+              style={{
+                fontSize: '0.82rem',
+                color: 'var(--text-secondary)',
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gap: '12px',
+                background: 'rgba(255,255,255,0.05)',
+                padding: '12px',
+                borderRadius: '8px'
+              }}
+            >
               <div>
-                <strong>Caudal de Simulación:</strong> {flowDisplayVal(Q_calc).toFixed(1)} {flowUnit === 'lh' ? 'L/h' : 'm³/h'} <br/>
-                <strong>Potencia del Motor:</strong> {motorPower} HP <br/>
+                <strong>Caudal de Simulación:</strong> {flowDisplayVal(Q_calc).toFixed(1)}{' '}
+                {flowUnit === 'lh' ? 'L/h' : 'm³/h'} <br />
+                <strong>Potencia del Motor:</strong> {motorPower} HP <br />
                 <strong>Diámetro de Tubería:</strong> {activeDiameter}"
               </div>
               <div>
-                <strong>Altura de la Bomba:</strong> {H_pump_active.toFixed(1)} m <br/>
-                <strong>NPSH Disponible:</strong> <span style={{ color: 'var(--status-operational)', fontWeight: 'bold' }}>{NPSHa_active.toFixed(2)} m</span> <br/>
-                <strong>NPSH Requerido:</strong> <span style={{ color: 'var(--status-replace)', fontWeight: 'bold' }}>{NPSHr_active.toFixed(2)} m</span>
+                <strong>Altura de la Bomba:</strong> {H_pump_active.toFixed(1)} m <br />
+                <strong>NPSH Disponible:</strong>{' '}
+                <span style={{ color: 'var(--status-operational)', fontWeight: 'bold' }}>
+                  {NPSHa_active.toFixed(2)} m
+                </span>{' '}
+                <br />
+                <strong>NPSH Requerido:</strong>{' '}
+                <span style={{ color: 'var(--status-replace)', fontWeight: 'bold' }}>
+                  {NPSHr_active.toFixed(2)} m
+                </span>
               </div>
             </div>
           </div>

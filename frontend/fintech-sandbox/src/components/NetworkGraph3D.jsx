@@ -6,12 +6,12 @@ export default function NetworkGraph3D({ accounts, transactions, onSelectAccount
   const containerRef = useRef(null);
   const [hoveredNode, setHoveredNode] = useState(null);
   const [selectedNode, setSelectedNode] = useState(null);
-  
+
   // Keep physics nodes in ref to survive rerenders and maintain position stability
   const nodesRef = useRef([]);
   const linksRef = useRef([]);
   const particlesRef = useRef([]); // Animated transfer particles
-  
+
   useEffect(() => {
     if (!containerRef.current || accounts.length === 0) return;
 
@@ -54,7 +54,7 @@ export default function NetworkGraph3D({ accounts, transactions, onSelectAccount
     controls.minDistance = 15;
 
     // 6. Build or Sync Nodes
-    const prevNodesMap = new Map(nodesRef.current.map(n => [n.id, n]));
+    const prevNodesMap = new Map(nodesRef.current.map((n) => [n.id, n]));
     const newNodes = accounts.map((acc, idx) => {
       const existing = prevNodesMap.get(acc.id);
       if (existing) {
@@ -64,12 +64,12 @@ export default function NetworkGraph3D({ accounts, transactions, onSelectAccount
         existing.balance = acc.balance;
         return existing;
       }
-      
+
       // Spherical distribution initial positions
       const phi = Math.acos(-1 + (2 * idx) / accounts.length);
       const theta = Math.sqrt(accounts.length * Math.PI) * phi;
       const radius = 45;
-      
+
       return {
         id: acc.id,
         accountNumber: acc.accountNumber,
@@ -90,11 +90,11 @@ export default function NetworkGraph3D({ accounts, transactions, onSelectAccount
     // Create Mesh Group
     const nodeGroup = new THREE.Group();
     scene.add(nodeGroup);
-    
+
     const nodeMeshes = [];
     const sphereGeo = new THREE.SphereGeometry(1.6, 16, 16);
 
-    nodesRef.current.forEach(node => {
+    nodesRef.current.forEach((node) => {
       // Color based on riskScore
       let color = '#39ff14'; // Green
       if (node.isFrozen) {
@@ -125,15 +125,15 @@ export default function NetworkGraph3D({ accounts, transactions, onSelectAccount
     const links = [];
     const linksMap = new Map();
 
-    transactions.forEach(t => {
+    transactions.forEach((t) => {
       // Find matching accounts
-      const senderAcc = accounts.find(a => a.accountNumber === t.sender);
-      const receiverAcc = accounts.find(a => a.accountNumber === t.receiver);
+      const senderAcc = accounts.find((a) => a.accountNumber === t.sender);
+      const receiverAcc = accounts.find((a) => a.accountNumber === t.receiver);
       if (!senderAcc || !receiverAcc) return;
 
       const key = `${senderAcc.id}-${receiverAcc.id}`;
       const revKey = `${receiverAcc.id}-${senderAcc.id}`;
-      
+
       if (!linksMap.has(key) && !linksMap.has(revKey)) {
         linksMap.set(key, {
           sourceId: senderAcc.id,
@@ -143,9 +143,9 @@ export default function NetworkGraph3D({ accounts, transactions, onSelectAccount
       }
     });
 
-    linksMap.forEach(l => {
-      const source = nodesRef.current.find(n => n.id === l.sourceId);
-      const target = nodesRef.current.find(n => n.id === l.targetId);
+    linksMap.forEach((l) => {
+      const source = nodesRef.current.find((n) => n.id === l.sourceId);
+      const target = nodesRef.current.find((n) => n.id === l.targetId);
       if (source && target) {
         links.push({ source, target, isFraud: l.isFraud });
       }
@@ -170,7 +170,7 @@ export default function NetworkGraph3D({ accounts, transactions, onSelectAccount
 
     const lineObjects = [];
 
-    linksRef.current.forEach(link => {
+    linksRef.current.forEach((link) => {
       const geom = new THREE.BufferGeometry().setFromPoints([
         new THREE.Vector3(link.source.x, link.source.y, link.source.z),
         new THREE.Vector3(link.target.x, link.target.y, link.target.z)
@@ -182,14 +182,14 @@ export default function NetworkGraph3D({ accounts, transactions, onSelectAccount
 
     // 8. Capture and Animate Particles for recent transactions
     // If a new transaction occurs, we spawn a particle traveling source -> target
-    const currentTxIds = new Set(transactions.map(t => t.id));
+    const currentTxIds = new Set(transactions.map((t) => t.id));
     const prevTxIdsRef = useRef(new Set());
-    
+
     // Spawn particles for transactions that are brand new
-    transactions.forEach(t => {
+    transactions.forEach((t) => {
       if (!prevTxIdsRef.current.has(t.id)) {
-        const sourceNode = nodesRef.current.find(n => n.accountNumber === t.sender);
-        const targetNode = nodesRef.current.find(n => n.accountNumber === t.receiver);
+        const sourceNode = nodesRef.current.find((n) => n.accountNumber === t.sender);
+        const targetNode = nodesRef.current.find((n) => n.accountNumber === t.receiver);
         if (sourceNode && targetNode) {
           particlesRef.current.push({
             id: t.id,
@@ -212,9 +212,9 @@ export default function NetworkGraph3D({ accounts, transactions, onSelectAccount
 
     // Filter out finished particles and render active ones
     const activeParticleMeshes = [];
-    particlesRef.current = particlesRef.current.filter(p => p.progress < 1);
-    
-    particlesRef.current.forEach(p => {
+    particlesRef.current = particlesRef.current.filter((p) => p.progress < 1);
+
+    particlesRef.current.forEach((p) => {
       const pMat = new THREE.MeshBasicMaterial({
         color: p.isFraud ? 0xff007f : 0x00f0ff
       });
@@ -237,7 +237,7 @@ export default function NetworkGraph3D({ accounts, transactions, onSelectAccount
 
       if (intersects.length > 0) {
         const hitMesh = intersects[0].object;
-        const nodeInfo = nodesRef.current.find(n => n.id === hitMesh.userData.nodeId);
+        const nodeInfo = nodesRef.current.find((n) => n.id === hitMesh.userData.nodeId);
         if (nodeInfo) {
           setHoveredNode(nodeInfo);
           document.body.style.cursor = 'pointer';
@@ -254,7 +254,7 @@ export default function NetworkGraph3D({ accounts, transactions, onSelectAccount
 
       if (intersects.length > 0) {
         const hitMesh = intersects[0].object;
-        const nodeInfo = nodesRef.current.find(n => n.id === hitMesh.userData.nodeId);
+        const nodeInfo = nodesRef.current.find((n) => n.id === hitMesh.userData.nodeId);
         if (nodeInfo) {
           setSelectedNode(nodeInfo);
           onSelectAccount(nodeInfo);
@@ -274,7 +274,7 @@ export default function NetworkGraph3D({ accounts, transactions, onSelectAccount
 
       // Force-directed layout logic
       const nodes = nodesRef.current;
-      
+
       // Coulomb repulsion between all nodes
       for (let i = 0; i < nodes.length; i++) {
         for (let j = i + 1; j < nodes.length; j++) {
@@ -282,17 +282,17 @@ export default function NetworkGraph3D({ accounts, transactions, onSelectAccount
           const dy = nodes[j].y - nodes[i].y;
           const dz = nodes[j].z - nodes[i].z;
           const dist = Math.sqrt(dx * dx + dy * dy + dz * dz) || 1;
-          
+
           if (dist < 40) {
             const force = 0.8 / (dist * dist);
             const fx = (dx / dist) * force;
             const fy = (dy / dist) * force;
             const fz = (dz / dist) * force;
-            
+
             nodes[i].vx -= fx;
             nodes[i].vy -= fy;
             nodes[i].vz -= fz;
-            
+
             nodes[j].vx += fx;
             nodes[j].vy += fy;
             nodes[j].vz += fz;
@@ -301,28 +301,28 @@ export default function NetworkGraph3D({ accounts, transactions, onSelectAccount
       }
 
       // Hooke attraction along links
-      linksRef.current.forEach(l => {
+      linksRef.current.forEach((l) => {
         const dx = l.target.x - l.source.x;
         const dy = l.target.y - l.source.y;
         const dz = l.target.z - l.source.z;
         const dist = Math.sqrt(dx * dx + dy * dy + dz * dz) || 1;
-        
+
         const force = 0.003 * (dist - 20); // Equilibrium distance of 20
         const fx = (dx / dist) * force;
         const fy = (dy / dist) * force;
         const fz = (dz / dist) * force;
-        
+
         l.source.vx += fx;
         l.source.vy += fy;
         l.source.vz += fz;
-        
+
         l.target.vx -= fx;
         l.target.vy -= fy;
         l.target.vz -= fz;
       });
 
       // Gravity towards center and updates positions
-      nodes.forEach(n => {
+      nodes.forEach((n) => {
         const dist = Math.sqrt(n.x * n.x + n.y * n.y + n.z * n.z) || 1;
         // Gravity pull
         n.vx -= (n.x / dist) * 0.015;
@@ -341,7 +341,7 @@ export default function NetworkGraph3D({ accounts, transactions, onSelectAccount
       });
 
       // Sync node meshes positions
-      nodeMeshes.forEach(nm => {
+      nodeMeshes.forEach((nm) => {
         nm.mesh.position.set(nm.nodeData.x, nm.nodeData.y, nm.nodeData.z);
         // Emphasize selected node
         if (selectedNode && nm.nodeData.id === selectedNode.id) {
@@ -352,7 +352,7 @@ export default function NetworkGraph3D({ accounts, transactions, onSelectAccount
       });
 
       // Sync line geometries positions
-      lineObjects.forEach(lo => {
+      lineObjects.forEach((lo) => {
         const pos = lo.line.geometry.attributes.position;
         pos.setXYZ(0, lo.link.source.x, lo.link.source.y, lo.link.source.z);
         pos.setXYZ(1, lo.link.target.x, lo.link.target.y, lo.link.target.z);
@@ -360,10 +360,10 @@ export default function NetworkGraph3D({ accounts, transactions, onSelectAccount
       });
 
       // Animate active transfer particles
-      activeParticleMeshes.forEach(pm => {
+      activeParticleMeshes.forEach((pm) => {
         const p = pm.particleData;
         p.progress += p.speed;
-        
+
         // Linear interpolation source -> target
         const x = p.source.x + (p.target.x - p.source.x) * p.progress;
         const y = p.source.y + (p.target.y - p.source.y) * p.progress;
@@ -405,55 +405,76 @@ export default function NetworkGraph3D({ accounts, transactions, onSelectAccount
   }, [accounts, transactions, selectedNode]);
 
   return (
-    <div className="canvas-wrapper" style={{ height: '520px', width: '100%', position: 'relative' }}>
+    <div
+      className="canvas-wrapper"
+      style={{ height: '520px', width: '100%', position: 'relative' }}
+    >
       <div ref={containerRef} style={{ width: '100%', height: '100%' }} />
-      
+
       {/* Node Tooltip */}
       {hoveredNode && (
-        <div style={{
-          position: 'absolute',
-          top: '16px',
-          left: '16px',
-          background: 'rgba(10, 12, 20, 0.9)',
-          border: '1px solid var(--neon-cyan)',
-          padding: '8px 12px',
-          borderRadius: '6px',
-          fontFamily: 'var(--font-mono)',
-          fontSize: '11px',
-          pointerEvents: 'none',
-          boxShadow: 'var(--glow-cyan)',
-          zIndex: 20
-        }}>
-          <div style={{ color: 'var(--text-bright)', fontWeight: 'bold' }}>{hoveredNode.ownerName}</div>
+        <div
+          style={{
+            position: 'absolute',
+            top: '16px',
+            left: '16px',
+            background: 'rgba(10, 12, 20, 0.9)',
+            border: '1px solid var(--neon-cyan)',
+            padding: '8px 12px',
+            borderRadius: '6px',
+            fontFamily: 'var(--font-mono)',
+            fontSize: '11px',
+            pointerEvents: 'none',
+            boxShadow: 'var(--glow-cyan)',
+            zIndex: 20
+          }}
+        >
+          <div style={{ color: 'var(--text-bright)', fontWeight: 'bold' }}>
+            {hoveredNode.ownerName}
+          </div>
           <div style={{ color: 'var(--text-muted)' }}>Cta: {hoveredNode.accountNumber}</div>
-          <div style={{ color: hoveredNode.riskScore > 75 ? 'var(--neon-magenta)' : hoveredNode.riskScore > 40 ? 'var(--neon-yellow)' : 'var(--neon-green)' }}>
+          <div
+            style={{
+              color:
+                hoveredNode.riskScore > 75
+                  ? 'var(--neon-magenta)'
+                  : hoveredNode.riskScore > 40
+                    ? 'var(--neon-yellow)'
+                    : 'var(--neon-green)'
+            }}
+          >
             Riesgo: {hoveredNode.riskScore}/100
           </div>
         </div>
       )}
 
       {/* Graph Legend Overlay */}
-      <div style={{
-        position: 'absolute',
-        bottom: '16px',
-        left: '16px',
-        background: 'rgba(10, 12, 20, 0.75)',
-        border: '1px solid var(--border-color)',
-        padding: '10px 14px',
-        borderRadius: '8px',
-        fontSize: '11px',
-        pointerEvents: 'none',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '6px',
-        zIndex: 10
-      }}>
+      <div
+        style={{
+          position: 'absolute',
+          bottom: '16px',
+          left: '16px',
+          background: 'rgba(10, 12, 20, 0.75)',
+          border: '1px solid var(--border-color)',
+          padding: '10px 14px',
+          borderRadius: '8px',
+          fontSize: '11px',
+          pointerEvents: 'none',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '6px',
+          zIndex: 10
+        }}
+      >
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span className="pulse-dot" style={{ width: '6px', height: '6px' }}></span>
           <span>Riesgo Bajo (&lt;40)</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span className="pulse-dot" style={{ width: '6px', height: '6px', backgroundColor: '#fff000' }}></span>
+          <span
+            className="pulse-dot"
+            style={{ width: '6px', height: '6px', backgroundColor: '#fff000' }}
+          ></span>
           <span>Riesgo Medio (40-75)</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -461,7 +482,10 @@ export default function NetworkGraph3D({ accounts, transactions, onSelectAccount
           <span>Riesgo Alto/Fraude (&gt;75)</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span className="pulse-dot" style={{ width: '6px', height: '6px', backgroundColor: '#888888' }}></span>
+          <span
+            className="pulse-dot"
+            style={{ width: '6px', height: '6px', backgroundColor: '#888888' }}
+          ></span>
           <span>Cuenta Congelada</span>
         </div>
       </div>

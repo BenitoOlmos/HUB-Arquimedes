@@ -32,12 +32,12 @@ export const getPartById = async (req: Request, res: Response, next: NextFunctio
 
 export const updatePartStatus = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.params;
-  
+
   try {
     // Validate request body status using shared Zod schema
     const parsedBody = partStatusSchema.safeParse(req.body.status);
     if (!parsedBody.success) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: 'Invalid status value. Must be Operational, Inspect, or Replace',
         details: parsedBody.error.errors
       });
@@ -57,9 +57,9 @@ export const addMaintenanceLog = async (req: Request, res: Response, next: NextF
     // Validate request body using shared Zod schema
     const parsedBody = maintenanceLogSchema.safeParse(req.body);
     if (!parsedBody.success) {
-      return res.status(400).json({ 
-        error: 'Validation failed', 
-        details: parsedBody.error.errors 
+      return res.status(400).json({
+        error: 'Validation failed',
+        details: parsedBody.error.errors
       });
     }
 

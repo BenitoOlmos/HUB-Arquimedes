@@ -8,7 +8,21 @@ import DiagnosisPanel from './components/UI/DiagnosisPanel';
 import SecurityPanel from './components/UI/SecurityPanel';
 import HistoryPanel from './components/UI/HistoryPanel';
 import { usePumpSimulation } from './hooks/usePumpSimulation';
-import { RotateCcw, Activity, HelpCircle, Eye, EyeOff, BookOpen, ClipboardList, ShieldCheck, BarChart3, Menu, X, User, Wrench } from 'lucide-react';
+import {
+  RotateCcw,
+  Activity,
+  HelpCircle,
+  Eye,
+  EyeOff,
+  BookOpen,
+  ClipboardList,
+  ShieldCheck,
+  BarChart3,
+  Menu,
+  X,
+  User,
+  Wrench
+} from 'lucide-react';
 import ScrewCalculatorPanel from './components/UI/ScrewCalculatorPanel';
 
 function App() {
@@ -34,7 +48,6 @@ function App() {
   const [controlsExpanded, setControlsExpanded] = useState(window.innerWidth > 768);
   const [userRole, setUserRole] = useState('Leader'); // 'Tech' or 'Leader'
 
-  
   const {
     explodeFactor,
     setExplodeFactor,
@@ -108,7 +121,7 @@ function App() {
         <div className="blob blob-2"></div>
         <div className="blob blob-3"></div>
       </div>
-      
+
       {/* Integrated Header Bar (Persistent at Top) */}
       <header className="app-header">
         <div className="header-brand">
@@ -124,42 +137,42 @@ function App() {
 
         {/* Integrated Navigation Tabs: Desktop-only tabs */}
         <nav className="global-navbar desktop-only">
-          <button 
+          <button
             className={`nav-tab ${currentView === 'simulator' ? 'active' : ''}`}
             onClick={() => setCurrentView('simulator')}
           >
             <Activity size={14} />
             <span>Simulador 3D</span>
           </button>
-          <button 
+          <button
             className={`nav-tab ${currentView === 'diagnosis' ? 'active' : ''}`}
             onClick={() => setCurrentView('diagnosis')}
           >
             <ClipboardList size={14} />
             <span>Matriz de Diagnóstico</span>
           </button>
-          <button 
+          <button
             className={`nav-tab ${currentView === 'pedagogy' ? 'active' : ''}`}
             onClick={() => setCurrentView('pedagogy')}
           >
             <BookOpen size={14} />
             <span>Plan de Trabajo (5W2H)</span>
           </button>
-          <button 
+          <button
             className={`nav-tab ${currentView === 'security' ? 'active' : ''}`}
             onClick={() => setCurrentView('security')}
           >
             <ShieldCheck size={14} />
             <span>Seguridad e IoT</span>
           </button>
-          <button 
+          <button
             className={`nav-tab ${currentView === 'history' ? 'active' : ''}`}
             onClick={() => setCurrentView('history')}
           >
             <BarChart3 size={14} />
             <span>Historial e Informes</span>
           </button>
-          <button 
+          <button
             className={`nav-tab ${currentView === 'screws' ? 'active' : ''}`}
             onClick={() => setCurrentView('screws')}
           >
@@ -169,30 +182,52 @@ function App() {
         </nav>
 
         {/* User Role Selector */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(255, 255, 255, 0.08)', padding: '4px 10px', borderRadius: '20px', border: '1px solid var(--border-glass)', marginRight: '12px', flexShrink: 0 }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            background: 'rgba(255, 255, 255, 0.08)',
+            padding: '4px 10px',
+            borderRadius: '20px',
+            border: '1px solid var(--border-glass)',
+            marginRight: '12px',
+            flexShrink: 0
+          }}
+        >
           <User size={12} style={{ color: 'var(--accent-cyan)' }} />
-          <select 
-            value={userRole} 
+          <select
+            value={userRole}
             onChange={(e) => setUserRole(e.target.value)}
             className="premium-select"
-            style={{ 
-              padding: '2px 4px', 
-              fontSize: '0.78rem', 
-              background: 'transparent', 
-              border: 'none', 
-              color: 'var(--text-primary)', 
-              fontWeight: '700', 
+            style={{
+              padding: '2px 4px',
+              fontSize: '0.78rem',
+              background: 'transparent',
+              border: 'none',
+              color: 'var(--text-primary)',
+              fontWeight: '700',
               cursor: 'pointer',
               outline: 'none'
             }}
           >
-            <option value="Tech" style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)' }}>Técnico</option>
-            <option value="Leader" style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)' }}>Líder</option>
+            <option
+              value="Tech"
+              style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)' }}
+            >
+              Técnico
+            </option>
+            <option
+              value="Leader"
+              style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)' }}
+            >
+              Líder
+            </option>
           </select>
         </div>
-        
+
         {/* Hamburger Menu Toggle Button (Mobile-only) */}
-        <button 
+        <button
           className="mobile-menu-toggle mobile-only"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           aria-label="Toggle Navigation Menu"
@@ -204,7 +239,7 @@ function App() {
       {/* Mobile Navigation Dropdown List */}
       {mobileMenuOpen && (
         <nav className="mobile-navbar-menu mobile-only">
-          <button 
+          <button
             className={`mobile-nav-item ${currentView === 'simulator' ? 'active' : ''}`}
             onClick={() => {
               setCurrentView('simulator');
@@ -214,7 +249,7 @@ function App() {
             <Activity size={16} />
             <span>Simulador 3D</span>
           </button>
-          <button 
+          <button
             className={`mobile-nav-item ${currentView === 'diagnosis' ? 'active' : ''}`}
             onClick={() => {
               setCurrentView('diagnosis');
@@ -224,7 +259,7 @@ function App() {
             <ClipboardList size={16} />
             <span>Matriz de Diagnóstico</span>
           </button>
-          <button 
+          <button
             className={`mobile-nav-item ${currentView === 'pedagogy' ? 'active' : ''}`}
             onClick={() => {
               setCurrentView('pedagogy');
@@ -234,7 +269,7 @@ function App() {
             <BookOpen size={16} />
             <span>Plan de Trabajo (5W2H)</span>
           </button>
-          <button 
+          <button
             className={`mobile-nav-item ${currentView === 'security' ? 'active' : ''}`}
             onClick={() => {
               setCurrentView('security');
@@ -244,7 +279,7 @@ function App() {
             <ShieldCheck size={16} />
             <span>Seguridad e IoT</span>
           </button>
-          <button 
+          <button
             className={`mobile-nav-item ${currentView === 'history' ? 'active' : ''}`}
             onClick={() => {
               setCurrentView('history');
@@ -254,7 +289,7 @@ function App() {
             <BarChart3 size={16} />
             <span>Historial e Informes</span>
           </button>
-          <button 
+          <button
             className={`mobile-nav-item ${currentView === 'screws' ? 'active' : ''}`}
             onClick={() => {
               setCurrentView('screws');
@@ -276,11 +311,19 @@ function App() {
               <div className="instructions-overlay">
                 <div className="instruction-item">
                   <div className="instruction-dot"></div>
-                  <span>{selectedModel === 'sketchfab-bomba-centrifuga' ? 'Arrastrar: Rotar 3D' : 'Click + Arrastrar: Orbitar 360º'}</span>
+                  <span>
+                    {selectedModel === 'sketchfab-bomba-centrifuga'
+                      ? 'Arrastrar: Rotar 3D'
+                      : 'Click + Arrastrar: Orbitar 360º'}
+                  </span>
                 </div>
                 <div className="instruction-item">
                   <div className="instruction-dot"></div>
-                  <span>{selectedModel === 'sketchfab-bomba-centrifuga' ? 'Shift + Arrastrar: Desplazar' : 'Click Der. + Arrastrar: Desplazar'}</span>
+                  <span>
+                    {selectedModel === 'sketchfab-bomba-centrifuga'
+                      ? 'Shift + Arrastrar: Desplazar'
+                      : 'Click Der. + Arrastrar: Desplazar'}
+                  </span>
                 </div>
                 <div className="instruction-item">
                   <div className="instruction-dot"></div>
@@ -296,7 +339,16 @@ function App() {
 
               {/* 3D Canvas Visualizer or Sketchfab Embed */}
               {selectedModel === 'sketchfab-bomba-centrifuga' ? (
-                <div className="canvas-container" style={{ position: 'relative', overflow: 'hidden', borderRadius: '12px', background: '#f8fafc', border: '1px solid var(--border-glass)' }}>
+                <div
+                  className="canvas-container"
+                  style={{
+                    position: 'relative',
+                    overflow: 'hidden',
+                    borderRadius: '12px',
+                    background: '#f8fafc',
+                    border: '1px solid var(--border-glass)'
+                  }}
+                >
                   <iframe
                     title="Bomba Centrifuga Anima"
                     frameBorder="0"
@@ -331,7 +383,14 @@ function App() {
               {/* Interactive Overlay controls */}
               <div className="controls-panel">
                 {/* Model Selector - ALWAYS visible on mobile & desktop */}
-                <div className="control-row" style={{ borderBottom: '1px solid var(--border-glass)', paddingBottom: '12px', marginBottom: '8px' }}>
+                <div
+                  className="control-row"
+                  style={{
+                    borderBottom: '1px solid var(--border-glass)',
+                    paddingBottom: '12px',
+                    marginBottom: '8px'
+                  }}
+                >
                   <div className="control-label">
                     <span>Modelo 3D Activo</span>
                   </div>
@@ -346,8 +405,8 @@ function App() {
                   >
                     {models.map((model) => (
                       <option key={model} value={model}>
-                        {model === 'sketchfab-bomba-centrifuga' 
-                          ? 'BOMBA ANIMADA (SKETCHFAB)' 
+                        {model === 'sketchfab-bomba-centrifuga'
+                          ? 'BOMBA ANIMADA (SKETCHFAB)'
                           : model === 'pump.glb'
                             ? 'BOMBA CENTRÍFUGA ESTÁNDAR'
                             : model === 'centrifugal-pump-grantjohnson-vrtraining.glb'
@@ -360,20 +419,24 @@ function App() {
                                     ? 'BOMBA CENTRÍFUGA DE DOBLE SUCCIÓN'
                                     : model.includes('bomba_centrifuga')
                                       ? `BOMBA CENTRÍFUGA GENERAL${model.includes('(1)') ? ' (VARIANTE 1)' : model.includes('(2)') ? ' (VARIANTE 2)' : ''}`
-                                      : model.replace('.glb', '').replace(/_/g, ' ').replace(/-/g, ' ').toUpperCase()}
+                                      : model
+                                          .replace('.glb', '')
+                                          .replace(/_/g, ' ')
+                                          .replace(/-/g, ' ')
+                                          .toUpperCase()}
                       </option>
                     ))}
                   </select>
                 </div>
 
                 {/* Header that can be clicked to toggle expansion of advanced controls */}
-                <div 
-                  className="controls-panel-header" 
+                <div
+                  className="controls-panel-header"
                   onClick={() => setControlsExpanded(!controlsExpanded)}
-                  style={{ 
-                    display: 'flex', 
-                    justifyContent: 'space-between', 
-                    alignItems: 'center', 
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
                     cursor: 'pointer',
                     fontWeight: '700',
                     fontSize: '0.82rem',
@@ -391,15 +454,43 @@ function App() {
                 </div>
 
                 {controlsExpanded && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '8px', borderTop: '1px solid var(--border-glass)', paddingTop: '10px' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '12px',
+                      marginTop: '8px',
+                      borderTop: '1px solid var(--border-glass)',
+                      paddingTop: '10px'
+                    }}
+                  >
                     {selectedModel === 'sketchfab-bomba-centrifuga' ? (
-                      <div style={{ padding: '8px 4px', fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--accent-blue)', fontWeight: 'bold' }}>
+                      <div
+                        style={{
+                          padding: '8px 4px',
+                          fontSize: '0.75rem',
+                          color: 'var(--text-secondary)',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '6px'
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            color: 'var(--accent-blue)',
+                            fontWeight: 'bold'
+                          }}
+                        >
                           <HelpCircle size={14} />
                           <span>Visualizador Externo</span>
                         </div>
                         <p style={{ margin: 0, lineHeight: '1.4' }}>
-                          Visualizando <strong>Bomba Centrífuga Anima</strong> desde Sketchfab. Las opciones de despiece, simulación e inspección de partes locales están desactivadas para este modelo.
+                          Visualizando <strong>Bomba Centrífuga Anima</strong> desde Sketchfab. Las
+                          opciones de despiece, simulación e inspección de partes locales están
+                          desactivadas para este modelo.
                         </p>
                       </div>
                     ) : (
@@ -438,7 +529,15 @@ function App() {
                           </div>
 
                           {usingFallback && (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                            <div
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '6px',
+                                fontSize: '0.75rem',
+                                color: 'var(--text-muted)'
+                              }}
+                            >
                               <HelpCircle size={12} color="var(--status-inspect)" />
                               <span>Modo Sin Servidor (Datos Simulados)</span>
                             </div>
@@ -454,22 +553,30 @@ function App() {
             {/* Sidebar Info Panel */}
             <aside className="info-sidebar" style={{ width: `${sidebarWidth}px` }}>
               {/* Drag Resizer Handle */}
-              <div 
-                className="sidebar-resizer" 
-                onMouseDown={startResizing}
-              />
-              
-              <div className="sidebar-header" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div className="sidebar-resizer" onMouseDown={startResizing} />
+
+              <div
+                className="sidebar-header"
+                style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}
+              >
+                <div
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                >
                   <div>
-                    <h2 className="sidebar-title">{sidebarMode === 'simulation' ? 'Simulador Dinámico' : 'Detalles Técnicos'}</h2>
-                    <span className="sidebar-subtitle">{sidebarMode === 'simulation' ? 'Curvas de Rendimiento' : 'Control de Mantenimiento'}</span>
+                    <h2 className="sidebar-title">
+                      {sidebarMode === 'simulation' ? 'Simulador Dinámico' : 'Detalles Técnicos'}
+                    </h2>
+                    <span className="sidebar-subtitle">
+                      {sidebarMode === 'simulation'
+                        ? 'Curvas de Rendimiento'
+                        : 'Control de Mantenimiento'}
+                    </span>
                   </div>
                 </div>
-                
+
                 {/* Modern Toggle Tabs */}
                 <div className="sidebar-tabs" style={{ width: '100%', marginTop: '4px' }}>
-                  <button 
+                  <button
                     onClick={() => setSidebarMode('simulation')}
                     className={`sidebar-tab ${sidebarMode === 'simulation' ? 'active' : ''}`}
                     style={{ flex: 1, justifyContent: 'center' }}
@@ -477,7 +584,7 @@ function App() {
                     <Activity size={13} />
                     <span>Simulación</span>
                   </button>
-                  <button 
+                  <button
                     onClick={() => {
                       setSidebarMode('inspection');
                       if (!selectedPartId) {
@@ -492,7 +599,7 @@ function App() {
                   </button>
                 </div>
               </div>
-              
+
               <ErrorBoundary>
                 {sidebarMode === 'simulation' ? (
                   <PumpSimulatorPanel

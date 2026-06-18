@@ -3,15 +3,15 @@ import { io } from 'socket.io-client';
 import FarmGlobe from './components/FarmGlobe';
 import RulesManager from './components/RulesManager';
 import PestPredictor from './components/PestPredictor';
-import { 
-  Sprout, 
-  Activity, 
-  ToggleLeft, 
-  Brain, 
-  Flame, 
-  Droplet, 
-  Heart, 
-  Terminal, 
+import {
+  Sprout,
+  Activity,
+  ToggleLeft,
+  Brain,
+  Flame,
+  Droplet,
+  Heart,
+  Terminal,
   Sun,
   XCircle,
   HelpCircle,
@@ -33,11 +33,15 @@ function App() {
     activeEventSeverity: 0
   });
   const [logs, setLogs] = useState([
-    { id: 1, time: new Date().toLocaleTimeString(), text: "Simulador AgroTech IoT iniciado. Conectando al servicio de telemetría..." }
+    {
+      id: 1,
+      time: new Date().toLocaleTimeString(),
+      text: 'Simulador AgroTech IoT iniciado. Conectando al servicio de telemetría...'
+    }
   ]);
 
   const addLog = (text) => {
-    setLogs(prev => [
+    setLogs((prev) => [
       { id: Date.now(), time: new Date().toLocaleTimeString(), text },
       ...prev.slice(0, 49) // Keep last 50 logs
     ]);
@@ -74,7 +78,7 @@ function App() {
       }
     } catch (err) {
       console.error(err);
-      addLog("Error de conexión al cargar datos iniciales del predio agrícola.");
+      addLog('Error de conexión al cargar datos iniciales del predio agrícola.');
     }
   };
 
@@ -86,12 +90,12 @@ function App() {
 
     socket.on('connect', () => {
       setIsConnected(true);
-      addLog("Enlace de Telemetría IoT Establecido (WebSocket: Activo).");
+      addLog('Enlace de Telemetría IoT Establecido (WebSocket: Activo).');
     });
 
     socket.on('disconnect', () => {
       setIsConnected(false);
-      addLog("Advertencia: Conexión con los sensores IoT perdida.");
+      addLog('Advertencia: Conexión con los sensores IoT perdida.');
     });
 
     socket.on('agrotech-telemetry-update', (data) => {
@@ -136,7 +140,7 @@ function App() {
       }
     } catch (err) {
       console.error(err);
-      addLog("Error al crear regla de automatización");
+      addLog('Error al crear regla de automatización');
     }
   };
 
@@ -150,7 +154,7 @@ function App() {
       }
     } catch (err) {
       console.error(err);
-      addLog("Error al eliminar regla de automatización");
+      addLog('Error al eliminar regla de automatización');
     }
   };
 
@@ -164,14 +168,16 @@ function App() {
       if (res.ok) {
         fetchData();
         if (eventType === 'NORMAL') {
-          addLog("Docente: Todas las crisis climáticas resueltas. Volviendo a condiciones normales.");
+          addLog(
+            'Docente: Todas las crisis climáticas resueltas. Volviendo a condiciones normales.'
+          );
         } else {
           addLog(`Docente: Crisis inyectada -> ${eventType} (Severidad: ${severity}/5).`);
         }
       }
     } catch (err) {
       console.error(err);
-      addLog("Error al comunicar evento docente al servidor.");
+      addLog('Error al comunicar evento docente al servidor.');
     }
   };
 
@@ -182,11 +188,11 @@ function App() {
       });
       if (res.ok) {
         fetchData();
-        addLog("Docente: Simulación y consumos hídricos restablecidos a cero.");
+        addLog('Docente: Simulación y consumos hídricos restablecidos a cero.');
       }
     } catch (err) {
       console.error(err);
-      addLog("Error al reiniciar la simulación.");
+      addLog('Error al reiniciar la simulación.');
     }
   };
 
@@ -198,7 +204,6 @@ function App() {
 
   return (
     <div className="app-container">
-      
       {/* 1. Header */}
       <header className="glass-header">
         <div className="header-content">
@@ -208,55 +213,59 @@ function App() {
               <span className="header-title">AgroTech Dashboard</span>
               <span className="header-subtitle">Monitoreo y Control Agrícola de Precisión</span>
             </div>
-            <span style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '4px', 
-              fontSize: '0.65rem', 
-              background: isConnected ? 'rgba(16, 185, 129, 0.08)' : 'rgba(239, 68, 68, 0.08)',
-              color: isConnected ? 'var(--accent-emerald)' : 'var(--color-valve-closed)',
-              border: `1px solid ${isConnected ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)'}`,
-              padding: '2px 8px',
-              borderRadius: '20px',
-              fontWeight: 'bold',
-              marginLeft: '0.5rem'
-            }}>
-              <span style={{
-                width: '6px',
-                height: '6px',
-                borderRadius: '50%',
-                background: isConnected ? 'var(--accent-emerald)' : 'var(--color-valve-closed)',
-                display: 'inline-block',
-                boxShadow: isConnected ? '0 0 6px var(--accent-emerald)' : 'none'
-              }}></span>
-              {isConnected ? "TELEMETRÍA ONLINE" : "DESCONECTADO"}
+            <span
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                fontSize: '0.65rem',
+                background: isConnected ? 'rgba(16, 185, 129, 0.08)' : 'rgba(239, 68, 68, 0.08)',
+                color: isConnected ? 'var(--accent-emerald)' : 'var(--color-valve-closed)',
+                border: `1px solid ${isConnected ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)'}`,
+                padding: '2px 8px',
+                borderRadius: '20px',
+                fontWeight: 'bold',
+                marginLeft: '0.5rem'
+              }}
+            >
+              <span
+                style={{
+                  width: '6px',
+                  height: '6px',
+                  borderRadius: '50%',
+                  background: isConnected ? 'var(--accent-emerald)' : 'var(--color-valve-closed)',
+                  display: 'inline-block',
+                  boxShadow: isConnected ? '0 0 6px var(--accent-emerald)' : 'none'
+                }}
+              ></span>
+              {isConnected ? 'TELEMETRÍA ONLINE' : 'DESCONECTADO'}
             </span>
           </div>
 
           {/* Navigation Tabs */}
           <nav className="role-tabs">
-            <button 
+            <button
               className={`role-btn ${activeTab === 'telemetry' ? 'active telemetry' : ''}`}
               onClick={() => setActiveTab('telemetry')}
             >
               <Activity size={14} />
               <span>Gemelo 3D</span>
             </button>
-            <button 
+            <button
               className={`role-btn ${activeTab === 'rules' ? 'active rules' : ''}`}
               onClick={() => setActiveTab('rules')}
             >
               <ToggleLeft size={14} />
               <span>Riego Automático</span>
             </button>
-            <button 
+            <button
               className={`role-btn ${activeTab === 'pests' ? 'active pests' : ''}`}
               onClick={() => setActiveTab('pests')}
             >
               <Brain size={14} />
               <span>Predicción Plagas</span>
             </button>
-            <button 
+            <button
               className={`role-btn ${activeTab === 'teacher' ? 'active teacher' : ''}`}
               onClick={() => setActiveTab('teacher')}
             >
@@ -270,9 +279,14 @@ function App() {
       {/* 2. KPIs Top Bar */}
       <section className="master-kpis-banner">
         <div className="kpi-grid">
-          
           <div className="kpi-card">
-            <div className="kpi-icon-container" style={{ background: 'rgba(14, 165, 233, 0.08)', border: '1px solid rgba(14, 165, 233, 0.2)' }}>
+            <div
+              className="kpi-icon-container"
+              style={{
+                background: 'rgba(14, 165, 233, 0.08)',
+                border: '1px solid rgba(14, 165, 233, 0.2)'
+              }}
+            >
               <Droplet size={18} color="var(--color-moisture)" />
             </div>
             <div className="kpi-content">
@@ -284,7 +298,13 @@ function App() {
           </div>
 
           <div className="kpi-card">
-            <div className="kpi-icon-container" style={{ background: 'rgba(16, 185, 129, 0.08)', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
+            <div
+              className="kpi-icon-container"
+              style={{
+                background: 'rgba(16, 185, 129, 0.08)',
+                border: '1px solid rgba(16, 185, 129, 0.2)'
+              }}
+            >
               <Heart size={18} color="var(--color-valve-open)" />
             </div>
             <div className="kpi-content">
@@ -296,96 +316,134 @@ function App() {
           </div>
 
           <div className="kpi-card">
-            <div className="kpi-icon-container" style={{ background: 'rgba(249, 115, 22, 0.08)', border: '1px solid rgba(249, 115, 22, 0.2)' }}>
+            <div
+              className="kpi-icon-container"
+              style={{
+                background: 'rgba(249, 115, 22, 0.08)',
+                border: '1px solid rgba(249, 115, 22, 0.2)'
+              }}
+            >
               <Sun size={18} color="var(--color-radiation)" />
             </div>
             <div className="kpi-content">
               <span className="kpi-title">Radiación Solar</span>
               <span className="kpi-value" style={{ color: 'var(--color-radiation)' }}>
-                {zones[0]?.sensors?.find(s => s.type === 'RADIATION')?.currentValue.toFixed(0) || 0} W/m²
+                {zones[0]?.sensors?.find((s) => s.type === 'RADIATION')?.currentValue.toFixed(0) ||
+                  0}{' '}
+                W/m²
               </span>
             </div>
           </div>
 
-          <div className="kpi-card" style={{ 
-            border: kpis.activeEvent !== 'NORMAL' ? '1px solid var(--color-valve-closed)' : '1px solid var(--border-glass)',
-            background: kpis.activeEvent !== 'NORMAL' ? 'rgba(239, 68, 68, 0.05)' : 'rgba(255, 255, 255, 0.01)'
-          }}>
-            <div className="kpi-icon-container" style={{ 
-              background: kpis.activeEvent !== 'NORMAL' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(255, 255, 255, 0.03)'
-            }}>
-              <Flame size={18} color={kpis.activeEvent !== 'NORMAL' ? 'var(--color-valve-closed)' : 'var(--text-muted)'} />
+          <div
+            className="kpi-card"
+            style={{
+              border:
+                kpis.activeEvent !== 'NORMAL'
+                  ? '1px solid var(--color-valve-closed)'
+                  : '1px solid var(--border-glass)',
+              background:
+                kpis.activeEvent !== 'NORMAL'
+                  ? 'rgba(239, 68, 68, 0.05)'
+                  : 'rgba(255, 255, 255, 0.01)'
+            }}
+          >
+            <div
+              className="kpi-icon-container"
+              style={{
+                background:
+                  kpis.activeEvent !== 'NORMAL'
+                    ? 'rgba(239, 68, 68, 0.15)'
+                    : 'rgba(255, 255, 255, 0.03)'
+              }}
+            >
+              <Flame
+                size={18}
+                color={
+                  kpis.activeEvent !== 'NORMAL' ? 'var(--color-valve-closed)' : 'var(--text-muted)'
+                }
+              />
             </div>
             <div className="kpi-content">
               <span className="kpi-title">Clima del Predio</span>
-              <span className="kpi-value" style={{ 
-                color: kpis.activeEvent !== 'NORMAL' ? 'var(--color-valve-closed)' : '#fff',
-                fontSize: '1rem' 
-              }}>
-                {getEventName(kpis.activeEvent)} {kpis.activeEventSeverity > 0 && `(SEV: ${kpis.activeEventSeverity}/5)`}
+              <span
+                className="kpi-value"
+                style={{
+                  color: kpis.activeEvent !== 'NORMAL' ? 'var(--color-valve-closed)' : '#fff',
+                  fontSize: '1rem'
+                }}
+              >
+                {getEventName(kpis.activeEvent)}{' '}
+                {kpis.activeEventSeverity > 0 && `(SEV: ${kpis.activeEventSeverity}/5)`}
               </span>
             </div>
           </div>
-
         </div>
       </section>
 
       {/* 3. Main view panel */}
       <main className="main-view">
-        
         {activeTab === 'telemetry' && (
-          <FarmGlobe 
-            zones={zones} 
-            onToggleValve={handleToggleValve} 
-            onTriggerAlert={addLog} 
-          />
+          <FarmGlobe zones={zones} onToggleValve={handleToggleValve} onTriggerAlert={addLog} />
         )}
 
         {activeTab === 'rules' && (
-          <RulesManager 
-            zones={zones} 
-            rules={rules} 
-            kpis={kpis} 
-            onCreateRule={handleCreateRule} 
-            onDeleteRule={handleDeleteRule} 
-            onTriggerAlert={addLog} 
+          <RulesManager
+            zones={zones}
+            rules={rules}
+            kpis={kpis}
+            onCreateRule={handleCreateRule}
+            onDeleteRule={handleDeleteRule}
+            onTriggerAlert={addLog}
           />
         )}
 
         {activeTab === 'pests' && (
-          <PestPredictor 
-            zones={zones} 
-            pestHistory={pestHistory} 
-            onTriggerAlert={addLog} 
-          />
+          <PestPredictor zones={zones} pestHistory={pestHistory} onTriggerAlert={addLog} />
         )}
 
         {activeTab === 'teacher' && (
           <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '1.5rem' }}>
-            
             {/* Instructor Actions panel */}
             <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column' }}>
               <div className="panel-header">
                 <div className="panel-title">
-                  <Flame size={18} color="var(--color-radiation)" /> Consola Docente - Inyector de Anomalías
+                  <Flame size={18} color="var(--color-radiation)" /> Consola Docente - Inyector de
+                  Anomalías
                 </div>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', fontSize: '0.82rem' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '1rem',
+                  fontSize: '0.82rem'
+                }}
+              >
                 <p style={{ color: 'var(--text-secondary)' }}>
-                  Provoca alteraciones climatológicas severas en tiempo real. Los estudiantes de Agronomía e Ingeniería deberán reconfigurar las automatizaciones de riego para compensar la tasa acelerada de evaporación del suelo.
+                  Provoca alteraciones climatológicas severas en tiempo real. Los estudiantes de
+                  Agronomía e Ingeniería deberán reconfigurar las automatizaciones de riego para
+                  compensar la tasa acelerada de evaporación del suelo.
                 </p>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginTop: '0.5rem' }}>
-                  <button 
-                    className="btn-danger" 
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr',
+                    gap: '0.75rem',
+                    marginTop: '0.5rem'
+                  }}
+                >
+                  <button
+                    className="btn-danger"
                     style={{ background: 'var(--color-radiation)', justifyContent: 'center' }}
                     onClick={() => handleTriggerEvent('OLA_DE_CALOR', 4)}
                   >
                     Ola de Calor (+10°C, Evaporación 2.5x)
                   </button>
-                  <button 
-                    className="btn-danger" 
+                  <button
+                    className="btn-danger"
                     style={{ justifyContent: 'center' }}
                     onClick={() => handleTriggerEvent('SEQUIA', 5)}
                   >
@@ -393,19 +451,37 @@ function App() {
                   </button>
                 </div>
 
-                <button 
-                  className="btn-primary" 
-                  style={{ width: '100%', justifyContent: 'center', background: 'var(--accent-emerald)', marginTop: '0.5rem' }}
+                <button
+                  className="btn-primary"
+                  style={{
+                    width: '100%',
+                    justifyContent: 'center',
+                    background: 'var(--accent-emerald)',
+                    marginTop: '0.5rem'
+                  }}
                   onClick={() => handleTriggerEvent('NORMAL', 0)}
                 >
                   Restablecer Clima Normal (Despejar Crisis)
                 </button>
 
-                <div style={{ borderTop: '1px solid var(--border-glass)', paddingTop: '1rem', marginTop: '1rem' }}>
-                  <span style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem' }}>Resetear Entorno Completo:</span>
-                  <button 
-                    className="btn-secondary" 
-                    style={{ width: '100%', justifyContent: 'center', borderColor: 'var(--color-valve-closed)', color: 'var(--color-valve-closed)' }}
+                <div
+                  style={{
+                    borderTop: '1px solid var(--border-glass)',
+                    paddingTop: '1rem',
+                    marginTop: '1rem'
+                  }}
+                >
+                  <span style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem' }}>
+                    Resetear Entorno Completo:
+                  </span>
+                  <button
+                    className="btn-secondary"
+                    style={{
+                      width: '100%',
+                      justifyContent: 'center',
+                      borderColor: 'var(--color-valve-closed)',
+                      color: 'var(--color-valve-closed)'
+                    }}
                     onClick={handleResetSimulation}
                   >
                     Restablecer Consumos y Riegos a Cero
@@ -418,38 +494,89 @@ function App() {
             <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column' }}>
               <div className="panel-header">
                 <div className="panel-title">
-                  <HelpCircle size={18} color="var(--accent-emerald)" /> Guía de Evaluación Pedagógica
+                  <HelpCircle size={18} color="var(--accent-emerald)" /> Guía de Evaluación
+                  Pedagógica
                 </div>
               </div>
 
-              <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '0.85rem', lineHeight: '1.45' }}>
+              <div
+                style={{
+                  fontSize: '0.82rem',
+                  color: 'var(--text-secondary)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.85rem',
+                  lineHeight: '1.45'
+                }}
+              >
                 <strong>Variables de Evaluación para los Estudiantes:</strong>
                 <ul>
-                  <li>• **Eficiencia Hídrica**: Mantener la huella hídrica total en valores bajos (óptimo &lt; 2000L).</li>
-                  <li>• **Salud de Planta**: Evitar que el índice de salud disminuya por debajo del 90% (evitando marchitez).</li>
-                  <li>• **Prevención**: Calibrar las ventanas del predictor fitosanitario en la pestaña "Predicción Plagas" para detectar Botrytis con anticipación de acuerdo con los históricos del predio.</li>
+                  <li>
+                    • **Eficiencia Hídrica**: Mantener la huella hídrica total en valores bajos
+                    (óptimo &lt; 2000L).
+                  </li>
+                  <li>
+                    • **Salud de Planta**: Evitar que el índice de salud disminuya por debajo del
+                    90% (evitando marchitez).
+                  </li>
+                  <li>
+                    • **Prevención**: Calibrar las ventanas del predictor fitosanitario en la
+                    pestaña "Predicción Plagas" para detectar Botrytis con anticipación de acuerdo
+                    con los históricos del predio.
+                  </li>
                 </ul>
-                <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid var(--border-glass)', borderRadius: '6px', padding: '0.65rem', marginTop: '0.5rem' }}>
+                <div
+                  style={{
+                    background: 'rgba(255,255,255,0.01)',
+                    border: '1px solid var(--border-glass)',
+                    borderRadius: '6px',
+                    padding: '0.65rem',
+                    marginTop: '0.5rem'
+                  }}
+                >
                   <strong style={{ color: '#fff' }}>Ecuación de Evaluación:</strong>
-                  <div style={{ fontFamily: 'monospace', color: 'var(--accent-emerald)', marginTop: '4px' }}>
+                  <div
+                    style={{
+                      fontFamily: 'monospace',
+                      color: 'var(--accent-emerald)',
+                      marginTop: '4px'
+                    }}
+                  >
                     Score = (Salud Planta * 10) - (Agua Utilizada / 20) - Penalización de Plagas
                   </div>
                 </div>
               </div>
             </div>
-
           </div>
         )}
 
         {/* 4. Telemetry Events Log */}
         <div className="glass-panel" style={{ padding: '1rem', marginTop: '1.5rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-              <Terminal size={14} color="var(--accent-emerald)" /> Consola de Sucesos y Eventos IoT (Live Feed)
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '0.5rem'
+            }}
+          >
+            <span
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                fontSize: '0.75rem',
+                fontWeight: 'bold',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px'
+              }}
+            >
+              <Terminal size={14} color="var(--accent-emerald)" /> Consola de Sucesos y Eventos IoT
+              (Live Feed)
             </span>
           </div>
           <div className="event-log-container">
-            {logs.map(log => (
+            {logs.map((log) => (
               <div key={log.id} className="event-log-entry">
                 <span className="event-log-time">[{log.time}]</span>
                 <span>{log.text}</span>
@@ -457,19 +584,27 @@ function App() {
             ))}
           </div>
         </div>
-
       </main>
 
       {/* 5. Footer */}
       <footer className="app-footer">
-        <div style={{ display: 'flex', justifyContent: 'space-between', maxW: '1600px', margin: '0 auto', opacity: 0.6 }}>
-          <span>© {new Date().getFullYear()} HUB-Arquímedes - Licenciado para Entornos Universitarios</span>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            maxW: '1600px',
+            margin: '0 auto',
+            opacity: 0.6
+          }}
+        >
+          <span>
+            © {new Date().getFullYear()} HUB-Arquímedes - Licenciado para Entornos Universitarios
+          </span>
           <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
             <BookOpen size={12} /> Laboratorio de AgroTech y Agricultura de Precisión
           </span>
         </div>
       </footer>
-
     </div>
   );
 }

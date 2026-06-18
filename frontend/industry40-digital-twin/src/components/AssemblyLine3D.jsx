@@ -39,7 +39,7 @@ const AssemblyLine3D = ({ lineState, onSelectMachine, selectedMachineId }) => {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    
+
     // Clear container and append new canvas
     containerRef.current.innerHTML = '';
     containerRef.current.appendChild(renderer.domElement);
@@ -193,7 +193,7 @@ const AssemblyLine3D = ({ lineState, onSelectMachine, selectedMachineId }) => {
         // Arch sensor structure
         const archGeom = new THREE.BoxGeometry(0.2, 1.8, 1.6);
         const archMat = new THREE.MeshStandardMaterial({ color: '#0284c7', metalness: 0.8 });
-        
+
         const archL = new THREE.Mesh(archGeom, archMat);
         archL.position.set(-0.6, 0.9, 0);
         archL.castShadow = true;
@@ -235,16 +235,22 @@ const AssemblyLine3D = ({ lineState, onSelectMachine, selectedMachineId }) => {
 
       // Stack lights
       const lightGeom = new THREE.CylinderGeometry(0.08, 0.08, 0.12, 12);
-      
+
       const lightRed = new THREE.Mesh(lightGeom, new THREE.MeshBasicMaterial({ color: '#7f1d1d' }));
       lightRed.position.y = 0.8;
       andonGroup.add(lightRed);
 
-      const lightYellow = new THREE.Mesh(lightGeom, new THREE.MeshBasicMaterial({ color: '#78350f' }));
+      const lightYellow = new THREE.Mesh(
+        lightGeom,
+        new THREE.MeshBasicMaterial({ color: '#78350f' })
+      );
       lightYellow.position.y = 0.65;
       andonGroup.add(lightYellow);
 
-      const lightGreen = new THREE.Mesh(lightGeom, new THREE.MeshBasicMaterial({ color: '#064e3b' }));
+      const lightGreen = new THREE.Mesh(
+        lightGeom,
+        new THREE.MeshBasicMaterial({ color: '#064e3b' })
+      );
       lightGreen.position.y = 0.5;
       andonGroup.add(lightGreen);
 
@@ -277,13 +283,17 @@ const AssemblyLine3D = ({ lineState, onSelectMachine, selectedMachineId }) => {
     const partsCount = 6;
     const items = [];
     const itemGeom = new THREE.CylinderGeometry(0.25, 0.25, 0.3, 16);
-    const itemMat = new THREE.MeshStandardMaterial({ color: '#64748b', roughness: 0.3, metalness: 0.6 });
+    const itemMat = new THREE.MeshStandardMaterial({
+      color: '#64748b',
+      roughness: 0.3,
+      metalness: 0.6
+    });
 
     for (let i = 0; i < partsCount; i++) {
       const item = new THREE.Mesh(itemGeom, itemMat);
       item.castShadow = true;
       // Distribute evenly along conveyor length [-7, 7]
-      const startX = -7 + (i * (14 / (partsCount - 1)));
+      const startX = -7 + i * (14 / (partsCount - 1));
       item.position.set(startX, 0.15, 0);
       partsGroup.add(item);
       items.push(item);
@@ -310,7 +320,7 @@ const AssemblyLine3D = ({ lineState, onSelectMachine, selectedMachineId }) => {
         if (parent && parent.userData.id) {
           // Find the actual machine node matching sequence order
           const matchNode = lineStateRef.current?.machines?.find(
-            m => m.sequenceOrder.toString() === parent.userData.id
+            (m) => m.sequenceOrder.toString() === parent.userData.id
           );
           if (matchNode) {
             onSelectMachine(matchNode);
@@ -333,13 +343,18 @@ const AssemblyLine3D = ({ lineState, onSelectMachine, selectedMachineId }) => {
       pulseTime += 0.05;
 
       const currentLineState = lineStateRef.current;
-      const isSimulationActive = currentLineState?.machines?.some(m => m.status === 'OPERATIONAL') && 
-        !(currentLineState?.activeEvent === 'NORMAL' && currentLineState?.machines?.every(m => m.status === 'OPERATIONAL') && !currentLineState?.machines?.some(m => m.upgraded)); 
+      const isSimulationActive =
+        currentLineState?.machines?.some((m) => m.status === 'OPERATIONAL') &&
+        !(
+          currentLineState?.activeEvent === 'NORMAL' &&
+          currentLineState?.machines?.every((m) => m.status === 'OPERATIONAL') &&
+          !currentLineState?.machines?.some((m) => m.upgraded)
+        );
       // Actually let's look at activeEvent / simulation status. If we have machines with 'OPERATIONAL' but simulation loop isn't active, we can check.
       // Better: let's determine simulation active state from the prop values or if any machine is operating.
 
       // Animate active items on the belt
-      const isBeltMoving = currentLineState?.machines?.some(m => m.status === 'OPERATIONAL');
+      const isBeltMoving = currentLineState?.machines?.some((m) => m.status === 'OPERATIONAL');
 
       items.forEach((item, idx) => {
         if (isBeltMoving) {
@@ -360,7 +375,7 @@ const AssemblyLine3D = ({ lineState, onSelectMachine, selectedMachineId }) => {
       // Animate each machine based on its live state
       machinesGroup.children.forEach((group) => {
         const sequenceOrder = parseInt(group.userData.id);
-        const node = currentLineState?.machines?.find(m => m.sequenceOrder === sequenceOrder);
+        const node = currentLineState?.machines?.find((m) => m.sequenceOrder === sequenceOrder);
         const status = node?.status || 'OPERATIONAL';
 
         // 1. Update selection indicator
@@ -444,14 +459,14 @@ const AssemblyLine3D = ({ lineState, onSelectMachine, selectedMachineId }) => {
       if (!containerRef.current) return;
       const w = containerRef.current.clientWidth;
       const h = containerRef.current.clientHeight || 400;
-      
+
       const aspect = w / h;
       camera.left = -d * aspect;
       camera.right = d * aspect;
       camera.top = d;
       camera.bottom = -d;
       camera.updateProjectionMatrix();
-      
+
       renderer.setSize(w, h);
     };
 
@@ -470,14 +485,26 @@ const AssemblyLine3D = ({ lineState, onSelectMachine, selectedMachineId }) => {
     <div className="relative w-full h-full min-h-[420px] rounded-xl overflow-hidden border border-slate-800 bg-[#090d16] flex flex-col">
       <div className="absolute top-4 left-4 z-10 flex items-center space-x-2 bg-slate-950/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-cyan-500/30">
         <span className="w-2.5 h-2.5 rounded-full bg-cyan-500 animate-pulse"></span>
-        <span className="text-xs font-mono text-cyan-400 tracking-wider">3D DIGITAL TWIN - ACTIVE PLC SIMULATION</span>
+        <span className="text-xs font-mono text-cyan-400 tracking-wider">
+          3D DIGITAL TWIN - ACTIVE PLC SIMULATION
+        </span>
       </div>
       <div className="absolute bottom-4 right-4 z-10 bg-slate-950/80 backdrop-blur-md p-3 rounded-lg border border-slate-800 text-xxs font-mono text-slate-400 flex flex-col space-y-1">
-        <div className="flex items-center"><span className="w-2.5 h-2.5 rounded bg-green-500 mr-2"></span>OPERATIONAL</div>
-        <div className="flex items-center"><span className="w-2.5 h-2.5 rounded bg-yellow-500 mr-2"></span>DEGRADED / FAULT</div>
-        <div className="flex items-center"><span className="w-2.5 h-2.5 rounded bg-red-500 mr-2 animate-pulse"></span>DOWN / EMERGENCY</div>
+        <div className="flex items-center">
+          <span className="w-2.5 h-2.5 rounded bg-green-500 mr-2"></span>OPERATIONAL
+        </div>
+        <div className="flex items-center">
+          <span className="w-2.5 h-2.5 rounded bg-yellow-500 mr-2"></span>DEGRADED / FAULT
+        </div>
+        <div className="flex items-center">
+          <span className="w-2.5 h-2.5 rounded bg-red-500 mr-2 animate-pulse"></span>DOWN /
+          EMERGENCY
+        </div>
       </div>
-      <div ref={containerRef} className="w-full h-full flex-grow flex items-center justify-center" />
+      <div
+        ref={containerRef}
+        className="w-full h-full flex-grow flex items-center justify-center"
+      />
     </div>
   );
 };

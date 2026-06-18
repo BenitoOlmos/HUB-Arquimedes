@@ -15,7 +15,6 @@ let yieldRules: YieldRule[] = [
 let overbookingLimitPercent = 5; // e.g. oversell up to 5% over capacity
 
 export class RevenueService {
-
   async getKpis() {
     const roomsCount = await prisma.hotelRoom.count({ where: { status: { not: 'OUT_OF_ORDER' } } });
     const totalRooms = roomsCount || 24;
@@ -27,15 +26,15 @@ export class RevenueService {
     });
 
     // Calculate dynamic ADR and RevPAR for past reservations
-    const pastReservations = reservations.filter(r => r.checkInDate < new Date());
+    const pastReservations = reservations.filter((r) => r.checkInDate < new Date());
     const totalRevenue = pastReservations.reduce((sum, r) => sum + r.totalPrice, 0);
-    
+
     // Average Daily Rate (ADR)
     const totalNights = pastReservations.length || 1;
     const adr = totalRevenue / totalNights;
 
     // Room occupancy rate based on rooms count
-    const occupiedCount = pastReservations.filter(r => r.status === 'CHECKED_IN').length;
+    const occupiedCount = pastReservations.filter((r) => r.status === 'CHECKED_IN').length;
     const occupancyRate = (occupiedCount / totalRooms) * 100;
 
     // RevPAR
@@ -43,7 +42,7 @@ export class RevenueService {
 
     // Cost calculations for GOPPAR
     // Standard laundry cost: 12 per checkout. Amenities: 5 per guest checkin.
-    const checkoutCount = pastReservations.filter(r => r.status === 'CONFIRMED').length;
+    const checkoutCount = pastReservations.filter((r) => r.status === 'CONFIRMED').length;
     const laundryCost = checkoutCount * 12.0;
     const amenitiesCost = pastReservations.length * 5.0;
     const totalCosts = laundryCost + amenitiesCost;
@@ -88,7 +87,7 @@ export class RevenueService {
       { name: '0-6 días', min: 0, max: 6, count: 0, revenue: 0 }
     ];
 
-    reservations.forEach(r => {
+    reservations.forEach((r) => {
       const diffTime = Math.abs(r.checkInDate.getTime() - r.bookingDate.getTime());
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
@@ -117,9 +116,9 @@ export class RevenueService {
   // Apply Yield management pricing adjusting base tariffs according to rules
   applyYieldPricing(baseRate: number, currentOccupancy: number, daysToArrival: number): number {
     let finalRate = baseRate;
-    
+
     // Evaluate if any rule applies
-    yieldRules.forEach(rule => {
+    yieldRules.forEach((rule) => {
       if (currentOccupancy >= rule.occupancyThreshold && daysToArrival <= rule.leadTimeDays) {
         finalRate = baseRate * (1 + rule.priceAdjustmentPercent / 100);
       }
@@ -144,7 +143,7 @@ export class RevenueService {
     // Historical cancellation/No-show rate is 15%.
     // If overbookingLimit is too high relative to cancel rate, the probability of exceeding physical capacity (24 rooms) increases.
     const cancelRate = 0.15;
-    
+
     // Projected checkins based on current occupancy + overbooked rooms
     const capacity = 24;
     const overbookedRooms = Math.round((overbookingLimitPercent / 100) * capacity);
@@ -152,7 +151,7 @@ export class RevenueService {
 
     // Expected arrivals = totalBooked * (1 - cancelRate)
     const expectedArrivals = totalBooked * (1 - cancelRate);
-    
+
     // Walkout probability using binomial or simplified heuristics
     let walkoutRisk = 0;
     if (totalBooked > capacity) {

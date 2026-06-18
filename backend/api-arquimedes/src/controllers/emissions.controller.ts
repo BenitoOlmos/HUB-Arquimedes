@@ -4,7 +4,6 @@ import { EsgService } from '../services/esg.service';
 const esgService = new EsgService();
 
 export class EmissionsController {
-
   static async getActivities(req: Request, res: Response) {
     try {
       const scope = req.query.scope ? Number(req.query.scope) : undefined;
@@ -21,11 +20,17 @@ export class EmissionsController {
     try {
       const { activityId, correctedAmount, correctedUnit } = req.body;
       if (!activityId || correctedAmount === undefined || !correctedUnit) {
-        res.status(400).json({ error: 'Faltan parámetros de auditoría (activityId, correctedAmount, correctedUnit).' });
+        res.status(400).json({
+          error: 'Faltan parámetros de auditoría (activityId, correctedAmount, correctedUnit).'
+        });
         return;
       }
 
-      const updated = await esgService.auditActivity(activityId, Number(correctedAmount), correctedUnit);
+      const updated = await esgService.auditActivity(
+        activityId,
+        Number(correctedAmount),
+        correctedUnit
+      );
       res.json({ success: true, message: 'Registro de actividad auditado con éxito.', updated });
     } catch (error: any) {
       res.status(500).json({ error: error.message });

@@ -1,6 +1,11 @@
 {
   "name": "hub-arquimedes",
   "private": true,
+  "scripts": {
+    "prepare": "husky install",
+    "prettier:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
+    "prettier:write": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\""
+  },
   "workspaces": [
     "backend/api-arquimedes",
     "frontend/centrifuga-arquimedes",
@@ -16,5 +21,9 @@
     "frontend/hospitality-erp",
     "frontend/greentech-esg-tracker",
     "shared-schemas"
-  ]
+  ],
+  "devDependencies": {
+    "husky": "^8.0.3",
+    "prettier": "^3.2.5"
+  }
 }

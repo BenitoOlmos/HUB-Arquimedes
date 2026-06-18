@@ -1,90 +1,90 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { ManufacturingService } from '../services/manufacturing.service';
+import { z } from 'zod';
 
 const service = new ManufacturingService();
 
 export class ManufacturingController {
-
-  static async getLineState(req: Request, res: Response) {
+  static async getLineState(req: Request, res: Response, next: NextFunction) {
     try {
       const state = await service.getLineState();
       res.json(state);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      next(error);
     }
   }
 
-  static async getOeeMetrics(req: Request, res: Response) {
+  static async getOeeMetrics(req: Request, res: Response, next: NextFunction) {
     try {
       const metrics = await service.calculateOeeMetrics();
       res.json(metrics);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      next(error);
     }
   }
 
-  static async getDowntimeLogs(req: Request, res: Response) {
+  static async getDowntimeLogs(req: Request, res: Response, next: NextFunction) {
     try {
       const logs = await service.getDowntimeLogs();
       res.json(logs);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      next(error);
     }
   }
 
-  static async upgradeMachine(req: Request, res: Response) {
+  static async upgradeMachine(req: Request, res: Response, next: NextFunction) {
     try {
-      const { machineId } = req.body;
-      if (!machineId) {
-        return res.status(400).json({ error: "Missing required parameter: machineId" });
-      }
-      const result = await service.upgradeMachine(machineId);
+      const schema = z.object({
+        machineId: z.string().min(1, 'machineId es requerido')
+      });
+      const parsed = schema.parse(req.body);
+      const result = await service.upgradeMachine(parsed.machineId);
       res.json(result);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      next(error);
     }
   }
 
-  static async balanceLine(req: Request, res: Response) {
+  static async balanceLine(req: Request, res: Response, next: NextFunction) {
     try {
-      const { balance } = req.body;
-      if (balance === undefined) {
-        return res.status(400).json({ error: "Missing balance parameter in request body" });
-      }
-      const result = service.setLineBalance(Boolean(balance));
+      const schema = z.object({
+        balance: z.boolean()
+      });
+      const parsed = schema.parse(req.body);
+      const result = service.setLineBalance(parsed.balance);
       res.json(result);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      next(error);
     }
   }
 
-  static async triggerEvent(req: Request, res: Response) {
+  static async triggerEvent(req: Request, res: Response, next: NextFunction) {
     try {
-      const { event } = req.body;
-      if (!event) {
-        return res.status(400).json({ error: "Missing event parameter in request body" });
-      }
-      const result = service.setActiveEvent(event);
+      const schema = z.object({
+        event: z.string().min(1, 'event es requerido')
+      });
+      const parsed = schema.parse(req.body);
+      const result = service.setActiveEvent(parsed.event);
       res.json(result);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      next(error);
     }
   }
 
-  static async toggleSimulation(req: Request, res: Response) {
+  static async toggleSimulation(req: Request, res: Response, next: NextFunction) {
     try {
-      const { active } = req.body;
-      if (active === undefined) {
-        return res.status(400).json({ error: "Missing active parameter in request body" });
-      }
-      const result = service.setSimulationActive(Boolean(active));
+      const schema = z.object({
+        active: z.boolean()
+      });
+      const parsed = schema.parse(req.body);
+      const result = service.setSimulationActive(parsed.active);
       res.json(result);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      next(error);
     }
   }
 
-  static async getSimulationStatus(req: Request, res: Response) {
+  static async getSimulationStatus(req: Request, res: Response, next: NextFunction) {
     try {
       const active = service.getSimulationActive();
       const event = service.getActiveEvent();
@@ -93,7 +93,7 @@ export class ManufacturingController {
         activeEvent: event
       });
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      next(error);
     }
   }
 }

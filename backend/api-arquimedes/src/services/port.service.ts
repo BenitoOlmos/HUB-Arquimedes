@@ -2,17 +2,16 @@ import prisma from './prisma';
 
 // Define route segments for interpolation
 const PORT_COORDINATES = {
-  "Shanghai": { lat: 31.2, lng: 121.5 },
-  "Singapore": { lat: 1.3, lng: 103.8 },
-  "Rotterdam": { lat: 51.9, lng: 4.4 },
-  "Los Angeles": { lat: 33.7, lng: -118.2 },
-  "New York": { lat: 40.7, lng: -74.0 },
-  "Valparaíso": { lat: -33.0, lng: -71.6 },
-  "Cabo": { lat: -33.9, lng: 18.4 } // Cape of Good Hope detour
+  Shanghai: { lat: 31.2, lng: 121.5 },
+  Singapore: { lat: 1.3, lng: 103.8 },
+  Rotterdam: { lat: 51.9, lng: 4.4 },
+  'Los Angeles': { lat: 33.7, lng: -118.2 },
+  'New York': { lat: 40.7, lng: -74.0 },
+  Valparaíso: { lat: -33.0, lng: -71.6 },
+  Cabo: { lat: -33.9, lng: 18.4 } // Cape of Good Hope detour
 };
 
 export class PortService {
-  
   // Get all ships with their manifests
   async getShips() {
     return prisma.portShip.findMany({
@@ -54,7 +53,7 @@ export class PortService {
     // If detoured (e.g. going around Cape of Good Hope instead of Suez/Panama),
     // we change its coordinates slightly or increase fuel/daily cost
     const isDetoured = routeOption === 'DETOUR';
-    
+
     // Detoured routes double the remaining distance, increasing daily fuel cost and status
     return prisma.portShip.update({
       where: { id: shipId },
@@ -66,7 +65,10 @@ export class PortService {
   }
 
   // Update customs manifest status (Kanban)
-  async updateManifestStatus(manifestId: string, status: 'PENDIENTE' | 'APROBADO' | 'INSPECCION_FISICA' | 'RETENIDO') {
+  async updateManifestStatus(
+    manifestId: string,
+    status: 'PENDIENTE' | 'APROBADO' | 'INSPECCION_FISICA' | 'RETENIDO'
+  ) {
     return prisma.cargoManifest.update({
       where: { id: manifestId },
       data: { customsStatus: status }
@@ -74,7 +76,11 @@ export class PortService {
   }
 
   // Trigger weather or strike event
-  async triggerGlobalEvent(eventType: 'CLIMA' | 'HUELGA' | 'PIRATERIA', affectedRegion: string, severity: number) {
+  async triggerGlobalEvent(
+    eventType: 'CLIMA' | 'HUELGA' | 'PIRATERIA',
+    affectedRegion: string,
+    severity: number
+  ) {
     return prisma.globalEvent.create({
       data: {
         eventType,
@@ -97,18 +103,20 @@ export class PortService {
   async getConsolidatedState() {
     const ships = await this.getShips();
     const events = await this.getGlobalEvents();
-    
+
     // Calculate total cost scoring function
     // Score = Sum(Fuel Cost) + Sum(Customs Mismatch Fines) + Opportunity Delay Cost
     let totalFuelCost = 0;
     let totalCustomsFines = 0;
     let delayCost = 0;
 
-    ships.forEach(ship => {
+    ships.forEach((ship) => {
       totalFuelCost += ship.dailyFuelCost * (ship.fuelLevel / 10); // Simulated fuel days
-      
+
       // Calculate customs fines (e.g. $5,000 for each retained/mismatched manifest)
-      const retainedCount = ship.manifests.filter(m => m.customsStatus === 'RETENIDO' || m.customsStatus === 'INSPECCION_FISICA').length;
+      const retainedCount = ship.manifests.filter(
+        (m) => m.customsStatus === 'RETENIDO' || m.customsStatus === 'INSPECCION_FISICA'
+      ).length;
       totalCustomsFines += retainedCount * 5000;
 
       if (ship.status === 'RETENIDO') {
@@ -120,12 +128,14 @@ export class PortService {
 
     return {
       shipsCount: ships.length,
-      activeCrises: events.map(e => `${e.eventType} en ${e.affectedRegion} (Gravedad: ${e.severity})`),
+      activeCrises: events.map(
+        (e) => `${e.eventType} en ${e.affectedRegion} (Gravedad: ${e.severity})`
+      ),
       logisticsCostKPI: totalCostScore,
       fuelSpentTotal: totalFuelCost,
       customsPenalties: totalCustomsFines,
       delayLosses: delayCost,
-      ships: ships.map(s => ({
+      ships: ships.map((s) => ({
         id: s.id,
         imo: s.imoNumber,
         name: s.name,
@@ -145,10 +155,10 @@ export class PortService {
     const ships = await this.getShips();
     const events = await this.getGlobalEvents();
 
-    const isSuezBlocked = events.some(e => e.affectedRegion === 'Canal de Suez' && e.active);
-    const isPanamaBlocked = events.some(e => e.affectedRegion === 'Canal de Panamá' && e.active);
+    const isSuezBlocked = events.some((e) => e.affectedRegion === 'Canal de Suez' && e.active);
+    const isPanamaBlocked = events.some((e) => e.affectedRegion === 'Canal de Panamá' && e.active);
 
-    const updatePromises = ships.map(ship => {
+    const updatePromises = ships.map((ship) => {
       let lat = ship.currentLat;
       let lng = ship.currentLng;
       let status = ship.status;
@@ -160,21 +170,31 @@ export class PortService {
       let destLat = 33.7; // Los Angeles
       let destLng = -118.2;
 
-      if (index % 5 === 0) { // Pacific: Shanghai -> LA
-        destLat = 33.7; destLng = -118.2;
-      } else if (index % 5 === 1) { // Atlantic: Rotterdam -> NY
-        destLat = 40.7; destLng = -74.0;
-      } else if (index % 5 === 2) { // South America: Valparaíso -> Shanghai
-        destLat = 31.2; destLng = 121.5;
-      } else if (index % 5 === 3) { // Europe-Asia via Suez
-        destLat = 51.9; destLng = 4.4;
-        
+      if (index % 5 === 0) {
+        // Pacific: Shanghai -> LA
+        destLat = 33.7;
+        destLng = -118.2;
+      } else if (index % 5 === 1) {
+        // Atlantic: Rotterdam -> NY
+        destLat = 40.7;
+        destLng = -74.0;
+      } else if (index % 5 === 2) {
+        // South America: Valparaíso -> Shanghai
+        destLat = 31.2;
+        destLng = 121.5;
+      } else if (index % 5 === 3) {
+        // Europe-Asia via Suez
+        destLat = 51.9;
+        destLng = 4.4;
+
         // If Suez is blocked, redirect/anchor ships approaching Suez
         if (isSuezBlocked && lat > 10 && lat < 33 && lng > 30 && lng < 45) {
           status = 'FONDEADO';
         }
-      } else { // Oceania: Singapore -> Valparaíso
-        destLat = -33.0; destLng = -71.6;
+      } else {
+        // Oceania: Singapore -> Valparaíso
+        destLat = -33.0;
+        destLng = -71.6;
       }
 
       // If blocked, don't move

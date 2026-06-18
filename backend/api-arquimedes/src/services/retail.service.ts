@@ -2,11 +2,16 @@ import prisma from './prisma';
 
 let blackFridayActive = false;
 let crmRules: any[] = [
-  { id: "rule-1", name: "Recuperación Descuento Calzado", condition: "Stock Repuesto < 48h", discount: "10% OFF", active: true }
+  {
+    id: 'rule-1',
+    name: 'Recuperación Descuento Calzado',
+    condition: 'Stock Repuesto < 48h',
+    discount: '10% OFF',
+    active: true
+  }
 ];
 
 export class RetailService {
-
   async getProducts() {
     return prisma.retailProduct.findMany({
       include: {
@@ -21,7 +26,7 @@ export class RetailService {
         product: true
       }
     });
-    return inventories.map(inv => ({
+    return inventories.map((inv) => ({
       id: inv.id,
       productId: inv.productId,
       sku: inv.product.sku,
@@ -34,7 +39,13 @@ export class RetailService {
   }
 
   // Transfer stock from one node to another (Logistics Dispatch)
-  async transferStock(productId: string, fromType: string, toLat: number, toLng: number, qty: number) {
+  async transferStock(
+    productId: string,
+    fromType: string,
+    toLat: number,
+    toLng: number,
+    qty: number
+  ) {
     // Find source inventory
     const source = await prisma.storeInventory.findFirst({
       where: {
@@ -53,7 +64,7 @@ export class RetailService {
     });
 
     if (!source || !dest) {
-      throw new Error("Source or Destination inventory not found");
+      throw new Error('Source or Destination inventory not found');
     }
 
     if (source.stockLevel < qty) {
@@ -78,11 +89,11 @@ export class RetailService {
   // Get Conversion Funnel KPIs pre-calculated
   async getConversionFunnel() {
     const events = await prisma.retailEvent.findMany();
-    
-    const pageViews = events.filter(e => e.eventType === "PAGE_VIEW").length;
-    const addCarts = events.filter(e => e.eventType === "ADD_TO_CART").length;
-    const abandons = events.filter(e => e.eventType === "CART_ABANDONED").length;
-    const purchases = events.filter(e => e.eventType === "PURCHASE").length;
+
+    const pageViews = events.filter((e) => e.eventType === 'PAGE_VIEW').length;
+    const addCarts = events.filter((e) => e.eventType === 'ADD_TO_CART').length;
+    const abandons = events.filter((e) => e.eventType === 'CART_ABANDONED').length;
+    const purchases = events.filter((e) => e.eventType === 'PURCHASE').length;
 
     // Calculate CTR and Conversion Rates
     const clickRate = pageViews > 0 ? (addCarts / pageViews) * 100 : 0;
@@ -91,9 +102,9 @@ export class RetailService {
 
     return {
       funnelData: [
-        { stage: "1. Vistas", cantidad: pageViews, pct: 100 },
-        { stage: "2. Carritos", cantidad: addCarts, pct: parseFloat(clickRate.toFixed(1)) },
-        { stage: "3. Compras", cantidad: purchases, pct: parseFloat(conversionRate.toFixed(1)) }
+        { stage: '1. Vistas', cantidad: pageViews, pct: 100 },
+        { stage: '2. Carritos', cantidad: addCarts, pct: parseFloat(clickRate.toFixed(1)) },
+        { stage: '3. Compras', cantidad: purchases, pct: parseFloat(conversionRate.toFixed(1)) }
       ],
       kpis: {
         pageViews,
@@ -103,7 +114,7 @@ export class RetailService {
         ctr: parseFloat(clickRate.toFixed(1)),
         conversionRate: parseFloat(conversionRate.toFixed(1)),
         abandonRate: parseFloat(abandonRate.toFixed(1)),
-        lostRevenue: abandons * 79.90 // Average lost sales per abandonment
+        lostRevenue: abandons * 79.9 // Average lost sales per abandonment
       }
     };
   }
@@ -121,13 +132,13 @@ export class RetailService {
       }
     });
 
-    return customers.map(c => {
+    return customers.map((c) => {
       // Calculate totals
       const ordersCount = c.orders.length;
       let abandonedCount = 0;
-      
-      c.sessions.forEach(s => {
-        abandonedCount += s.events.filter(e => e.eventType === "CART_ABANDONED").length;
+
+      c.sessions.forEach((s) => {
+        abandonedCount += s.events.filter((e) => e.eventType === 'CART_ABANDONED').length;
       });
 
       return {
@@ -155,16 +166,16 @@ export class RetailService {
     });
 
     const products = await prisma.retailProduct.findMany();
-    const productMap = new Map(products.map(p => [p.id, p]));
+    const productMap = new Map(products.map((p) => [p.id, p]));
 
-    return events.map(e => {
+    return events.map((e) => {
       const p = e.productId ? productMap.get(e.productId) : null;
       return {
         id: e.id,
         sessionId: e.sessionId,
         eventType: e.eventType,
-        sku: p ? p.sku : "N/A",
-        productName: p ? p.name : "N/A",
+        sku: p ? p.sku : 'N/A',
+        productName: p ? p.name : 'N/A',
         price: p ? p.basePrice : 0,
         timestamp: e.timestamp.toISOString()
       };
@@ -206,38 +217,39 @@ export class RetailService {
 
     // Pick random customer
     const customer = customers[Math.floor(Math.random() * customers.length)];
-    
+
     // Create session
     const session = await prisma.retailSession.create({
       data: {
         customerId: customer.id,
-        device: "Mobile-APP"
+        device: 'Mobile-APP'
       }
     });
 
     // Pick product (80% chance of trail runner shoes to test stockouts!)
     const products = await prisma.retailProduct.findMany();
     if (products.length === 0) return null;
-    
-    const shoes = products.find(p => p.sku === "SKU-SHOES-01");
-    const product = (shoes && Math.random() < 0.8) ? shoes : products[Math.floor(Math.random() * products.length)];
+
+    const shoes = products.find((p) => p.sku === 'SKU-SHOES-01');
+    const product =
+      shoes && Math.random() < 0.8 ? shoes : products[Math.floor(Math.random() * products.length)];
 
     // PAGE_VIEW event
     await prisma.retailEvent.create({
       data: {
         sessionId: session.id,
-        eventType: "PAGE_VIEW",
+        eventType: 'PAGE_VIEW',
         productId: product.id
       }
     });
 
     // ADD_TO_CART (70% click rate)
-    const isAdd = Math.random() < 0.70;
+    const isAdd = Math.random() < 0.7;
     if (isAdd) {
       await prisma.retailEvent.create({
         data: {
           sessionId: session.id,
-          eventType: "ADD_TO_CART",
+          eventType: 'ADD_TO_CART',
           productId: product.id
         }
       });
@@ -253,7 +265,7 @@ export class RetailService {
         const ev = await prisma.retailEvent.create({
           data: {
             sessionId: session.id,
-            eventType: "CART_ABANDONED",
+            eventType: 'CART_ABANDONED',
             productId: product.id
           }
         });
@@ -264,7 +276,7 @@ export class RetailService {
       const isPurchase = Math.random() < 0.55; // 55% checkout conversion
       if (isPurchase) {
         // Decrease stock in a store that has stock
-        const storeWithStock = inventories.find(i => i.stockLevel > 0);
+        const storeWithStock = inventories.find((i) => i.stockLevel > 0);
         if (storeWithStock) {
           await prisma.storeInventory.update({
             where: { id: storeWithStock.id },
@@ -275,7 +287,7 @@ export class RetailService {
         const ev = await prisma.retailEvent.create({
           data: {
             sessionId: session.id,
-            eventType: "PURCHASE",
+            eventType: 'PURCHASE',
             productId: product.id
           }
         });
@@ -285,7 +297,7 @@ export class RetailService {
           data: {
             customerId: customer.id,
             totalAmount: product.basePrice,
-            status: "COMPLETED"
+            status: 'COMPLETED'
           }
         });
 
@@ -299,7 +311,7 @@ export class RetailService {
         const ev = await prisma.retailEvent.create({
           data: {
             sessionId: session.id,
-            eventType: "CART_ABANDONED",
+            eventType: 'CART_ABANDONED',
             productId: product.id
           }
         });

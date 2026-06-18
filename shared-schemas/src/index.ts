@@ -3,8 +3,8 @@ import { z } from 'zod';
 export const partStatusSchema = z.enum(['Operational', 'Inspect', 'Replace']);
 
 export const maintenanceLogSchema = z.object({
-  tech: z.string().min(1, "El nombre del técnico es requerido"),
-  desc: z.string().min(1, "La descripción del mantenimiento es requerida"),
+  tech: z.string().min(1, 'El nombre del técnico es requerido'),
+  desc: z.string().min(1, 'La descripción del mantenimiento es requerida'),
   status: partStatusSchema.optional()
 });
 
@@ -15,8 +15,8 @@ export type MaintenanceLogInput = z.infer<typeof maintenanceLogSchema>;
 // Smart Port Schema & Interfaces
 export const shipDataSchema = z.object({
   id: z.string().optional(),
-  imoNumber: z.string().min(5, "El número IMO es inválido"),
-  name: z.string().min(1, "El nombre es requerido"),
+  imoNumber: z.string().min(5, 'El número IMO es inválido'),
+  name: z.string().min(1, 'El nombre es requerido'),
   capacityTEU: z.number().int().positive(),
   currentLat: z.number(),
   currentLng: z.number(),
@@ -27,10 +27,10 @@ export const shipDataSchema = z.object({
 
 export const cargoManifestSchema = z.object({
   id: z.string().optional(),
-  shipId: z.string().min(1, "ID de buque es requerido"),
-  originPort: z.string().min(1, "Puerto de origen es requerido"),
-  destPort: z.string().min(1, "Puerto de destino es requerido"),
-  contents: z.string().min(1, "Manifiesto de carga detallado requerido"),
+  shipId: z.string().min(1, 'ID de buque es requerido'),
+  originPort: z.string().min(1, 'Puerto de origen es requerido'),
+  destPort: z.string().min(1, 'Puerto de destino es requerido'),
+  contents: z.string().min(1, 'Manifiesto de carga detallado requerido'),
   incoterm: z.enum(['FOB', 'CIF', 'EXW', 'DDP', 'CFR']),
   customsStatus: z.enum(['PENDIENTE', 'APROBADO', 'INSPECCION_FISICA', 'RETENIDO']),
   arrivalDate: z.string() // ISO Date String
@@ -40,14 +40,14 @@ export const weatherEventSchema = z.object({
   id: z.string().optional(),
   eventType: z.enum(['CLIMA', 'HUELGA', 'PIRATERIA']),
   severity: z.number().int().min(1).max(5),
-  affectedRegion: z.string().min(1, "Región afectada es requerida"),
+  affectedRegion: z.string().min(1, 'Región afectada es requerida'),
   active: z.boolean().default(true)
 });
 
 export const irrigationRuleInputSchema = z.object({
   id: z.string().optional(),
-  zoneId: z.string().min(1, "ID de zona es requerido"),
-  name: z.string().min(1, "Nombre de la regla es requerido"),
+  zoneId: z.string().min(1, 'ID de zona es requerido'),
+  name: z.string().min(1, 'Nombre de la regla es requerido'),
   sensorType: z.enum(['SOIL_MOISTURE', 'PH', 'TEMPERATURE', 'RADIATION']),
   operator: z.enum(['LT', 'GT']),
   thresholdValue: z.number(),
@@ -88,10 +88,10 @@ export interface PestOutbreakPrediction {
 }
 
 export const transactionPayloadSchema = z.object({
-  senderId: z.string().min(1, "Sender ID is required"),
-  receiverId: z.string().min(1, "Receiver ID is required"),
-  amount: z.number().positive("Amount must be positive"),
-  ipAddress: z.string().min(1, "IP Address is required"),
+  senderId: z.string().min(1, 'Sender ID is required'),
+  receiverId: z.string().min(1, 'Receiver ID is required'),
+  amount: z.number().positive('Amount must be positive'),
+  ipAddress: z.string().min(1, 'IP Address is required'),
   deviceFingerprint: z.string().optional()
 });
 
@@ -116,7 +116,7 @@ export interface AccountMetrics {
 // SCADA Renovables Schemas & Types
 export const scadaAssetSchema = z.object({
   id: z.string().optional(),
-  tagId: z.string().min(1, "El Tag ID es requerido"),
+  tagId: z.string().min(1, 'El Tag ID es requerido'),
   assetType: z.enum(['SOLAR_PANEL', 'INVERTER', 'WIND_TURBINE', 'TRANSFORMER']),
   status: z.enum(['ONLINE', 'OFFLINE', 'MAINTENANCE', 'FAULT']),
   location: z.string()
@@ -124,7 +124,17 @@ export const scadaAssetSchema = z.object({
 
 export const scadaTelemetrySchema = z.object({
   assetId: z.string(),
-  parameter: z.enum(['VOLTAGE', 'CURRENT', 'TEMPERATURE', 'RPM', 'WIND_SPEED', 'IRRADIANCE', 'POWER', 'VIBRATION', 'PITCH']),
+  parameter: z.enum([
+    'VOLTAGE',
+    'CURRENT',
+    'TEMPERATURE',
+    'RPM',
+    'WIND_SPEED',
+    'IRRADIANCE',
+    'POWER',
+    'VIBRATION',
+    'PITCH'
+  ]),
   value: z.number(),
   timestamp: z.string()
 });
@@ -348,10 +358,10 @@ export interface EsgMetrics {
 // HIS Triage Táctico Schemas & Types
 export const hisPatientSchema = z.object({
   id: z.string().optional(),
-  rut: z.string().min(1, "RUT es requerido"),
-  fullName: z.string().min(1, "Nombre completo es requerido"),
+  rut: z.string().min(1, 'RUT es requerido'),
+  fullName: z.string().min(1, 'Nombre completo es requerido'),
   age: z.number().int().nonnegative(),
-  bloodType: z.string().min(1, "Tipo de sangre es requerido"),
+  bloodType: z.string().min(1, 'Tipo de sangre es requerido'),
   comorbidities: z.string(),
   allergies: z.string().optional(),
   gender: z.string().optional()
@@ -359,8 +369,8 @@ export const hisPatientSchema = z.object({
 
 export const hisTriageSchema = z.object({
   id: z.string().optional(),
-  patientId: z.string().min(1, "ID de paciente es requerido"),
-  symptoms: z.string().min(1, "Síntomas son requeridos"),
+  patientId: z.string().min(1, 'ID de paciente es requerido'),
+  symptoms: z.string().min(1, 'Síntomas son requeridos'),
   assignedEsi: z.number().int().min(1).max(5).nullable(),
   arrivalTime: z.string().or(z.date()),
   attentionTime: z.string().or(z.date()).nullable(),
@@ -369,23 +379,23 @@ export const hisTriageSchema = z.object({
 
 export const hisBedSchema = z.object({
   id: z.string(),
-  ward: z.string().min(1, "Sala es requerida"),
-  bedNumber: z.string().min(1, "Número de cama es requerido"),
+  ward: z.string().min(1, 'Sala es requerida'),
+  bedNumber: z.string().min(1, 'Número de cama es requerido'),
   status: z.enum(['AVAILABLE', 'OCCUPIED', 'CLEANING', 'MAINTENANCE']),
   currentPatient: z.string().nullable()
 });
 
 export const hisPharmacySchema = z.object({
   id: z.string().optional(),
-  sku: z.string().min(1, "SKU es requerido"),
-  name: z.string().min(1, "Nombre del insumo es requerido"),
-  category: z.string().min(1, "Categoría es requerida"),
+  sku: z.string().min(1, 'SKU es requerido'),
+  name: z.string().min(1, 'Nombre del insumo es requerido'),
+  category: z.string().min(1, 'Categoría es requerida'),
   currentStock: z.number().int().nonnegative(),
   reorderPoint: z.number().int().nonnegative(),
   dailyConsumption: z.number().nonnegative(),
   cost: z.number().nonnegative().default(0),
   virtualStock: z.number().int().nonnegative().default(0),
-  provider: z.string().default(""),
+  provider: z.string().default(''),
   isCritical: z.boolean().default(false)
 });
 
@@ -393,10 +403,3 @@ export type HisPatientInput = z.infer<typeof hisPatientSchema>;
 export type HisTriageInput = z.infer<typeof hisTriageSchema>;
 export type HisBedInput = z.infer<typeof hisBedSchema>;
 export type HisPharmacyInput = z.infer<typeof hisPharmacySchema>;
-
-
-
-
-
-
-

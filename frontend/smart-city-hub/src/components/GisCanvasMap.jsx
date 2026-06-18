@@ -21,7 +21,7 @@ export default function GisCanvasMap({ routes, intersections, kpis, activeEvent 
   const roads = [
     // 1. Alameda/Providencia/Apoquindo (West-East Corridor)
     {
-      name: "Alameda - Av. Providencia - Av. Apoquindo",
+      name: 'Alameda - Av. Providencia - Av. Apoquindo',
       points: [
         { lat: -33.485, lng: -70.757 }, // Maipú
         { lat: -33.453, lng: -70.709 }, // Las Rejas
@@ -29,35 +29,35 @@ export default function GisCanvasMap({ routes, intersections, kpis, activeEvent 
         { lat: -33.451, lng: -70.678 }, // Estación Central
         { lat: -33.444, lng: -70.647 }, // Santa Lucía (Centro)
         { lat: -33.424, lng: -70.612 }, // Pedro de Valdivia (Providencia)
-        { lat: -33.412, lng: -70.578 }  // Las Condes
+        { lat: -33.412, lng: -70.578 } // Las Condes
       ]
     },
     // 2. Vicuña Mackenna (South Corridor)
     {
-      name: "Av. Vicuña Mackenna - Av. La Florida",
+      name: 'Av. Vicuña Mackenna - Av. La Florida',
       points: [
         { lat: -33.444, lng: -70.647 }, // Plaza Italia / Santa Lucía
         { lat: -33.468, lng: -70.625 }, // Ñuble
         { lat: -33.512, lng: -70.598 }, // La Florida
-        { lat: -33.595, lng: -70.578 }  // Puente Alto
+        { lat: -33.595, lng: -70.578 } // Puente Alto
       ]
     },
     // 3. Av. Grecia (South-East Corridor)
     {
-      name: "Av. Grecia",
+      name: 'Av. Grecia',
       points: [
         { lat: -33.468, lng: -70.625 }, // Ñuble
-        { lat: -33.463, lng: -70.620 }, // Grecia / Ñuñoa
-        { lat: -33.475, lng: -70.555 }  // Peñalolén
+        { lat: -33.463, lng: -70.62 }, // Grecia / Ñuñoa
+        { lat: -33.475, lng: -70.555 } // Peñalolén
       ]
     },
     // 4. Av. Independencia (North Corridor)
     {
-      name: "Av. Independencia",
+      name: 'Av. Independencia',
       points: [
         { lat: -33.444, lng: -70.647 }, // Centro
         { lat: -33.415, lng: -70.665 }, // Independencia
-        { lat: -33.375, lng: -70.675 }  // Huechuraba
+        { lat: -33.375, lng: -70.675 } // Huechuraba
       ]
     }
   ];
@@ -93,7 +93,7 @@ export default function GisCanvasMap({ routes, intersections, kpis, activeEvent 
     }
 
     // 1. Draw Arterial Roads (Transit Corridors)
-    roads.forEach(road => {
+    roads.forEach((road) => {
       ctx.beginPath();
       road.points.forEach((pt, idx) => {
         const coords = getCanvasCoords(pt.lat, pt.lng, width, height);
@@ -102,7 +102,7 @@ export default function GisCanvasMap({ routes, intersections, kpis, activeEvent 
       });
 
       // Congestion levels: red if marathon event is on and it's Alameda
-      const isAlameda = road.name.includes("Alameda");
+      const isAlameda = road.name.includes('Alameda');
       if (activeEvent === 'MARATON_ALAMEDA' && isAlameda) {
         ctx.strokeStyle = '#ef4444'; // Red jam
         ctx.lineWidth = 8;
@@ -121,14 +121,14 @@ export default function GisCanvasMap({ routes, intersections, kpis, activeEvent 
     });
 
     // 2. Draw Traffic Intersections (Semaphores)
-    intersections.forEach(inter => {
+    intersections.forEach((inter) => {
       const coords = getCanvasCoords(inter.lat, inter.lng, width, height);
-      
+
       // Calculate light state (nominal or current time green/red indicator)
       // We read offset score or toggle color based on system ticks
       const sec = Math.floor(Date.now() / 1000);
       const cycle = inter.greenPhase + inter.redPhase;
-      const isGreen = ((sec + inter.offset) % cycle) < inter.greenPhase;
+      const isGreen = (sec + inter.offset) % cycle < inter.greenPhase;
 
       // Draw light halo glow
       ctx.beginPath();
@@ -152,8 +152,8 @@ export default function GisCanvasMap({ routes, intersections, kpis, activeEvent 
     });
 
     // 3. Draw Bus Units (Particles)
-    routes.forEach(route => {
-      route.buses.forEach(bus => {
+    routes.forEach((route) => {
+      route.buses.forEach((bus) => {
         const telemetry = bus.telemetry[0];
         if (!telemetry) return;
 
@@ -183,12 +183,12 @@ export default function GisCanvasMap({ routes, intersections, kpis, activeEvent 
 
     // 4. Draw Marathon blocked area if active
     if (activeEvent === 'MARATON_ALAMEDA') {
-      const midCoords = getCanvasCoords(-33.4440, -70.6470, width, height);
+      const midCoords = getCanvasCoords(-33.444, -70.647, width, height);
       ctx.fillStyle = 'rgba(244, 63, 94, 0.1)';
       ctx.beginPath();
       ctx.arc(midCoords.x, midCoords.y, 60, 0, 2 * Math.PI);
       ctx.fill();
-      
+
       ctx.strokeStyle = 'rgba(244, 63, 94, 0.5)';
       ctx.lineWidth = 2;
       ctx.setLineDash([6, 3]);
@@ -197,7 +197,7 @@ export default function GisCanvasMap({ routes, intersections, kpis, activeEvent 
 
       ctx.fillStyle = '#fb7185';
       ctx.font = 'bold 10px sans-serif';
-      ctx.fillText("🚫 ALAMEDA CERRADA (MARATÓN)", midCoords.x - 70, midCoords.y + 4);
+      ctx.fillText('🚫 ALAMEDA CERRADA (MARATÓN)', midCoords.x - 70, midCoords.y + 4);
     }
   }, [routes, intersections, activeEvent]);
 
@@ -219,7 +219,7 @@ export default function GisCanvasMap({ routes, intersections, kpis, activeEvent 
         if (!telemetry) continue;
         const coords = getCanvasCoords(telemetry.lat, telemetry.lng, width, height);
         const dist = Math.sqrt(Math.pow(x - coords.x, 2) + Math.pow(y - coords.y, 2));
-        
+
         if (dist < 10) {
           setHoveredEntity({
             type: 'BUS',
@@ -255,90 +255,149 @@ export default function GisCanvasMap({ routes, intersections, kpis, activeEvent 
   };
 
   return (
-    <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', position: 'relative' }}>
-      
+    <div
+      className="glass-card"
+      style={{ display: 'flex', flexDirection: 'column', gap: '1rem', position: 'relative' }}
+    >
       {/* Map controls */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <Navigation className="logo-icon" size={20} />
           <div>
             <h3 style={{ fontSize: '1.1rem' }}>Visor Espacial GIS Metropolitano</h3>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>Partículas de buses Red Bus en vivo</p>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>
+              Partículas de buses Red Bus en vivo
+            </p>
           </div>
         </div>
 
         {/* Legend */}
-        <div style={{ display: 'flex', gap: '1rem', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+        <div
+          style={{
+            display: 'flex',
+            gap: '1rem',
+            fontSize: '0.75rem',
+            color: 'var(--text-secondary)'
+          }}
+        >
           <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-            <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#22d3ee' }}></span>
+            <span
+              style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#22d3ee' }}
+            ></span>
             Bus Transantiago
           </span>
           <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-            <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#10b981' }}></span>
+            <span
+              style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#10b981' }}
+            ></span>
             Semáforo Verde
           </span>
           <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-            <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#f43f5e' }}></span>
+            <span
+              style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#f43f5e' }}
+            ></span>
             Semáforo Rojo
           </span>
         </div>
       </div>
 
       {/* Main Canvas view */}
-      <div style={{ position: 'relative', border: '1px solid var(--border-color)', borderRadius: '12px', overflow: 'hidden' }}>
-        <canvas 
-          ref={canvasRef} 
-          width={800} 
-          height={480} 
+      <div
+        style={{
+          position: 'relative',
+          border: '1px solid var(--border-color)',
+          borderRadius: '12px',
+          overflow: 'hidden'
+        }}
+      >
+        <canvas
+          ref={canvasRef}
+          width={800}
+          height={480}
           onMouseMove={handleMouseMove}
-          style={{ display: 'block', width: '100%', height: 'auto', cursor: hoveredEntity ? 'pointer' : 'default' }}
+          style={{
+            display: 'block',
+            width: '100%',
+            height: 'auto',
+            cursor: hoveredEntity ? 'pointer' : 'default'
+          }}
         />
 
         {/* Dynamic Tooltip inside the canvas card */}
         {hoveredEntity && (
-          <div style={{
-            position: 'absolute',
-            top: '12px',
-            left: '12px',
-            backgroundColor: 'var(--bg-secondary)',
-            border: '1px solid var(--border-color)',
-            padding: '0.75rem 1rem',
-            borderRadius: '8px',
-            fontSize: '0.8rem',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
-            zIndex: 10,
-            maxWidth: '260px'
-          }}>
+          <div
+            style={{
+              position: 'absolute',
+              top: '12px',
+              left: '12px',
+              backgroundColor: 'var(--bg-secondary)',
+              border: '1px solid var(--border-color)',
+              padding: '0.75rem 1rem',
+              borderRadius: '8px',
+              fontSize: '0.8rem',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
+              zIndex: 10,
+              maxWidth: '260px'
+            }}
+          >
             {hoveredEntity.type === 'BUS' ? (
               <div>
-                <h4 style={{ color: '#22d3ee', marginBottom: '0.25rem' }}>Bus {hoveredEntity.plateNumber}</h4>
-                <p><strong>Recorrido:</strong> {hoveredEntity.routeCode}</p>
-                <p><strong>Velocidad:</strong> {hoveredEntity.speed} km/h</p>
+                <h4 style={{ color: '#22d3ee', marginBottom: '0.25rem' }}>
+                  Bus {hoveredEntity.plateNumber}
+                </h4>
                 <p>
-                  <strong>Ocupación:</strong> {hoveredEntity.passengers} / {hoveredEntity.capacity} pasajeros
-                  <span style={{ display: 'block', height: '4px', backgroundColor: '#1f2937', borderRadius: '2px', marginTop: '0.25rem', overflow: 'hidden' }}>
-                    <span style={{
+                  <strong>Recorrido:</strong> {hoveredEntity.routeCode}
+                </p>
+                <p>
+                  <strong>Velocidad:</strong> {hoveredEntity.speed} km/h
+                </p>
+                <p>
+                  <strong>Ocupación:</strong> {hoveredEntity.passengers} / {hoveredEntity.capacity}{' '}
+                  pasajeros
+                  <span
+                    style={{
                       display: 'block',
-                      height: '100%',
-                      width: `${(hoveredEntity.passengers / hoveredEntity.capacity) * 100}%`,
-                      backgroundColor: hoveredEntity.passengers >= hoveredEntity.capacity * 0.9 ? '#f43f5e' : '#10b981'
-                    }}></span>
+                      height: '4px',
+                      backgroundColor: '#1f2937',
+                      borderRadius: '2px',
+                      marginTop: '0.25rem',
+                      overflow: 'hidden'
+                    }}
+                  >
+                    <span
+                      style={{
+                        display: 'block',
+                        height: '100%',
+                        width: `${(hoveredEntity.passengers / hoveredEntity.capacity) * 100}%`,
+                        backgroundColor:
+                          hoveredEntity.passengers >= hoveredEntity.capacity * 0.9
+                            ? '#f43f5e'
+                            : '#10b981'
+                      }}
+                    ></span>
                   </span>
                 </p>
               </div>
             ) : (
               <div>
                 <h4 style={{ color: '#eab308', marginBottom: '0.25rem' }}>Semáforo Intersección</h4>
-                <p><strong>Ubicación:</strong> {hoveredEntity.name}</p>
-                <p><strong>Fase Verde:</strong> {hoveredEntity.green}s</p>
-                <p><strong>Fase Roja:</strong> {hoveredEntity.red}s</p>
-                <p><strong>Sincro (Offset):</strong> {hoveredEntity.offset}s</p>
+                <p>
+                  <strong>Ubicación:</strong> {hoveredEntity.name}
+                </p>
+                <p>
+                  <strong>Fase Verde:</strong> {hoveredEntity.green}s
+                </p>
+                <p>
+                  <strong>Fase Roja:</strong> {hoveredEntity.red}s
+                </p>
+                <p>
+                  <strong>Sincro (Offset):</strong> {hoveredEntity.offset}s
+                </p>
               </div>
             )}
           </div>
         )}
       </div>
-
     </div>
   );
 }

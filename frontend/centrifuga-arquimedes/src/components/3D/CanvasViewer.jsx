@@ -22,12 +22,12 @@ const CanvasViewer = ({
         gl={{ antialias: true, preserveDrawingBuffer: true }}
       >
         <color attach="background" args={['#f8fafc']} />
-        
+
         {/* Technical Grid (Light Theme) */}
-        <gridHelper 
-          args={[16, 32, '#0ea5e9', '#cbd5e1']} 
-          position={[0, -1.5, 0]} 
-          opacity={0.4} 
+        <gridHelper
+          args={[16, 32, '#0ea5e9', '#cbd5e1']}
+          position={[0, -1.5, 0]}
+          opacity={0.4}
           transparent
         />
 

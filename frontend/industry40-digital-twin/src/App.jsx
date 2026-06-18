@@ -1,6 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
-import { Play, Square, Settings, Wrench, ShieldAlert, Cpu, Layers, TrendingUp, HelpCircle, Terminal as TerminalIcon, ShieldCheck, UserCheck } from 'lucide-react';
+import {
+  Play,
+  Square,
+  Settings,
+  Wrench,
+  ShieldAlert,
+  Cpu,
+  Layers,
+  TrendingUp,
+  HelpCircle,
+  Terminal as TerminalIcon,
+  ShieldCheck,
+  UserCheck
+} from 'lucide-react';
 import AssemblyLine3D from './components/AssemblyLine3D';
 import OeeCalculator from './components/OeeCalculator';
 import IshikawaFishbone from './components/IshikawaFishbone';
@@ -10,24 +23,30 @@ const App = () => {
   const [lineState, setLineState] = useState(null);
   const [oeeMetrics, setOeeMetrics] = useState(null);
   const [downtimeLogs, setDowntimeLogs] = useState([]);
-  
+
   const [simulationActive, setSimulationActive] = useState(false);
   const [activeEvent, setActiveEvent] = useState('NORMAL');
   const [selectedMachine, setSelectedMachine] = useState(null);
   const [showDocentePanel, setShowDocentePanel] = useState(false);
-  
+
   // Imaginary budget/credits for improvements
   const [credits, setCredits] = useState(1500);
   const [terminalLogs, setTerminalLogs] = useState([
-    { time: new Date().toLocaleTimeString(), text: 'PLC Virtual inicializado. Listo para recibir telemetría.' },
-    { time: new Date().toLocaleTimeString(), text: 'Tableros de control SCADA en escucha en puerto local 20013.' }
+    {
+      time: new Date().toLocaleTimeString(),
+      text: 'PLC Virtual inicializado. Listo para recibir telemetría.'
+    },
+    {
+      time: new Date().toLocaleTimeString(),
+      text: 'Tableros de control SCADA en escucha en puerto local 20013.'
+    }
   ]);
 
   const socketRef = useRef(null);
 
   // Helper to add terminal log messages
   const addLog = (text) => {
-    setTerminalLogs(prev => [
+    setTerminalLogs((prev) => [
       { time: new Date().toLocaleTimeString(), text },
       ...prev.slice(0, 15) // Keep last 15 logs
     ]);
@@ -84,15 +103,20 @@ const App = () => {
 
     // Handle incoming telemetry events
     socket.on('manufacturing-telemetry-update', (data) => {
-      const { stepResult, lineState: newLineState, oeeMetrics: newOee, downtimeLogs: newDowntime } = data;
-      
+      const {
+        stepResult,
+        lineState: newLineState,
+        oeeMetrics: newOee,
+        downtimeLogs: newDowntime
+      } = data;
+
       setLineState(newLineState);
       setOeeMetrics(newOee);
       setDowntimeLogs(newDowntime);
-      
+
       // Update selected machine reference if open
       if (selectedMachine) {
-        const refreshed = newLineState?.machines?.find(m => m.id === selectedMachine.id);
+        const refreshed = newLineState?.machines?.find((m) => m.id === selectedMachine.id);
         if (refreshed) {
           setSelectedMachine(refreshed);
         }
@@ -100,7 +124,9 @@ const App = () => {
 
       // Add feedback log
       if (stepResult?.defectsFound > 0) {
-        addLog(`PLC SENSOR: Lote ${stepResult.batchId.substring(0, 5)} reporta ${stepResult.defectsFound} pieza defectuosa (Scrap).`);
+        addLog(
+          `PLC SENSOR: Lote ${stepResult.batchId.substring(0, 5)} reporta ${stepResult.defectsFound} pieza defectuosa (Scrap).`
+        );
       }
     });
 
@@ -162,9 +188,11 @@ const App = () => {
       });
 
       if (res.ok) {
-        setCredits(prev => prev - cost);
-        addLog(`INTERVENCIÓN MEJORA: Aplicado mantenimiento preventivo a máquina. Probabilidad de paradas reducida.`);
-        
+        setCredits((prev) => prev - cost);
+        addLog(
+          `INTERVENCIÓN MEJORA: Aplicado mantenimiento preventivo a máquina. Probabilidad de paradas reducida.`
+        );
+
         // Refresh local view
         fetchInitialData();
       }
@@ -193,12 +221,14 @@ const App = () => {
 
       if (res.ok) {
         if (nextBalanced) {
-          setCredits(prev => prev - cost);
-          addLog(`INTERVENCIÓN MEJORA: Línea Balanceada. Reasignación de carga robótica reduce el cuello de botella a 6.0s.`);
+          setCredits((prev) => prev - cost);
+          addLog(
+            `INTERVENCIÓN MEJORA: Línea Balanceada. Reasignación de carga robótica reduce el cuello de botella a 6.0s.`
+          );
         } else {
           addLog(`INTERVENCIÓN MEJORA: Línea Desbalanceada. Regreso a la configuración inicial.`);
         }
-        
+
         // Refresh local view
         fetchInitialData();
       }
@@ -261,7 +291,9 @@ const App = () => {
             <button
               onClick={toggleSimulationState}
               className={`docente-btn py-2 px-3 rounded flex items-center justify-center space-x-1 ${
-                simulationActive ? 'active border-red-500 text-red-350' : 'border-emerald-500 text-emerald-350'
+                simulationActive
+                  ? 'active border-red-500 text-red-350'
+                  : 'border-emerald-500 text-emerald-350'
               }`}
             >
               {simulationActive ? (
@@ -367,9 +399,15 @@ const App = () => {
                   >
                     <div className="flex justify-between items-center mb-1">
                       <span className="text-slate-450 font-bold">ESTACIÓN {m.sequenceOrder}</span>
-                      <span className={`w-2 h-2 rounded-full ${
-                        m.status === 'OPERATIONAL' ? 'bg-emerald-500' : m.status === 'DEGRADED' ? 'bg-amber-500' : 'bg-red-500 animate-pulse'
-                      }`} />
+                      <span
+                        className={`w-2 h-2 rounded-full ${
+                          m.status === 'OPERATIONAL'
+                            ? 'bg-emerald-500'
+                            : m.status === 'DEGRADED'
+                              ? 'bg-amber-500'
+                              : 'bg-red-500 animate-pulse'
+                        }`}
+                      />
                     </div>
                     <div className="text-slate-200 font-bold mb-2 truncate">{m.type}</div>
                     <div className="flex justify-between text-slate-500">
@@ -387,7 +425,9 @@ const App = () => {
               {selectedMachine ? (
                 <div className="p-4 rounded-xl border data-plate flex flex-col space-y-3 font-mono">
                   <div className="flex justify-between items-center border-b border-slate-850 pb-2">
-                    <span className="text-xs font-bold text-cyan-400">PLACA DE DATOS DE MAQUINARIA</span>
+                    <span className="text-xs font-bold text-cyan-400">
+                      PLACA DE DATOS DE MAQUINARIA
+                    </span>
                     <button
                       onClick={() => setSelectedMachine(null)}
                       className="text-slate-500 hover:text-slate-300 text-xs"
@@ -399,7 +439,9 @@ const App = () => {
                   <div className="space-y-2 text-xxs">
                     <div className="flex justify-between">
                       <span className="text-slate-450">ID Nodo:</span>
-                      <span className="text-slate-200 select-all">{selectedMachine.id.substring(0, 18)}...</span>
+                      <span className="text-slate-200 select-all">
+                        {selectedMachine.id.substring(0, 18)}...
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-450">Tipo Estación:</span>
@@ -407,25 +449,35 @@ const App = () => {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-450">Orden Secuencial:</span>
-                      <span className="text-slate-200">Estación #{selectedMachine.sequenceOrder}</span>
+                      <span className="text-slate-200">
+                        Estación #{selectedMachine.sequenceOrder}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-450">T. Ciclo Nominal:</span>
-                      <span className="text-slate-200 font-bold">{selectedMachine.nominalCycleTime.toFixed(1)}s</span>
+                      <span className="text-slate-200 font-bold">
+                        {selectedMachine.nominalCycleTime.toFixed(1)}s
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-450">T. Ciclo Actual:</span>
-                      <span className="text-slate-200 font-bold text-cyan-400">{selectedMachine.currentCycleTime.toFixed(2)}s</span>
+                      <span className="text-slate-200 font-bold text-cyan-400">
+                        {selectedMachine.currentCycleTime.toFixed(2)}s
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-450">Temperatura Motor:</span>
-                      <span className={`font-bold ${selectedMachine.temperature > 65 ? 'text-rose-450' : 'text-slate-200'}`}>
+                      <span
+                        className={`font-bold ${selectedMachine.temperature > 65 ? 'text-rose-450' : 'text-slate-200'}`}
+                      >
                         {selectedMachine.temperature.toFixed(1)} °C
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-450">Tasa Consumo Energía:</span>
-                      <span className="text-slate-200">{selectedMachine.energyRate.toFixed(3)} kW/h</span>
+                      <span className="text-slate-200">
+                        {selectedMachine.energyRate.toFixed(3)} kW/h
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-450">Preventive Maintenance:</span>
@@ -455,7 +507,10 @@ const App = () => {
               ) : (
                 <div className="p-5 rounded-xl border border-slate-850 bg-slate-900/40 text-center text-slate-500 font-mono text-xxs h-44 flex flex-col items-center justify-center space-y-2">
                   <Cpu size={24} className="text-slate-650" />
-                  <p>Selecciona una máquina en el visor 3D para desplegar su instrumentación telemétrica y opciones de mejora preventivas.</p>
+                  <p>
+                    Selecciona una máquina en el visor 3D para desplegar su instrumentación
+                    telemétrica y opciones de mejora preventivas.
+                  </p>
                 </div>
               )}
 
@@ -466,7 +521,8 @@ const App = () => {
                   INTERVENCIONES LEAN: BALANCEO DE LÍNEA
                 </span>
                 <p className="text-xxs text-slate-500 leading-relaxed">
-                  Reasigna las tareas de carga del brazo robótico (Estación 3) para equilibrar los tiempos de ciclo. Costo único de 500 créditos.
+                  Reasigna las tareas de carga del brazo robótico (Estación 3) para equilibrar los
+                  tiempos de ciclo. Costo único de 500 créditos.
                 </p>
 
                 <div className="flex justify-between items-center text-xxs">
@@ -476,7 +532,9 @@ const App = () => {
                       <UserCheck size={11} className="mr-1" /> BALANCEADO
                     </span>
                   ) : (
-                    <span className="text-rose-400 font-bold">DESEQUILIBRADO (Cuello de Botella)</span>
+                    <span className="text-rose-400 font-bold">
+                      DESEQUILIBRADO (Cuello de Botella)
+                    </span>
                   )}
                 </div>
 
@@ -484,7 +542,9 @@ const App = () => {
                   onClick={handleBalanceLine}
                   className="w-full bg-slate-950 border border-cyan-500/30 hover:border-cyan-500 text-cyan-400 hover:text-cyan-300 py-1.5 rounded text-xxs font-bold transition"
                 >
-                  {lineState?.lineBalanced ? 'Desactivar Balanceo' : 'Equilibrar Carga Estación 3 (Costo: 500 CR)'}
+                  {lineState?.lineBalanced
+                    ? 'Desactivar Balanceo'
+                    : 'Equilibrar Carga Estación 3 (Costo: 500 CR)'}
                 </button>
               </div>
 
@@ -507,13 +567,9 @@ const App = () => {
           </div>
         )}
 
-        {activeTab === 'oee' && (
-          <OeeCalculator oeeData={oeeMetrics} />
-        )}
+        {activeTab === 'oee' && <OeeCalculator oeeData={oeeMetrics} />}
 
-        {activeTab === 'ishikawa' && (
-          <IshikawaFishbone />
-        )}
+        {activeTab === 'ishikawa' && <IshikawaFishbone />}
       </div>
 
       {/* Down Table: Downtime Log (Tiempos Muertos) */}
@@ -541,8 +597,12 @@ const App = () => {
                       {log.reasonCode}
                     </span>
                   </td>
-                  <td className="py-2.5 text-cyan-400 font-bold">{log.durationSecs} seg (aprox {(log.durationSecs / 60).toFixed(1)} mins)</td>
-                  <td className="py-2.5 text-slate-500">{new Date(log.timestamp).toLocaleString()}</td>
+                  <td className="py-2.5 text-cyan-400 font-bold">
+                    {log.durationSecs} seg (aprox {(log.durationSecs / 60).toFixed(1)} mins)
+                  </td>
+                  <td className="py-2.5 text-slate-500">
+                    {new Date(log.timestamp).toLocaleString()}
+                  </td>
                 </tr>
               ))}
               {downtimeLogs.length === 0 && (

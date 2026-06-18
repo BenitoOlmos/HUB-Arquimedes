@@ -5,11 +5,11 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 export default function PlantViewer3D({ assets, breakers }) {
   const containerRef = useRef(null);
   const [selectedAsset, setSelectedAsset] = useState(null);
-  
+
   // Store turbine rotation angles in ref
   const rotationAnglesRef = useRef({
-    "WTG-01": 0,
-    "WTG-02": 0
+    'WTG-01': 0,
+    'WTG-02': 0
   });
 
   useEffect(() => {
@@ -111,11 +111,11 @@ export default function PlantViewer3D({ assets, breakers }) {
       for (let i = 0; i < 3; i++) {
         const bladeMesh = new THREE.Mesh(bladeGeo, bladeMat);
         bladeMesh.position.y = 6; // Pivot around the end
-        
+
         const rotationPivot = new THREE.Group();
         rotationPivot.rotation.z = (i * 2 * Math.PI) / 3;
         rotationPivot.add(bladeMesh);
-        
+
         bladesSubGroup.add(rotationPivot);
       }
       g.add(bladesSubGroup);
@@ -138,13 +138,13 @@ export default function PlantViewer3D({ assets, breakers }) {
     const createSolarArray = (tagId, startX, startZ, rows, cols, status) => {
       const g = new THREE.Group();
       g.userData = { tagId };
-      
+
       const color = getStatusColorHex(tagId, status);
       const panelMat = new THREE.MeshPhongMaterial({ color: 0x1a202c, shininess: 80 });
       const frameMat = new THREE.MeshPhongMaterial({ color: 0x4a5568 });
-      
+
       const panelGeo = new THREE.BoxGeometry(2.5, 0.1, 1.5);
-      
+
       const panelsList = [];
 
       for (let r = 0; r < rows; r++) {
@@ -163,7 +163,7 @@ export default function PlantViewer3D({ assets, breakers }) {
           panelMesh.position.y = 1.0;
           panelMesh.rotation.x = 0.35; // Fixed solar tilt angle
           panelGroup.add(panelMesh);
-          
+
           g.add(panelGroup);
           panelsList.push(panelMesh);
         }
@@ -171,7 +171,12 @@ export default function PlantViewer3D({ assets, breakers }) {
 
       // Main outline box for selection/status highlight
       const baseGeo = new THREE.BoxGeometry(cols * 4, 1.5, rows * 3);
-      const baseMat = new THREE.MeshBasicMaterial({ color, wireframe: true, transparent: true, opacity: 0.3 });
+      const baseMat = new THREE.MeshBasicMaterial({
+        color,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.3
+      });
       const base = new THREE.Mesh(baseGeo, baseMat);
       base.position.set(startX + (cols - 1) * 2, 0.5, startZ + (rows - 1) * 1.5);
       g.add(base);
@@ -200,7 +205,10 @@ export default function PlantViewer3D({ assets, breakers }) {
 
       // Box body
       const bodyGeo = new THREE.BoxGeometry(6, 4, 6);
-      const bodyMat = new THREE.MeshPhongMaterial({ color: isTrafo ? 0x2d3748 : 0x718096, shininess: 20 });
+      const bodyMat = new THREE.MeshPhongMaterial({
+        color: isTrafo ? 0x2d3748 : 0x718096,
+        shininess: 20
+      });
       const body = new THREE.Mesh(bodyGeo, bodyMat);
       body.position.y = 2.0;
       g.add(body);
@@ -228,21 +236,41 @@ export default function PlantViewer3D({ assets, breakers }) {
 
     // Instantiate Plant Assets procedural meshes
     const wtgs = [
-      createWindTurbine("WTG-01", -35, -20, assets.find(a => a.tagId === "WTG-01")?.status),
-      createWindTurbine("WTG-02", -35, 20, assets.find(a => a.tagId === "WTG-02")?.status)
+      createWindTurbine('WTG-01', -35, -20, assets.find((a) => a.tagId === 'WTG-01')?.status),
+      createWindTurbine('WTG-02', -35, 20, assets.find((a) => a.tagId === 'WTG-02')?.status)
     ];
 
     const pvs = [
-      createSolarArray("PV-ARRAY-01", 10, -30, 4, 6, assets.find(a => a.tagId === "PV-ARRAY-01")?.status),
-      createSolarArray("PV-ARRAY-02", 10, 10, 4, 6, assets.find(a => a.tagId === "PV-ARRAY-02")?.status)
+      createSolarArray(
+        'PV-ARRAY-01',
+        10,
+        -30,
+        4,
+        6,
+        assets.find((a) => a.tagId === 'PV-ARRAY-01')?.status
+      ),
+      createSolarArray(
+        'PV-ARRAY-02',
+        10,
+        10,
+        4,
+        6,
+        assets.find((a) => a.tagId === 'PV-ARRAY-02')?.status
+      )
     ];
 
     const inverters = [
-      createStation("INV-01", 15, -5, assets.find(a => a.tagId === "INV-01")?.status),
-      createStation("INV-02", 25, -5, assets.find(a => a.tagId === "INV-02")?.status)
+      createStation('INV-01', 15, -5, assets.find((a) => a.tagId === 'INV-01')?.status),
+      createStation('INV-02', 25, -5, assets.find((a) => a.tagId === 'INV-02')?.status)
     ];
 
-    const trafo = createStation("TRAFO-01", -5, 0, assets.find(a => a.tagId === "TRAFO-01")?.status, true);
+    const trafo = createStation(
+      'TRAFO-01',
+      -5,
+      0,
+      assets.find((a) => a.tagId === 'TRAFO-01')?.status,
+      true
+    );
 
     // 6. Mouse Raycasting Selection
     const raycaster = new THREE.Raycaster();
@@ -259,7 +287,7 @@ export default function PlantViewer3D({ assets, breakers }) {
       if (intersects.length > 0) {
         const hitMesh = intersects[0].object;
         const tagId = hitMesh.userData.tagId;
-        const match = assets.find(a => a.tagId === tagId);
+        const match = assets.find((a) => a.tagId === tagId);
         if (match) {
           setSelectedAsset(match);
         }
@@ -272,19 +300,19 @@ export default function PlantViewer3D({ assets, breakers }) {
     // 7. Animation Loop
     let lastTime = performance.now();
     let animId;
-    
+
     const animate = () => {
       animId = requestAnimationFrame(animate);
-      
+
       const time = performance.now();
       const deltaTime = (time - lastTime) / 1000;
       lastTime = time;
 
       // Rotate Turbine blades based on their live RPM telemetry
-      wtgs.forEach(wtg => {
-        const assetData = assets.find(a => a.tagId === wtg.group.userData.tagId);
+      wtgs.forEach((wtg) => {
+        const assetData = assets.find((a) => a.tagId === wtg.group.userData.tagId);
         if (assetData) {
-          const rpm = assetData.telemetry["RPM"] || 0;
+          const rpm = assetData.telemetry['RPM'] || 0;
           const speedRad = (rpm * 2 * Math.PI) / 60; // rad/s
           rotationAnglesRef.current[assetData.tagId] += speedRad * deltaTime;
           wtg.blades.rotation.z = rotationAnglesRef.current[assetData.tagId];
@@ -293,11 +321,11 @@ export default function PlantViewer3D({ assets, breakers }) {
 
       // Pulse fault/online beacons above assets
       const pulseFactor = 0.7 + 0.3 * Math.sin(time * 0.005);
-      
+
       // Update beacons
-      wtgs.forEach(wtg => wtg.beacon.scale.set(pulseFactor, pulseFactor, pulseFactor));
-      pvs.forEach(pv => pv.beacon.scale.set(pulseFactor, pulseFactor, pulseFactor));
-      inverters.forEach(inv => inv.beacon.scale.set(pulseFactor, pulseFactor, pulseFactor));
+      wtgs.forEach((wtg) => wtg.beacon.scale.set(pulseFactor, pulseFactor, pulseFactor));
+      pvs.forEach((pv) => pv.beacon.scale.set(pulseFactor, pulseFactor, pulseFactor));
+      inverters.forEach((inv) => inv.beacon.scale.set(pulseFactor, pulseFactor, pulseFactor));
       trafo.beacon.scale.set(pulseFactor, pulseFactor, pulseFactor);
 
       controls.update();
@@ -333,30 +361,53 @@ export default function PlantViewer3D({ assets, breakers }) {
 
       {/* Selected Asset Overlay Details panel */}
       {selectedAsset && (
-        <div style={{
-          position: 'absolute',
-          top: '16px',
-          right: '16px',
-          background: 'rgba(10, 11, 16, 0.9)',
-          border: '1px solid var(--hmi-border)',
-          borderRadius: '4px',
-          width: '200px',
-          padding: '12px',
-          zIndex: 20,
-          fontFamily: 'var(--font-sans)',
-          fontSize: '11px',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.5)'
-        }}>
-          <div style={{ fontWeight: 'bold', color: 'var(--text-bright)', marginBottom: '8px', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '4px' }}>
+        <div
+          style={{
+            position: 'absolute',
+            top: '16px',
+            right: '16px',
+            background: 'rgba(10, 11, 16, 0.9)',
+            border: '1px solid var(--hmi-border)',
+            borderRadius: '4px',
+            width: '200px',
+            padding: '12px',
+            zIndex: 20,
+            fontFamily: 'var(--font-sans)',
+            fontSize: '11px',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.5)'
+          }}
+        >
+          <div
+            style={{
+              fontWeight: 'bold',
+              color: 'var(--text-bright)',
+              marginBottom: '8px',
+              borderBottom: '1px solid rgba(255,255,255,0.05)',
+              paddingBottom: '4px'
+            }}
+          >
             {selectedAsset.tagId}
           </div>
-          <div style={{ color: 'var(--text-muted)', marginBottom: '6px' }}>Tipo: {selectedAsset.assetType}</div>
-          <div style={{ color: 'var(--text-muted)', marginBottom: '10px' }}>Ubicación: {selectedAsset.location}</div>
-          
+          <div style={{ color: 'var(--text-muted)', marginBottom: '6px' }}>
+            Tipo: {selectedAsset.assetType}
+          </div>
+          <div style={{ color: 'var(--text-muted)', marginBottom: '10px' }}>
+            Ubicación: {selectedAsset.location}
+          </div>
+
           <div style={{ borderTop: '1px dashed rgba(255,255,255,0.1)', paddingTop: '8px' }}>
-            <div style={{ fontWeight: 'bold', color: 'var(--hmi-cyan)', marginBottom: '4px' }}>TELEMETRÍA:</div>
+            <div style={{ fontWeight: 'bold', color: 'var(--hmi-cyan)', marginBottom: '4px' }}>
+              TELEMETRÍA:
+            </div>
             {Object.entries(selectedAsset.telemetry).map(([param, val]) => (
-              <div key={param} style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--font-mono)' }}>
+              <div
+                key={param}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  fontFamily: 'var(--font-mono)'
+                }}
+              >
                 <span>{param}:</span>
                 <span style={{ color: 'var(--text-bright)' }}>{val}</span>
               </div>
@@ -364,19 +415,21 @@ export default function PlantViewer3D({ assets, breakers }) {
           </div>
         </div>
       )}
-      
-      <div style={{
-        position: 'absolute',
-        top: '16px',
-        left: '16px',
-        pointerEvents: 'none',
-        background: 'rgba(10, 11, 16, 0.55)',
-        padding: '6px 10px',
-        borderRadius: '3px',
-        fontSize: '10px',
-        fontFamily: 'var(--font-mono)',
-        color: 'var(--text-muted)'
-      }}>
+
+      <div
+        style={{
+          position: 'absolute',
+          top: '16px',
+          left: '16px',
+          pointerEvents: 'none',
+          background: 'rgba(10, 11, 16, 0.55)',
+          padding: '6px 10px',
+          borderRadius: '3px',
+          fontSize: '10px',
+          fontFamily: 'var(--font-mono)',
+          color: 'var(--text-muted)'
+        }}
+      >
         [ CLICK EN EQUIPO PARA INSPECCIÓN ]
       </div>
     </div>

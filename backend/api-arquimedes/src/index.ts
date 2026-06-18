@@ -29,14 +29,16 @@ import { EsgService } from './services/esg.service';
 import hisRoutes from './routes/his.routes';
 import { HisService } from './services/his.service';
 
-
 // Initialize Pino Logger
 export const logger = pino({
   level: process.env.LOG_LEVEL || 'info',
-  transport: process.env.NODE_ENV !== 'production' ? {
-    target: 'pino-pretty',
-    options: { colorize: true }
-  } : undefined
+  transport:
+    process.env.NODE_ENV !== 'production'
+      ? {
+          target: 'pino-pretty',
+          options: { colorize: true }
+        }
+      : undefined
 });
 
 const app = express();
@@ -61,16 +63,18 @@ const limiter = rateLimit({
   max: 500, // Elevated for simulation polling / solver scripts
   message: { error: 'Too many requests from this IP, please try again after 15 minutes.' },
   standardHeaders: true,
-  legacyHeaders: false,
+  legacyHeaders: false
 });
 app.use('/api', limiter);
 
 // CORS setup
-app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+app.use(
+  cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+  })
+);
 
 app.use(express.json());
 
@@ -94,7 +98,6 @@ app.use('/api/revenue', revenueRoutes);
 app.use('/api/esg', esgRoutes);
 app.use('/api/his', hisRoutes);
 
-
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK', timestamp: new Date() });
@@ -108,10 +111,10 @@ app.use((req: Request, res: Response) => {
 // Global Error Handling Middleware
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   logger.error({ err, url: req.url, method: req.method }, 'Unhandled Exception Occurred');
-  
+
   const status = err.status || 500;
   const message = err.message || 'Internal Server Error';
-  
+
   res.status(status).json({
     error: message,
     timestamp: new Date().toISOString()
@@ -121,7 +124,7 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 // Socket.io Connection handler
 io.on('connection', (socket) => {
   logger.info({ socketId: socket.id }, 'WebSockets client connected.');
-  
+
   socket.on('disconnect', () => {
     logger.info({ socketId: socket.id }, 'WebSockets client disconnected.');
   });
@@ -171,9 +174,9 @@ setInterval(async () => {
     const transactions = await fintechService.getTransactions(40);
     const alerts = await fintechService.getAlerts();
     const evalStats = fintechService.getEvaluationStats();
-    
+
     io.emit('fintech-telemetry-update', {
-      transactions: transactions.map(t => ({
+      transactions: transactions.map((t) => ({
         id: t.id,
         sender: t.sender.accountNumber,
         receiver: t.receiver.accountNumber,
@@ -250,7 +253,7 @@ setInterval(async () => {
       const kpis = await trafficService.getKPIs();
       const routes = await trafficService.getRoutes();
       const intersections = await trafficService.getIntersections();
-      
+
       io.emit('mobility-telemetry-update', {
         stepTelemetry,
         kpis,
@@ -270,7 +273,9 @@ httpServer.listen(PORT, () => {
   logger.info(`Smart Port Logistics API is active at http://localhost:${PORT}/api/port`);
   logger.info(`Retail Analytics API is active at http://localhost:${PORT}/api/retail`);
   logger.info(`Smart City Mobility API is active at http://localhost:${PORT}/api/mobility`);
-  logger.info(`Industry 4.0 Digital Twin API is active at http://localhost:${PORT}/api/manufacturing`);
+  logger.info(
+    `Industry 4.0 Digital Twin API is active at http://localhost:${PORT}/api/manufacturing`
+  );
   logger.info(`Hospitality PMS API is active at http://localhost:${PORT}/api/pms`);
 });
 
@@ -282,7 +287,7 @@ setInterval(async () => {
   try {
     if (pmsService.getSimulationActive()) {
       await pmsService.runSimulationStep();
-      
+
       const rooms = await pmsService.getRooms();
       const reservations = await pmsService.getReservations();
       const reviews = await pmsService.getReviews();
@@ -317,7 +322,7 @@ setInterval(async () => {
         const lineState = await manufacturingService.getLineState();
         const oeeMetrics = await manufacturingService.calculateOeeMetrics();
         const downtimeLogs = await manufacturingService.getDowntimeLogs();
-        
+
         io.emit('manufacturing-telemetry-update', {
           stepResult,
           lineState,
@@ -359,4 +364,3 @@ setInterval(async () => {
     logger.error({ error }, 'Error during HIS simulation tick execution');
   }
 }, 3000);
-

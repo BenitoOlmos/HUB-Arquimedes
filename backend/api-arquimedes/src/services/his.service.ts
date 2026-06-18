@@ -2,11 +2,11 @@ import prisma from './prisma';
 
 // Time limit threshold for each ESI in simulated minutes/ticks
 const ESI_LIMITS: { [key: number]: number } = {
-  1: 2,    // Resuscitation: 2 mins (Immediate)
-  2: 10,   // Emergency: 10 mins
-  3: 30,   // Urgent: 30 mins
-  4: 60,   // Semi-urgent: 60 mins
-  5: 120   // Non-urgent: 120 mins
+  1: 2, // Resuscitation: 2 mins (Immediate)
+  2: 10, // Emergency: 10 mins
+  3: 30, // Urgent: 30 mins
+  4: 60, // Semi-urgent: 60 mins
+  5: 120 // Non-urgent: 120 mins
 };
 
 let activeCrises: string[] = []; // EPIDEMIC, ACCIDENT, EQUIPMENT_FAIL
@@ -33,7 +33,7 @@ export class HisService {
     const totalBeds = await prisma.hisBed.count();
     const occupiedBeds = await prisma.hisBed.count({ where: { status: 'OCCUPIED' } });
     const occupancy = totalBeds > 0 ? Math.round((occupiedBeds / totalBeds) * 100) : 0;
-    
+
     const attended = await prisma.hisTriage.count({
       where: { status: { in: ['ADMITTED', 'DISCHARGED'] } }
     });
@@ -96,18 +96,18 @@ export class HisService {
       orderBy: { bedNumber: 'asc' }
     });
 
-    const occupiedBeds = beds.filter(b => b.status === 'OCCUPIED' && b.currentPatient);
-    
+    const occupiedBeds = beds.filter((b) => b.status === 'OCCUPIED' && b.currentPatient);
+
     let patientsMap = new Map<string, any>();
     let triageMap = new Map<string, any>();
 
     if (occupiedBeds.length > 0) {
-      const patientIds = occupiedBeds.map(b => b.currentPatient as string);
-      
+      const patientIds = occupiedBeds.map((b) => b.currentPatient as string);
+
       const patients = await prisma.hisPatient.findMany({
         where: { id: { in: patientIds } }
       });
-      patientsMap = new Map(patients.map(p => [p.id, p]));
+      patientsMap = new Map(patients.map((p) => [p.id, p]));
 
       const triages = await prisma.hisTriage.findMany({
         where: {
@@ -115,12 +115,12 @@ export class HisService {
           status: 'ADMITTED'
         }
       });
-      triageMap = new Map(triages.map(t => [t.patientId, t]));
+      triageMap = new Map(triages.map((t) => [t.patientId, t]));
     }
 
-    return beds.map(b => {
+    return beds.map((b) => {
       const cleaningTimeLeftSim = bedCleaningTimers.get(b.id) || 0;
-      
+
       let frontendStatus = 'Disponible';
       if (b.status === 'OCCUPIED') frontendStatus = 'Ocupada';
       else if (b.status === 'CLEANING') frontendStatus = 'En Limpieza';
@@ -162,33 +162,36 @@ export class HisService {
       include: {
         patient: true
       },
-      orderBy: [
-        { assignedEsi: 'asc' },
-        { arrivalTime: 'asc' }
-      ]
+      orderBy: [{ assignedEsi: 'asc' }, { arrivalTime: 'asc' }]
     });
 
-    return list.map(item => {
+    return list.map((item) => {
       const parts = item.symptoms.split(' | Vitales: ');
       const cleanSymptoms = parts[0];
       const vitalsText = parts[1] || '';
-      
-      const vitals = { temp: 36.5, hr: 80, bp: "120/80", sat: 98 };
+
+      const vitals = { temp: 36.5, hr: 80, bp: '120/80', sat: 98 };
       if (vitalsText) {
         const tempMatch = vitalsText.match(/T:([\d.]+)°C/);
         const hrMatch = vitalsText.match(/FC:(\d+)LPM/);
         const bpMatch = vitalsText.match(/PA:([\d/]+)/);
         const satMatch = vitalsText.match(/Sat:(\d+)%/);
-        
+
         if (tempMatch) vitals.temp = parseFloat(tempMatch[1]);
         if (hrMatch) vitals.hr = parseInt(hrMatch[1]);
         if (bpMatch) vitals.bp = bpMatch[1];
         if (satMatch) vitals.sat = parseInt(satMatch[1]);
       }
 
-      const waitElapsedSim = Math.floor((new Date().getTime() - item.arrivalTime.getTime()) / 60000);
+      const waitElapsedSim = Math.floor(
+        (new Date().getTime() - item.arrivalTime.getTime()) / 60000
+      );
       const ESI_LIMITS: { [key: number]: number } = {
-        1: 2, 2: 10, 3: 30, 4: 60, 5: 120
+        1: 2,
+        2: 10,
+        3: 30,
+        4: 60,
+        5: 120
       };
       const esi = item.assignedEsi || 3;
       const timeLimitSim = ESI_LIMITS[esi];
@@ -248,7 +251,9 @@ export class HisService {
     });
 
     this.broadcastUpdate();
-    this.emitAlert(`📢 Ingreso Triage: Paciente ${patient.fullName} categorizado ESI ${assignedEsi}`);
+    this.emitAlert(
+      `📢 Ingreso Triage: Paciente ${patient.fullName} categorizado ESI ${assignedEsi}`
+    );
     return triage;
   }
 
@@ -269,26 +274,39 @@ export class HisService {
     const comorbidities = JSON.parse(triage.patient.comorbidities || '[]');
     const isPediatric = triage.patient.age < 18;
     const isAdult = triage.patient.age >= 18;
-    const isContagious = triage.symptoms.toLowerCase().includes('infección') ||
-                         triage.symptoms.toLowerCase().includes('brote') ||
-                         triage.symptoms.toLowerCase().includes('contagio') ||
-                         comorbidities.includes('Infección Activa');
+    const isContagious =
+      triage.symptoms.toLowerCase().includes('infección') ||
+      triage.symptoms.toLowerCase().includes('brote') ||
+      triage.symptoms.toLowerCase().includes('contagio') ||
+      comorbidities.includes('Infección Activa');
 
     // 1. Pediatric check
     if (isPediatric && bed.ward !== 'PED' && bed.ward !== 'AIS') {
-      throw new Error('Validación Clínica: Paciente pediátrico debe ir a la sala de Pediatría o Aislamiento.');
+      throw new Error(
+        'Validación Clínica: Paciente pediátrico debe ir a la sala de Pediatría o Aislamiento.'
+      );
     }
     // 2. Adult check
     if (isAdult && bed.ward === 'PED') {
-      throw new Error('Validación Clínica: Pacientes adultos no pueden ser ingresados a Pediatría.');
+      throw new Error(
+        'Validación Clínica: Pacientes adultos no pueden ser ingresados a Pediatría.'
+      );
     }
     // 3. Contagious check
     if (isContagious && bed.ward !== 'AIS' && bed.ward !== 'UCI') {
-      throw new Error('Validación Clínica: Paciente contagioso/infeccioso debe ser aislado en Aislamiento o UCI.');
+      throw new Error(
+        'Validación Clínica: Paciente contagioso/infeccioso debe ser aislado en Aislamiento o UCI.'
+      );
     }
     // 4. Critical check
-    if ((triage.assignedEsi === 1 || triage.assignedEsi === 2) && (bed.ward !== 'UCI' && bed.ward !== 'UTI')) {
-      throw new Error('Validación Clínica: Pacientes críticos ESI 1 y ESI 2 requieren monitoreo en UCI o UTI.');
+    if (
+      (triage.assignedEsi === 1 || triage.assignedEsi === 2) &&
+      bed.ward !== 'UCI' &&
+      bed.ward !== 'UTI'
+    ) {
+      throw new Error(
+        'Validación Clínica: Pacientes críticos ESI 1 y ESI 2 requieren monitoreo en UCI o UTI.'
+      );
     }
 
     // Perform Transfer
@@ -376,7 +394,9 @@ export class HisService {
     }
 
     this.broadcastUpdate();
-    this.emitAlert(`✨ Limpieza: Paciente dado de alta. Cama ${bedId} ingresa a desinfección (15 min).`);
+    this.emitAlert(
+      `✨ Limpieza: Paciente dado de alta. Cama ${bedId} ingresa a desinfección (15 min).`
+    );
     return { success: true };
   }
 
@@ -442,41 +462,41 @@ export class HisService {
 
     // Generate mock analytics based on active database for Recharts dashboard
     const esiDistribution = [
-      { name: "ESI 1 (Resucitación)", value: 850, color: "var(--esi-1-resus)" },
-      { name: "ESI 2 (Emergencia)", value: 4200, color: "var(--esi-2-emerg)" },
-      { name: "ESI 3 (Urgente)", value: 12500, color: "var(--esi-3-urg)" },
-      { name: "ESI 4 (Semi-urgente)", value: 19800, color: "var(--esi-4-semi)" },
-      { name: "ESI 5 (No urgente)", value: 14650, color: "var(--esi-5-non)" }
+      { name: 'ESI 1 (Resucitación)', value: 850, color: 'var(--esi-1-resus)' },
+      { name: 'ESI 2 (Emergencia)', value: 4200, color: 'var(--esi-2-emerg)' },
+      { name: 'ESI 3 (Urgente)', value: 12500, color: 'var(--esi-3-urg)' },
+      { name: 'ESI 4 (Semi-urgente)', value: 19800, color: 'var(--esi-4-semi)' },
+      { name: 'ESI 5 (No urgente)', value: 14650, color: 'var(--esi-5-non)' }
     ];
 
     const outcomes = [
-      { name: "Alta", value: 34500 },
-      { name: "Hospitalización", value: 16200 },
-      { name: "Fallecido", value: 320 },
-      { name: "Derivado", value: 980 }
+      { name: 'Alta', value: 34500 },
+      { name: 'Hospitalización', value: 16200 },
+      { name: 'Fallecido', value: 320 },
+      { name: 'Derivado', value: 980 }
     ];
 
     const monthlyTrend = [
-      { monthName: "Ene", admissions: 4200, deaths: 25 },
-      { monthName: "Feb", admissions: 3900, deaths: 18 },
-      { monthName: "Mar", admissions: 4500, deaths: 22 },
-      { monthName: "Abr", admissions: 4100, deaths: 15 },
-      { monthName: "May", admissions: 4800, deaths: 31 },
-      { monthName: "Jun", admissions: 5200, deaths: 38 },
-      { monthName: "Jul", admissions: 5600, deaths: 45 },
-      { monthName: "Ago", admissions: 5100, deaths: 29 },
-      { monthName: "Sep", admissions: 4600, deaths: 20 },
-      { monthName: "Oct", admissions: 4300, deaths: 24 },
-      { monthName: "Nov", admissions: 4100, deaths: 19 },
-      { monthName: "Dic", admissions: 4800, deaths: 35 }
+      { monthName: 'Ene', admissions: 4200, deaths: 25 },
+      { monthName: 'Feb', admissions: 3900, deaths: 18 },
+      { monthName: 'Mar', admissions: 4500, deaths: 22 },
+      { monthName: 'Abr', admissions: 4100, deaths: 15 },
+      { monthName: 'May', admissions: 4800, deaths: 31 },
+      { monthName: 'Jun', admissions: 5200, deaths: 38 },
+      { monthName: 'Jul', admissions: 5600, deaths: 45 },
+      { monthName: 'Ago', admissions: 5100, deaths: 29 },
+      { monthName: 'Sep', admissions: 4600, deaths: 20 },
+      { monthName: 'Oct', admissions: 4300, deaths: 24 },
+      { monthName: 'Nov', admissions: 4100, deaths: 19 },
+      { monthName: 'Dic', admissions: 4800, deaths: 35 }
     ];
 
     const categoryStats = [
-      { name: "Cardiovascular", value: 8200, avgWait: 10 },
-      { name: "Respiratorio", value: 14500, avgWait: 25 },
-      { name: "Trauma", value: 11200, avgWait: 15 },
-      { name: "Gastrointestinal", value: 9400, avgWait: 45 },
-      { name: "Salud Mental", value: 3200, avgWait: 60 }
+      { name: 'Cardiovascular', value: 8200, avgWait: 10 },
+      { name: 'Respiratorio', value: 14500, avgWait: 25 },
+      { name: 'Trauma', value: 11200, avgWait: 15 },
+      { name: 'Gastrointestinal', value: 9400, avgWait: 45 },
+      { name: 'Salud Mental', value: 3200, avgWait: 60 }
     ];
 
     return {
@@ -496,12 +516,18 @@ export class HisService {
     }
 
     if (type === 'ACCIDENT') {
-      this.emitAlert(`🚨 CRISIS: ¡Accidente de tránsito múltiple! Afluencia masiva de pacientes graves en curso.`);
+      this.emitAlert(
+        `🚨 CRISIS: ¡Accidente de tránsito múltiple! Afluencia masiva de pacientes graves en curso.`
+      );
       this.injectTraumaPatients();
     } else if (type === 'EPIDEMIC') {
-      this.emitAlert(`⚠️ CRISIS: Brote viral respiratorio detectado. Alta demanda de camas y suministro de oxígeno.`);
+      this.emitAlert(
+        `⚠️ CRISIS: Brote viral respiratorio detectado. Alta demanda de camas y suministro de oxígeno.`
+      );
     } else if (type === 'EQUIPMENT_FAIL') {
-      this.emitAlert(`❌ CRISIS: Falla técnica crítica en respiradores de la UCI. 2 camas inhabilitadas.`);
+      this.emitAlert(
+        `❌ CRISIS: Falla técnica crítica en respiradores de la UCI. 2 camas inhabilitadas.`
+      );
       this.disableUciBeds();
     }
 
@@ -525,7 +551,8 @@ export class HisService {
         await prisma.hisTriage.create({
           data: {
             patientId: patient.id,
-            symptoms: 'Politraumatismo agudo por colisión vial de alto impacto | FC:115LPM, Sat:88%',
+            symptoms:
+              'Politraumatismo agudo por colisión vial de alto impacto | FC:115LPM, Sat:88%',
             assignedEsi: Math.random() > 0.4 ? 1 : 2,
             status: 'WAITING',
             arrivalTime: new Date()
@@ -636,21 +663,25 @@ export class HisService {
             where: { id: item.id },
             data: { assignedEsi: newEsi }
           });
-          this.emitAlert(`⚠️ DEGRADACIÓN CLÍNICA: Paciente ${item.patient.fullName} empeoró a ESI ${newEsi} por tiempo de espera.`);
+          this.emitAlert(
+            `⚠️ DEGRADACIÓN CLÍNICA: Paciente ${item.patient.fullName} empeoró a ESI ${newEsi} por tiempo de espera.`
+          );
         } else if (currentEsi === 1 && diffMins > limit + 5) {
           // ESI 1 waiting too long dies
           await prisma.hisTriage.update({
             where: { id: item.id },
             data: { status: 'DECEASED' }
           });
-          this.emitAlert(`🚨 CÓDIGO NEGRO: Deceso de paciente ${item.patient.fullName} en sala de espera.`);
+          this.emitAlert(
+            `🚨 CÓDIGO NEGRO: Deceso de paciente ${item.patient.fullName} en sala de espera.`
+          );
         }
       }
     }
 
     // 4. Pharmacy consumption based on occupied beds
     const beds = await prisma.hisBed.findMany();
-    const occupiedCount = beds.filter(b => b.status === 'OCCUPIED').length;
+    const occupiedCount = beds.filter((b) => b.status === 'OCCUPIED').length;
     if (occupiedCount > 0) {
       const multiplier = activeCrises.includes('EPIDEMIC') ? 2.5 : 1.0;
       const qtyToConsume = Math.ceil(occupiedCount * 0.2 * multiplier);
@@ -663,8 +694,8 @@ export class HisService {
 
     // 5. Patient Auto-Arrival simulation
     let arrivalChance = 0.15;
-    if (activeCrises.includes('EPIDEMIC')) arrivalChance = 0.40;
-    if (activeCrises.includes('ACCIDENT')) arrivalChance = 0.50;
+    if (activeCrises.includes('EPIDEMIC')) arrivalChance = 0.4;
+    if (activeCrises.includes('ACCIDENT')) arrivalChance = 0.5;
 
     if (Math.random() < arrivalChance) {
       await this.generateAutoArrivalPatient();
@@ -739,7 +770,9 @@ export class HisService {
         }
       });
 
-      this.emitAlert(`📢 Ingreso Triage: Paciente ${patient.fullName} categorizado ESI ${assignedEsi}`);
+      this.emitAlert(
+        `📢 Ingreso Triage: Paciente ${patient.fullName} categorizado ESI ${assignedEsi}`
+      );
     } catch (e) {
       console.error('Error generating auto arrival patient:', e);
     }
@@ -747,22 +780,20 @@ export class HisService {
 
   private broadcastUpdate() {
     if (socketIoInstance) {
-      Promise.all([
-        this.getBeds(),
-        this.getActiveTriage(),
-        this.getKpis()
-      ]).then(([beds, activeTriage, kpis]) => {
-        socketIoInstance.emit('his-telemetry-update', {
-          beds,
-          activeTriage,
-          simTime,
-          clockSpeed,
-          activeCrises,
-          kpis
+      Promise.all([this.getBeds(), this.getActiveTriage(), this.getKpis()])
+        .then(([beds, activeTriage, kpis]) => {
+          socketIoInstance.emit('his-telemetry-update', {
+            beds,
+            activeTriage,
+            simTime,
+            clockSpeed,
+            activeCrises,
+            kpis
+          });
+        })
+        .catch((err) => {
+          console.error('Error fetching broadcast data:', err);
         });
-      }).catch(err => {
-        console.error('Error fetching broadcast data:', err);
-      });
     }
   }
 

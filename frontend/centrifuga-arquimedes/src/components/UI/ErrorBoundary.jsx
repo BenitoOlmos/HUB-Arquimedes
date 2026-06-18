@@ -12,30 +12,39 @@ class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error("ErrorBoundary caught an unhandled rendering error:", error, errorInfo);
+    console.error('ErrorBoundary caught an unhandled rendering error:', error, errorInfo);
   }
 
   render() {
     if (this.state.hasError) {
       return (
-        <div style={{
-          padding: '24px',
-          background: 'rgba(239, 68, 68, 0.05)',
-          border: '1px solid var(--status-replace)',
-          borderRadius: '12px',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '16px',
-          color: 'var(--text-primary)',
-          textAlign: 'center',
-          margin: '20px 0'
-        }}>
-          <AlertTriangle size={48} color="var(--status-replace)" style={{ animation: 'bounce 2s infinite' }} />
+        <div
+          style={{
+            padding: '24px',
+            background: 'rgba(239, 68, 68, 0.05)',
+            border: '1px solid var(--status-replace)',
+            borderRadius: '12px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '16px',
+            color: 'var(--text-primary)',
+            textAlign: 'center',
+            margin: '20px 0'
+          }}
+        >
+          <AlertTriangle
+            size={48}
+            color="var(--status-replace)"
+            style={{ animation: 'bounce 2s infinite' }}
+          />
           <div>
-            <h3 style={{ marginBottom: '8px', color: 'var(--text-primary)' }}>Error en el Componente</h3>
+            <h3 style={{ marginBottom: '8px', color: 'var(--text-primary)' }}>
+              Error en el Componente
+            </h3>
             <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', maxWidth: '400px' }}>
-              Se produjo un error al renderizar esta sección del panel técnico. El resto del simulador sigue operando normalmente.
+              Se produjo un error al renderizar esta sección del panel técnico. El resto del
+              simulador sigue operando normalmente.
             </p>
           </div>
           <button

@@ -1,6 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
-import { Play, Square, Settings, UserPlus, ShieldAlert, Cpu, Layers, TrendingUp, HelpCircle, Terminal as TerminalIcon, ShieldCheck, UserCheck, Star, Users } from 'lucide-react';
+import {
+  Play,
+  Square,
+  Settings,
+  UserPlus,
+  ShieldAlert,
+  Cpu,
+  Layers,
+  TrendingUp,
+  HelpCircle,
+  Terminal as TerminalIcon,
+  ShieldCheck,
+  UserCheck,
+  Star,
+  Users
+} from 'lucide-react';
 import HotelMap3D from './components/HotelMap3D';
 import RevenueDashboard from './components/RevenueDashboard';
 import TapeChart from './components/TapeChart';
@@ -14,27 +29,33 @@ const App = () => {
   const [kpis, setKpis] = useState(null);
   const [pickupCurve, setPickupCurve] = useState([]);
   const [rules, setRules] = useState([]);
-  
+
   const [simulationActive, setSimulationActive] = useState(false);
   const [activeEvent, setActiveEvent] = useState('NORMAL');
   const [selectedRoomNumber, setSelectedRoomNumber] = useState(null);
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [showDocentePanel, setShowDocentePanel] = useState(false);
   const [activeCrisis, setActiveCrisis] = useState(null);
-  
+
   const [budgetCredits, setBudgetCredits] = useState(1500);
   const [reputationScore, setReputationScore] = useState(7.8);
   const [overbookingLimitPercent, setOverbookingLimitPercent] = useState(5);
 
   const [terminalLogs, setTerminalLogs] = useState([
-    { time: new Date().toLocaleTimeString(), text: 'Sistema PMS virtualizado y en escucha en puerto local 20014.' },
-    { time: new Date().toLocaleTimeString(), text: 'Base de datos de reservas on-the-books cargada exitosamente.' }
+    {
+      time: new Date().toLocaleTimeString(),
+      text: 'Sistema PMS virtualizado y en escucha en puerto local 20014.'
+    },
+    {
+      time: new Date().toLocaleTimeString(),
+      text: 'Base de datos de reservas on-the-books cargada exitosamente.'
+    }
   ]);
 
   const socketRef = useRef(null);
 
   const addLog = (text) => {
-    setTerminalLogs(prev => [
+    setTerminalLogs((prev) => [
       { time: new Date().toLocaleTimeString(), text },
       ...prev.slice(0, 15)
     ]);
@@ -114,8 +135,16 @@ const App = () => {
     });
 
     socket.on('hospitality-telemetry-update', (data) => {
-      const { rooms: newRooms, reservations: newRes, reviews: newRev, kpis: newKpis, activeCrisis: newCrisis, budgetCredits: newBudget, reputationScore: newRep } = data;
-      
+      const {
+        rooms: newRooms,
+        reservations: newRes,
+        reviews: newRev,
+        kpis: newKpis,
+        activeCrisis: newCrisis,
+        budgetCredits: newBudget,
+        reputationScore: newRep
+      } = data;
+
       setRooms(newRooms);
       setReservations(newRes);
       setReviews(newRev);
@@ -137,7 +166,7 @@ const App = () => {
 
   const handleSelectRoom = (roomNum) => {
     setSelectedRoomNumber(roomNum);
-    const room = rooms.find(r => r.roomNumber === roomNum);
+    const room = rooms.find((r) => r.roomNumber === roomNum);
     setSelectedRoom(room);
   };
 
@@ -316,8 +345,8 @@ const App = () => {
 
   // Get active housekeeping tasks
   const housekeepingTasks = rooms
-    .filter(r => r.status === 'DIRTY')
-    .map(r => ({
+    .filter((r) => r.status === 'DIRTY')
+    .map((r) => ({
       id: r.id,
       room: r,
       credits: r.cleaningCredits,
@@ -385,7 +414,9 @@ const App = () => {
             <button
               onClick={toggleSimulation}
               className={`docente-btn py-2 px-3 rounded flex items-center justify-center space-x-1 ${
-                simulationActive ? 'active border-red-500 text-red-350' : 'border-emerald-500 text-emerald-350'
+                simulationActive
+                  ? 'active border-red-500 text-red-350'
+                  : 'border-emerald-500 text-emerald-350'
               }`}
             >
               {simulationActive ? (
@@ -453,7 +484,9 @@ const App = () => {
         <button
           onClick={() => setActiveTab('twin')}
           className={`flex-grow py-2.5 rounded-lg text-xs font-bold font-mono tracking-wider transition flex items-center justify-center space-x-2 ${
-            activeTab === 'twin' ? 'bg-slate-950 border border-cyan-500/20 text-cyan-400 shadow' : 'text-slate-400 hover:bg-slate-950/40'
+            activeTab === 'twin'
+              ? 'bg-slate-950 border border-cyan-500/20 text-cyan-400 shadow'
+              : 'text-slate-400 hover:bg-slate-950/40'
           }`}
         >
           <Layers size={14} />
@@ -463,7 +496,9 @@ const App = () => {
         <button
           onClick={() => setActiveTab('tape')}
           className={`flex-grow py-2.5 rounded-lg text-xs font-bold font-mono tracking-wider transition flex items-center justify-center space-x-2 ${
-            activeTab === 'tape' ? 'bg-slate-950 border border-cyan-500/20 text-cyan-400 shadow' : 'text-slate-400 hover:bg-slate-950/40'
+            activeTab === 'tape'
+              ? 'bg-slate-950 border border-cyan-500/20 text-cyan-400 shadow'
+              : 'text-slate-400 hover:bg-slate-950/40'
           }`}
         >
           <Users size={14} />
@@ -473,7 +508,9 @@ const App = () => {
         <button
           onClick={() => setActiveTab('housekeeping')}
           className={`flex-grow py-2.5 rounded-lg text-xs font-bold font-mono tracking-wider transition flex items-center justify-center space-x-2 ${
-            activeTab === 'housekeeping' ? 'bg-slate-950 border border-cyan-500/20 text-cyan-400 shadow' : 'text-slate-400 hover:bg-slate-950/40'
+            activeTab === 'housekeeping'
+              ? 'bg-slate-950 border border-cyan-500/20 text-cyan-400 shadow'
+              : 'text-slate-400 hover:bg-slate-950/40'
           }`}
         >
           <Settings size={14} />
@@ -483,7 +520,9 @@ const App = () => {
         <button
           onClick={() => setActiveTab('revenue')}
           className={`flex-grow py-2.5 rounded-lg text-xs font-bold font-mono tracking-wider transition flex items-center justify-center space-x-2 ${
-            activeTab === 'revenue' ? 'bg-slate-950 border border-cyan-500/20 text-cyan-400 shadow' : 'text-slate-400 hover:bg-slate-950/40'
+            activeTab === 'revenue'
+              ? 'bg-slate-950 border border-cyan-500/20 text-cyan-400 shadow'
+              : 'text-slate-400 hover:bg-slate-950/40'
           }`}
         >
           <TrendingUp size={14} />
@@ -493,7 +532,9 @@ const App = () => {
         <button
           onClick={() => setActiveTab('reviews')}
           className={`flex-grow py-2.5 rounded-lg text-xs font-bold font-mono tracking-wider transition flex items-center justify-center space-x-2 ${
-            activeTab === 'reviews' ? 'bg-slate-950 border border-cyan-500/20 text-cyan-400 shadow' : 'text-slate-400 hover:bg-slate-950/40'
+            activeTab === 'reviews'
+              ? 'bg-slate-950 border border-cyan-500/20 text-cyan-400 shadow'
+              : 'text-slate-400 hover:bg-slate-950/40'
           }`}
         >
           <HelpCircle size={14} />
@@ -536,7 +577,9 @@ const App = () => {
               {selectedRoom ? (
                 <div className="p-4 rounded-xl border data-plate flex flex-col space-y-3 font-mono">
                   <div className="flex justify-between items-center border-b border-slate-850 pb-2">
-                    <span className="text-xs font-bold text-cyan-400">FICHA TÉCNICA - HABITACIÓN {selectedRoom.roomNumber}</span>
+                    <span className="text-xs font-bold text-cyan-400">
+                      FICHA TÉCNICA - HABITACIÓN {selectedRoom.roomNumber}
+                    </span>
                     <button
                       onClick={() => setSelectedRoom(null)}
                       className="text-slate-500 hover:text-slate-300 text-xs"
@@ -556,12 +599,17 @@ const App = () => {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-450">Estado Limpieza:</span>
-                      <span className={`font-bold px-1.5 py-0.5 rounded text-xxxxs ${
-                        selectedRoom.status === 'INSPECTED' ? 'bg-green-950 text-green-300' :
-                        selectedRoom.status === 'CLEAN' ? 'bg-yellow-950 text-yellow-300' :
-                        selectedRoom.status === 'DIRTY' ? 'bg-red-950 text-red-300' :
-                        'bg-slate-950 text-slate-400'
-                      }`}>
+                      <span
+                        className={`font-bold px-1.5 py-0.5 rounded text-xxxxs ${
+                          selectedRoom.status === 'INSPECTED'
+                            ? 'bg-green-950 text-green-300'
+                            : selectedRoom.status === 'CLEAN'
+                              ? 'bg-yellow-950 text-yellow-300'
+                              : selectedRoom.status === 'DIRTY'
+                                ? 'bg-red-950 text-red-300'
+                                : 'bg-slate-950 text-slate-400'
+                        }`}
+                      >
                         {selectedRoom.status}
                       </span>
                     </div>
@@ -569,17 +617,28 @@ const App = () => {
 
                   {/* Active reservation checkin/out actions */}
                   <div className="border-t border-slate-850 pt-3 flex flex-col space-y-2">
-                    <span className="text-xxxxs font-bold text-slate-500 uppercase block mb-1">Huéspedes Asignables (Pre-llegada)</span>
-                    
+                    <span className="text-xxxxs font-bold text-slate-500 uppercase block mb-1">
+                      Huéspedes Asignables (Pre-llegada)
+                    </span>
+
                     {/* List confirmed reservations to check-in */}
                     <div className="max-height-[150px] overflow-y-auto space-y-1.5">
                       {reservations
-                        .filter(res => res.status === 'CONFIRMED' && (!res.roomId || res.roomId === selectedRoom.id))
+                        .filter(
+                          (res) =>
+                            res.status === 'CONFIRMED' &&
+                            (!res.roomId || res.roomId === selectedRoom.id)
+                        )
                         .slice(0, 3)
                         .map((res) => (
-                          <div key={res.id} className="bg-slate-950 border border-slate-850 p-2 rounded flex justify-between items-center text-xxxxs">
+                          <div
+                            key={res.id}
+                            className="bg-slate-950 border border-slate-850 p-2 rounded flex justify-between items-center text-xxxxs"
+                          >
                             <div>
-                              <span className="text-slate-350 block font-bold">{res.guestName}</span>
+                              <span className="text-slate-350 block font-bold">
+                                {res.guestName}
+                              </span>
                               <span className="text-slate-500">{res.channel}</span>
                             </div>
                             <button
@@ -595,11 +654,18 @@ const App = () => {
 
                     {/* Active check-out action */}
                     {reservations
-                      .filter(res => res.roomId === selectedRoom.id && res.status === 'CHECKED_IN')
+                      .filter(
+                        (res) => res.roomId === selectedRoom.id && res.status === 'CHECKED_IN'
+                      )
                       .map((res) => (
-                        <div key={res.id} className="bg-slate-950 border border-slate-800 p-3 rounded flex justify-between items-center text-xxxxs">
+                        <div
+                          key={res.id}
+                          className="bg-slate-950 border border-slate-800 p-3 rounded flex justify-between items-center text-xxxxs"
+                        >
                           <div>
-                            <span className="text-slate-100 block font-bold">{res.guestName} (Ocupando)</span>
+                            <span className="text-slate-100 block font-bold">
+                              {res.guestName} (Ocupando)
+                            </span>
                             <span className="text-slate-500">Salida prevista</span>
                           </div>
                           <button
@@ -615,7 +681,10 @@ const App = () => {
               ) : (
                 <div className="p-5 rounded-xl border border-slate-850 bg-slate-900/40 text-center text-slate-500 font-mono text-xxs h-44 flex flex-col items-center justify-center space-y-2">
                   <Cpu size={24} className="text-slate-650" />
-                  <p>Selecciona una habitación en el visor 3D para desplegar su estado de recepción y realizar check-in de huéspedes.</p>
+                  <p>
+                    Selecciona una habitación en el visor 3D para desplegar su estado de recepción y
+                    realizar check-in de huéspedes.
+                  </p>
                 </div>
               )}
 
@@ -644,7 +713,7 @@ const App = () => {
             reservations={reservations}
             onSelectReservation={(res) => {
               // Redirect to room checkin view
-              const matchingRoom = rooms.find(rm => rm.id === res.roomId);
+              const matchingRoom = rooms.find((rm) => rm.id === res.roomId);
               if (matchingRoom) {
                 handleSelectRoom(matchingRoom.roomNumber);
                 setActiveTab('twin');
@@ -657,7 +726,10 @@ const App = () => {
           <HousekeepingPanel
             tasks={housekeepingTasks}
             housekeepers={[
-              { name: 'Andrés Silva', assignedCredits: rooms.filter(r => r.status === 'DIRTY').length * 15 },
+              {
+                name: 'Andrés Silva',
+                assignedCredits: rooms.filter((r) => r.status === 'DIRTY').length * 15
+              },
               { name: 'Marta Díaz', assignedCredits: 0 },
               { name: 'Carlos Pizarro', assignedCredits: 0 }
             ]}
@@ -685,7 +757,10 @@ const App = () => {
 
             <div className="grid grid-cols-1 md_grid-cols-2 gap-4">
               {reviews.map((rev) => (
-                <div key={rev.id} className="bg-slate-950 border border-slate-850 p-3.5 rounded-lg space-y-2 relative">
+                <div
+                  key={rev.id}
+                  className="bg-slate-950 border border-slate-850 p-3.5 rounded-lg space-y-2 relative"
+                >
                   <div className="flex justify-between items-center">
                     <span className="font-bold text-cyan-400">{rev.category}</span>
                     <span className="text-amber-500 font-bold flex items-center">

@@ -1,5 +1,15 @@
 import React, { useState } from 'react';
-import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ReferenceLine } from 'recharts';
+import {
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ReferenceLine
+} from 'recharts';
 import { AlertTriangle, Award, Info, RefreshCw, BarChart2 } from 'lucide-react';
 
 const OeeCalculator = ({ oeeData }) => {
@@ -44,7 +54,8 @@ const OeeCalculator = ({ oeeData }) => {
     if (avOk && peOk && quOk && oeOk) {
       setVerificationResult({
         success: true,
-        message: '¡Excelente! Tus cálculos coinciden con los del gemelo digital. Has calculado correctamente el OEE.'
+        message:
+          '¡Excelente! Tus cálculos coinciden con los del gemelo digital. Has calculado correctamente el OEE.'
       });
     } else {
       let issues = [];
@@ -71,18 +82,23 @@ const OeeCalculator = ({ oeeData }) => {
           </div>
           <div>
             <div className="flex justify-between items-center mb-2">
-              <span className="text-xs text-slate-400 font-mono tracking-wider">DISPONIBILIDAD</span>
+              <span className="text-xs text-slate-400 font-mono tracking-wider">
+                DISPONIBILIDAD
+              </span>
               <div className="group relative">
                 <Info size={14} className="text-slate-500 cursor-help hover:text-slate-350" />
                 <div className="absolute bottom-full right-0 mb-2 w-56 p-2 bg-slate-950 text-xxs text-slate-350 rounded border border-slate-800 hidden group-hover:block z-20 font-mono">
-                  Tiempo de Operación / Tiempo Planificado.<br/>
+                  Tiempo de Operación / Tiempo Planificado.
+                  <br />
                   (Reduce paradas no planificadas con mantenimiento preventivo).
                 </div>
               </div>
             </div>
             {/* The student must calculate. We hide the actual value or show it as target/sensor logs */}
             <div className="text-2xl font-bold font-mono text-cyan-400">--- %</div>
-            <div className="text-xxs text-slate-500 font-mono mt-1">Sugerencia: Analizar registros en la tabla de paradas</div>
+            <div className="text-xxs text-slate-500 font-mono mt-1">
+              Sugerencia: Analizar registros en la tabla de paradas
+            </div>
           </div>
         </div>
 
@@ -97,13 +113,16 @@ const OeeCalculator = ({ oeeData }) => {
               <div className="group relative">
                 <Info size={14} className="text-slate-500 cursor-help hover:text-slate-350" />
                 <div className="absolute bottom-full right-0 mb-2 w-56 p-2 bg-slate-950 text-xxs text-slate-350 rounded border border-slate-800 hidden group-hover:block z-20 font-mono">
-                  (Piezas Producidas * Tiempo Ciclo Ideal) / Tiempo de Operación.<br/>
+                  (Piezas Producidas * Tiempo Ciclo Ideal) / Tiempo de Operación.
+                  <br />
                   Ideal = 6.0s. Traición = Máquina 3 a 7.5s.
                 </div>
               </div>
             </div>
             <div className="text-2xl font-bold font-mono text-emerald-400">--- %</div>
-            <div className="text-xxs text-slate-500 font-mono mt-1">Sugerencia: Descargar logs de telemetría</div>
+            <div className="text-xxs text-slate-500 font-mono mt-1">
+              Sugerencia: Descargar logs de telemetría
+            </div>
           </div>
         </div>
 
@@ -118,13 +137,16 @@ const OeeCalculator = ({ oeeData }) => {
               <div className="group relative">
                 <Info size={14} className="text-slate-500 cursor-help hover:text-slate-350" />
                 <div className="absolute bottom-full right-0 mb-2 w-56 p-2 bg-slate-950 text-xxs text-slate-350 rounded border border-slate-800 hidden group-hover:block z-20 font-mono">
-                  (Piezas Buenas / Piezas Totales).<br/>
+                  (Piezas Buenas / Piezas Totales).
+                  <br />
                   Piezas Buenas = Producidas - Defectos.
                 </div>
               </div>
             </div>
             <div className="text-2xl font-bold font-mono text-purple-400">--- %</div>
-            <div className="text-xxs text-slate-500 font-mono mt-1">Sugerencia: Ver total de piezas vs defectos</div>
+            <div className="text-xxs text-slate-500 font-mono mt-1">
+              Sugerencia: Ver total de piezas vs defectos
+            </div>
           </div>
         </div>
 
@@ -144,7 +166,9 @@ const OeeCalculator = ({ oeeData }) => {
               </div>
             </div>
             <div className="text-2xl font-bold font-mono text-amber-500">--- %</div>
-            <div className="text-xxs text-slate-500 font-mono mt-1">Meta Clase Mundial: &gt; 85%</div>
+            <div className="text-xxs text-slate-500 font-mono mt-1">
+              Meta Clase Mundial: &gt; 85%
+            </div>
           </div>
         </div>
       </div>
@@ -170,9 +194,24 @@ const OeeCalculator = ({ oeeData }) => {
               >
                 <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
                 <XAxis dataKey="batchId" stroke="#475569" tickLine={false} />
-                <YAxis stroke="#475569" tickLine={false} domain={[0, 4.0]} label={{ value: 'Tasa Defectos (%)', angle: -90, position: 'insideLeft', offset: 10, fill: '#475569' }} />
+                <YAxis
+                  stroke="#475569"
+                  tickLine={false}
+                  domain={[0, 4.0]}
+                  label={{
+                    value: 'Tasa Defectos (%)',
+                    angle: -90,
+                    position: 'insideLeft',
+                    offset: 10,
+                    fill: '#475569'
+                  }}
+                />
                 <Tooltip
-                  contentStyle={{ backgroundColor: '#090d16', border: '1px solid #334155', borderRadius: '6px' }}
+                  contentStyle={{
+                    backgroundColor: '#090d16',
+                    border: '1px solid #334155',
+                    borderRadius: '6px'
+                  }}
                   labelClassName="text-slate-350 font-bold font-mono text-xxs"
                   itemStyle={{ fontFamily: 'monospace', fontSize: '11px' }}
                 />
@@ -220,10 +259,14 @@ const OeeCalculator = ({ oeeData }) => {
               INDICACIONES PARA EL ANÁLISIS DE VARIABILIDAD:
             </div>
             <p>
-              1. <strong>Puntos Fuera de Límites:</strong> Si algún lote supera el UCL (Límite de Control Superior), significa que el proceso está fuera de control estadístico (Causa Asignable).
+              1. <strong>Puntos Fuera de Límites:</strong> Si algún lote supera el UCL (Límite de
+              Control Superior), significa que el proceso está fuera de control estadístico (Causa
+              Asignable).
             </p>
             <p>
-              2. <strong>Correlación de Fallas:</strong> Compara los picos del p-Chart con la tabla de telemetrías y consumo de energía para detectar desgastes en la herramienta de corte CNC.
+              2. <strong>Correlación de Fallas:</strong> Compara los picos del p-Chart con la tabla
+              de telemetrías y consumo de energía para detectar desgastes en la herramienta de corte
+              CNC.
             </p>
           </div>
         </div>
@@ -236,7 +279,9 @@ const OeeCalculator = ({ oeeData }) => {
               VERIFICADOR DE CÁLCULO OEE
             </h3>
             <p className="text-xxs font-mono text-slate-400 mb-4 leading-relaxed">
-              Introduce tus cálculos a partir de los datos telemétricos históricos. Para aprobar la práctica, los valores ingresados deben tener una precisión menor al 0.5% frente al sensor del gemelo digital.
+              Introduce tus cálculos a partir de los datos telemétricos históricos. Para aprobar la
+              práctica, los valores ingresados deben tener una precisión menor al 0.5% frente al
+              sensor del gemelo digital.
             </p>
 
             <form onSubmit={handleVerify} className="space-y-3 font-mono">
@@ -277,7 +322,9 @@ const OeeCalculator = ({ oeeData }) => {
               </div>
 
               <div>
-                <label className="block text-xxs text-slate-400 mb-1">OEE FINAL CALCULADO (%)</label>
+                <label className="block text-xxs text-slate-400 mb-1">
+                  OEE FINAL CALCULADO (%)
+                </label>
                 <input
                   type="number"
                   step="0.01"
@@ -298,11 +345,13 @@ const OeeCalculator = ({ oeeData }) => {
           </div>
 
           {verificationResult && (
-            <div className={`mt-4 p-3 rounded border text-xxs font-mono ${
-              verificationResult.success
-                ? 'bg-emerald-950/50 border-emerald-800 text-emerald-300'
-                : 'bg-red-950/50 border-red-900 text-red-300'
-            }`}>
+            <div
+              className={`mt-4 p-3 rounded border text-xxs font-mono ${
+                verificationResult.success
+                  ? 'bg-emerald-950/50 border-emerald-800 text-emerald-300'
+                  : 'bg-red-950/50 border-red-900 text-red-300'
+              }`}
+            >
               {verificationResult.message}
             </div>
           )}

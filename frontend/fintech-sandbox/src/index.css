@@ -9,27 +9,27 @@
   --bg-tertiary: #181d36;
   --border-color: rgba(255, 255, 255, 0.08);
   --border-hover: rgba(255, 255, 255, 0.18);
-  
+
   /* Neon Accents */
   --neon-cyan: #00f0ff;
   --neon-green: #39ff14;
   --neon-magenta: #ff007f;
   --neon-yellow: #fff000;
-  
+
   /* Text */
   --text-muted: #8b9bb4;
   --text-normal: #d1dbe9;
   --text-bright: #ffffff;
-  
+
   /* Fonts */
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
-  
+
   /* Shadows */
   --glow-cyan: 0 0 10px rgba(0, 240, 255, 0.25);
   --glow-green: 0 0 10px rgba(57, 255, 20, 0.25);
   --glow-magenta: 0 0 10px rgba(255, 0, 127, 0.25);
-  
+
   /* Constants */
   --header-height: 72px;
 }
@@ -211,10 +211,18 @@ body {
   transition: background 0.3s;
 }
 
-.cyber-card.cyan::before { background: var(--neon-cyan); }
-.cyber-card.green::before { background: var(--neon-green); }
-.cyber-card.magenta::before { background: var(--neon-magenta); }
-.cyber-card.yellow::before { background: var(--neon-yellow); }
+.cyber-card.cyan::before {
+  background: var(--neon-cyan);
+}
+.cyber-card.green::before {
+  background: var(--neon-green);
+}
+.cyber-card.magenta::before {
+  background: var(--neon-magenta);
+}
+.cyber-card.yellow::before {
+  background: var(--neon-yellow);
+}
 
 .card-title {
   font-size: 14px;
@@ -600,7 +608,9 @@ body {
   position: absolute;
   top: 3px;
   left: 3px;
-  transition: transform 0.3s, background-color 0.3s;
+  transition:
+    transform 0.3s,
+    background-color 0.3s;
 }
 
 .audio-toggle input:checked + .audio-switch {

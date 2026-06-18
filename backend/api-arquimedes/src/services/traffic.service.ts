@@ -5,7 +5,6 @@ let simulationTimeSec = 0; // Simulated clock seconds
 let activeEvent = 'NORMAL'; // 'NORMAL', 'MARATON_ALAMEDA', 'PARTIDO_ESTADIO'
 
 export class TrafficService {
-  
   // Get transit routes and active units with coordinates
   async getRoutes() {
     return prisma.transitRoute.findMany({
@@ -106,7 +105,7 @@ export class TrafficService {
     let count = 0;
     let overcrowdedBuses = 0;
 
-    buses.forEach(b => {
+    buses.forEach((b) => {
       const tel = b.telemetry[0];
       if (tel) {
         totalSpeed += tel.speed;
@@ -118,7 +117,7 @@ export class TrafficService {
     });
 
     const avgSpeed = count > 0 ? totalSpeed / count : 22; // default 22 km/h
-    
+
     // Commute time increases as average speed decreases
     // Nominal time is 35 minutes for 20 km travel at 35 km/h
     const avgCommuteTimeMin = Math.round((20 / avgSpeed) * 60);
@@ -140,7 +139,7 @@ export class TrafficService {
     }
 
     // 3. CO2 emissions calculation
-    // Base emission for 30 buses is 150 kg/hr. 
+    // Base emission for 30 buses is 150 kg/hr.
     // Mismatched offsets (queuing/idling) and crisis events increase emissions.
     let eventPenalty = 0;
     if (activeEvent === 'MARATON_ALAMEDA') eventPenalty = 80;
@@ -177,39 +176,39 @@ export class TrafficService {
     const intersections = await prisma.trafficIntersection.findMany();
 
     const stopPoints: Record<string, { lat: number; lng: number }[]> = {
-      "401": [
+      '401': [
         { lat: -33.485, lng: -70.757 }, // Maipú
         { lat: -33.453, lng: -70.709 }, // Las Rejas
         { lat: -33.452, lng: -70.692 }, // Gral Velásquez
         { lat: -33.451, lng: -70.678 }, // Estación Central
         { lat: -33.444, lng: -70.647 }, // Santa Lucía
         { lat: -33.424, lng: -70.612 }, // Pedro de Valdivia
-        { lat: -33.412, lng: -70.578 }  // Las Condes
+        { lat: -33.412, lng: -70.578 } // Las Condes
       ],
-      "210": [
+      '210': [
         { lat: -33.451, lng: -70.678 }, // Estación Central
         { lat: -33.444, lng: -70.647 }, // Santa Lucía
         { lat: -33.468, lng: -70.625 }, // Vicuña Mackenna / Ñuble
         { lat: -33.512, lng: -70.598 }, // La Florida
-        { lat: -33.595, lng: -70.578 }  // Puente Alto
+        { lat: -33.595, lng: -70.578 } // Puente Alto
       ],
-      "506": [
+      '506': [
         { lat: -33.485, lng: -70.757 }, // Maipú
         { lat: -33.465, lng: -70.698 }, // Cerrillos
-        { lat: -33.460, lng: -70.655 }, // Blanco Encalada
-        { lat: -33.463, lng: -70.620 }, // Grecia / Ñuñoa
-        { lat: -33.475, lng: -70.555 }  // Peñalolén
+        { lat: -33.46, lng: -70.655 }, // Blanco Encalada
+        { lat: -33.463, lng: -70.62 }, // Grecia / Ñuñoa
+        { lat: -33.475, lng: -70.555 } // Peñalolén
       ],
-      "B02": [
+      B02: [
         { lat: -33.375, lng: -70.675 }, // Huechuraba
         { lat: -33.415, lng: -70.665 }, // Independencia
-        { lat: -33.444, lng: -70.647 }  // Santa Lucía
+        { lat: -33.444, lng: -70.647 } // Santa Lucía
       ],
-      "104": [
+      '104': [
         { lat: -33.424, lng: -70.612 }, // Pedro de Valdivia
         { lat: -33.475, lng: -70.605 }, // Macul
-        { lat: -33.525, lng: -70.590 }, // La Florida
-        { lat: -33.595, lng: -70.578 }  // Puente Alto
+        { lat: -33.525, lng: -70.59 }, // La Florida
+        { lat: -33.595, lng: -70.578 } // Puente Alto
       ]
     };
 
@@ -223,9 +222,11 @@ export class TrafficService {
       if (!currentTel) continue;
 
       // Determine next coordinate in route path
-      let currentIdx = path.findIndex(p => Math.abs(p.lat - currentTel.lat) < 0.05 && Math.abs(p.lng - currentTel.lng) < 0.05);
+      let currentIdx = path.findIndex(
+        (p) => Math.abs(p.lat - currentTel.lat) < 0.05 && Math.abs(p.lng - currentTel.lng) < 0.05
+      );
       if (currentIdx === -1) currentIdx = 0;
-      
+
       let nextIdx = (currentIdx + 1) % path.length;
       let nextPos = path[nextIdx];
 
@@ -240,16 +241,18 @@ export class TrafficService {
       let nearIntersection = false;
 
       for (const inter of intersections) {
-        const dist = Math.sqrt(Math.pow(nextPos.lat - inter.lat, 2) + Math.pow(nextPos.lng - inter.lng, 2));
+        const dist = Math.sqrt(
+          Math.pow(nextPos.lat - inter.lat, 2) + Math.pow(nextPos.lng - inter.lng, 2)
+        );
         if (dist < 0.008) {
           nearIntersection = true;
           // Calculate traffic light state at this simulation time
           const totalCycle = inter.greenPhase + inter.redPhase;
           const timeOffset = (simulationTimeSec + inter.offset) % totalCycle;
-          
+
           if (timeOffset >= inter.greenPhase) {
             // Light is RED -> stop or slow down significantly
-            delayPenalty = 0.1; 
+            delayPenalty = 0.1;
           } else {
             // Light is GREEN -> check Green Wave offset sync
             // Sincronización score: green lights are aligned. Higher green phase gives more flow.
@@ -275,7 +278,10 @@ export class TrafficService {
         passengers = Math.min(bus.capacity, passengers + Math.floor(Math.random() * 15));
       } else {
         // normal boarding variation
-        passengers = Math.max(5, Math.min(bus.capacity, passengers + Math.floor(Math.random() * 11) - 5));
+        passengers = Math.max(
+          5,
+          Math.min(bus.capacity, passengers + Math.floor(Math.random() * 11) - 5)
+        );
       }
 
       // Calculate travel displacement

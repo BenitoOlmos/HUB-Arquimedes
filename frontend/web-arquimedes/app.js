@@ -1,154 +1,154 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. SISTEMA DE PARTÍCULAS (Canvas)
-    initParticleSystem();
+  // 1. SISTEMA DE PARTÍCULAS (Canvas)
+  initParticleSystem();
 
-    // 2. ANIMACIONES AL HACER SCROLL (IntersectionObserver)
-    initScrollAnimations();
+  // 2. ANIMACIONES AL HACER SCROLL (IntersectionObserver)
+  initScrollAnimations();
 
-    // 3. EFECTO INCLINACIÓN 3D (Tilt Effect)
-    initTiltEffect();
+  // 3. EFECTO INCLINACIÓN 3D (Tilt Effect)
+  initTiltEffect();
 
-    // 4. CONTROL DE MODALES (Inventos)
-    initModals();
+  // 4. CONTROL DE MODALES (Inventos)
+  initModals();
 });
 
 /* -------------------------------------------------------------
    1. SISTEMA DE PARTÍCULAS (Polvo de Oro Flotante)
    ------------------------------------------------------------- */
 function initParticleSystem() {
-    const canvas = document.getElementById('particle-canvas');
-    if (!canvas) return;
+  const canvas = document.getElementById('particle-canvas');
+  if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
-    let particles = [];
-    const particleCount = 60;
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  const particleCount = 60;
 
-    // Redimensionar Canvas
-    function resizeCanvas() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    }
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
+  // Redimensionar Canvas
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
 
-    // Clase Partícula
-    class Particle {
-        constructor() {
-            this.x = Math.random() * canvas.width;
-            this.y = Math.random() * canvas.height;
-            this.size = Math.random() * 2.5 + 0.5;
-            this.speedX = Math.random() * 0.4 - 0.2;
-            this.speedY = Math.random() * -0.5 - 0.1; // Flotar hacia arriba
-            this.opacity = Math.random() * 0.5 + 0.1;
-            this.fadeSpeed = Math.random() * 0.005 + 0.002;
-        }
-
-        update() {
-            this.x += this.speedX;
-            this.y += this.speedY;
-
-            // Reiniciar partícula si sale de la pantalla o se desvanece
-            if (this.y < 0 || this.x < 0 || this.x > canvas.width) {
-                this.y = canvas.height + 10;
-                this.x = Math.random() * canvas.width;
-                this.opacity = Math.random() * 0.5 + 0.1;
-            }
-        }
-
-        draw() {
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-            // Color oro con opacidad variable
-            ctx.fillStyle = `rgba(212, 175, 55, ${this.opacity})`;
-            ctx.shadowBlur = this.size * 2;
-            ctx.shadowColor = 'rgba(212, 175, 55, 0.4)';
-            ctx.fill();
-        }
+  // Clase Partícula
+  class Particle {
+    constructor() {
+      this.x = Math.random() * canvas.width;
+      this.y = Math.random() * canvas.height;
+      this.size = Math.random() * 2.5 + 0.5;
+      this.speedX = Math.random() * 0.4 - 0.2;
+      this.speedY = Math.random() * -0.5 - 0.1; // Flotar hacia arriba
+      this.opacity = Math.random() * 0.5 + 0.1;
+      this.fadeSpeed = Math.random() * 0.005 + 0.002;
     }
 
-    // Inicializar partículas
-    for (let i = 0; i < particleCount; i++) {
-        particles.push(new Particle());
+    update() {
+      this.x += this.speedX;
+      this.y += this.speedY;
+
+      // Reiniciar partícula si sale de la pantalla o se desvanece
+      if (this.y < 0 || this.x < 0 || this.x > canvas.width) {
+        this.y = canvas.height + 10;
+        this.x = Math.random() * canvas.width;
+        this.opacity = Math.random() * 0.5 + 0.1;
+      }
     }
 
-    // Bucle de Animación
-    function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        // Dibujar y actualizar partículas
-        particles.forEach(p => {
-            p.update();
-            p.draw();
-        });
-        
-        requestAnimationFrame(animate);
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      // Color oro con opacidad variable
+      ctx.fillStyle = `rgba(212, 175, 55, ${this.opacity})`;
+      ctx.shadowBlur = this.size * 2;
+      ctx.shadowColor = 'rgba(212, 175, 55, 0.4)';
+      ctx.fill();
     }
-    animate();
+  }
+
+  // Inicializar partículas
+  for (let i = 0; i < particleCount; i++) {
+    particles.push(new Particle());
+  }
+
+  // Bucle de Animación
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Dibujar y actualizar partículas
+    particles.forEach((p) => {
+      p.update();
+      p.draw();
+    });
+
+    requestAnimationFrame(animate);
+  }
+  animate();
 }
 
 /* -------------------------------------------------------------
    2. ANIMACIONES AL HACER SCROLL
    ------------------------------------------------------------- */
 function initScrollAnimations() {
-    const animElements = document.querySelectorAll('.scroll-animate');
-    
-    const observerOptions = {
-        root: null,
-        threshold: 0.15,
-        rootMargin: '0px 0px -50px 0px'
-    };
+  const animElements = document.querySelectorAll('.scroll-animate');
 
-    const observer = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('animated');
-                observer.unobserve(entry.target);
-            }
-        });
-    }, observerOptions);
+  const observerOptions = {
+    root: null,
+    threshold: 0.15,
+    rootMargin: '0px 0px -50px 0px'
+  };
 
-    animElements.forEach(el => {
-        observer.observe(el);
+  const observer = new IntersectionObserver((entries, observer) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('animated');
+        observer.unobserve(entry.target);
+      }
     });
+  }, observerOptions);
+
+  animElements.forEach((el) => {
+    observer.observe(el);
+  });
 }
 
 /* -------------------------------------------------------------
    3. EFECTO INCLINACIÓN 3D (Tilt Effect)
    ------------------------------------------------------------- */
 function initTiltEffect() {
-    const cards = document.querySelectorAll('.project-card, .invention-card');
-    
-    if (window.innerWidth < 768) return;
+  const cards = document.querySelectorAll('.project-card, .invention-card');
 
-    cards.forEach(card => {
-        card.addEventListener('mousemove', e => {
-            const rect = card.getBoundingClientRect();
-            
-            const x = (e.clientX - rect.left) / rect.width - 0.5;
-            const y = (e.clientY - rect.top) / rect.height - 0.5;
-            
-            const maxRotate = 10;
-            const rotateX = -y * maxRotate;
-            const rotateY = x * maxRotate;
+  if (window.innerWidth < 768) return;
 
-            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
-        });
+  cards.forEach((card) => {
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
 
-        card.addEventListener('mouseleave', () => {
-            card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
-        });
+      const x = (e.clientX - rect.left) / rect.width - 0.5;
+      const y = (e.clientY - rect.top) / rect.height - 0.5;
+
+      const maxRotate = 10;
+      const rotateX = -y * maxRotate;
+      const rotateY = x * maxRotate;
+
+      card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
     });
+
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+    });
+  });
 }
 
 /* -------------------------------------------------------------
    4. CONTROL DE MODALES (Datos de Inventos y Apertura con SVGs)
    ------------------------------------------------------------- */
 const inventionDetails = {
-    tornillo: {
-        title: "El Tornillo de Arquímedes",
-        formula: "V = π × r² × h / (paso de rosca)",
-        desc: "El tornillo de Arquímedes es una máquina gravimétrica helicoidal utilizada para la elevación de agua, harina o cereales. Fue inventado por Arquímedes en el siglo III a.C. durante su estancia en Egipto. Consiste en un tornillo que gira dentro de un cilindro hueco inclinado. Al girar el eje, el agua asciende por la hélice desafiando la gravedad. Hoy en día, este diseño sigue utilizándose en plantas de tratamiento de aguas residuales y turbinas de generación de energía microhidráulica por su alta eficiencia y resistencia a los residuos.",
-        svg: `
+  tornillo: {
+    title: 'El Tornillo de Arquímedes',
+    formula: 'V = π × r² × h / (paso de rosca)',
+    desc: 'El tornillo de Arquímedes es una máquina gravimétrica helicoidal utilizada para la elevación de agua, harina o cereales. Fue inventado por Arquímedes en el siglo III a.C. durante su estancia en Egipto. Consiste en un tornillo que gira dentro de un cilindro hueco inclinado. Al girar el eje, el agua asciende por la hélice desafiando la gravedad. Hoy en día, este diseño sigue utilizándose en plantas de tratamiento de aguas residuales y turbinas de generación de energía microhidráulica por su alta eficiencia y resistencia a los residuos.',
+    svg: `
             <svg viewBox="0 0 100 60" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:100%; max-height:280px; display:block; padding:1.5rem; background:rgba(0, 229, 255, 0.02);">
                 <rect x="15" y="18" width="70" height="24" rx="2" transform="rotate(-15 50 30)" stroke="#d4af37" stroke-width="1.5" fill="rgba(212, 175, 55, 0.05)"/>
                 <line x1="12" y1="36" x2="88" y2="16" stroke="#c5a880" stroke-width="2"/>
@@ -158,12 +158,12 @@ const inventionDetails = {
                 <path d="M12,36 L5,38 L5,28" stroke="#d4af37" stroke-width="1.5" fill="none"/>
             </svg>
         `
-    },
-    garra: {
-        title: "La Garra de Siracusa",
-        formula: "Momento = Fuerza × Distancia",
-        desc: "También conocida como 'el agitador de barcos', fue un arma de defensa de Syracuse diseñada por Arquímedes para combatir los asedios marítimos romanos. Consistía en un brazo articulado similar a una grúa con un gran gancho de metal. Cuando un barco romano se aproximaba a las murallas, el gancho se soltaba, atrapaba la proa del barco, y mediante un contrapeso de poleas compuestas, lo elevaba en el aire y lo dejaba caer abruptamente al mar, hundiéndolo o volcándolo al instante.",
-        svg: `
+  },
+  garra: {
+    title: 'La Garra de Siracusa',
+    formula: 'Momento = Fuerza × Distancia',
+    desc: "También conocida como 'el agitador de barcos', fue un arma de defensa de Syracuse diseñada por Arquímedes para combatir los asedios marítimos romanos. Consistía en un brazo articulado similar a una grúa con un gran gancho de metal. Cuando un barco romano se aproximaba a las murallas, el gancho se soltaba, atrapaba la proa del barco, y mediante un contrapeso de poleas compuestas, lo elevaba en el aire y lo dejaba caer abruptamente al mar, hundiéndolo o volcándolo al instante.",
+    svg: `
             <svg viewBox="0 0 100 60" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:100%; max-height:280px; display:block; padding:1rem; background:rgba(212, 175, 55, 0.02);">
                 <rect x="0" y="45" width="25" height="15" fill="#303540" stroke="#c5a880" stroke-width="1"/>
                 <g style="transform: rotate(-10deg); transform-origin: 15px 45px;">
@@ -180,12 +180,12 @@ const inventionDetails = {
                 </g>
             </svg>
         `
-    },
-    rayo: {
-        title: "El Rayo de Calor",
-        formula: "Foco = R / 2 (Espejos Cóncavos)",
-        desc: "El rayo de calor de Arquímedes es uno de sus inventos más legendarios y debatidos. Durante el asedio de Siracusa, se narra que Arquímedes alineó a cientos de soldados provistos de escudos de bronce altamente pulidos (actuando como reflectores cóncavos parabólicos). Concentrando la luz solar en un único punto focal sobre las velas de las galeras romanas, logró que estas ardieran a gran distancia. Experimentos modernos han demostrado que, aunque complejo, es físicamente viable prender madera utilizando reflectores parabólicos de bronce de gran precisión.",
-        svg: `
+  },
+  rayo: {
+    title: 'El Rayo de Calor',
+    formula: 'Foco = R / 2 (Espejos Cóncavos)',
+    desc: 'El rayo de calor de Arquímedes es uno de sus inventos más legendarios y debatidos. Durante el asedio de Siracusa, se narra que Arquímedes alineó a cientos de soldados provistos de escudos de bronce altamente pulidos (actuando como reflectores cóncavos parabólicos). Concentrando la luz solar en un único punto focal sobre las velas de las galeras romanas, logró que estas ardieran a gran distancia. Experimentos modernos han demostrado que, aunque complejo, es físicamente viable prender madera utilizando reflectores parabólicos de bronce de gran precisión.',
+    svg: `
             <svg viewBox="0 0 100 60" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:100%; max-height:280px; display:block; padding:1rem; background:rgba(0, 229, 255, 0.02);">
                 <circle cx="10" cy="15" r="8" fill="#d4af37" filter="drop-shadow(0 0 4px #d4af37)"/>
                 <line x1="16" y1="20" x2="28" y2="38" stroke="rgba(212, 175, 55, 0.4)" stroke-width="1" stroke-dasharray="2 2"/>
@@ -199,12 +199,12 @@ const inventionDetails = {
                 </g>
             </svg>
         `
-    },
-    corona: {
-        title: "El Principio de la Corona",
-        formula: "E = ρ_fluido × g × V_desplazado",
-        desc: "La famosa historia de 'Eureka'. El rey Hierón II de Siracusa pidió a Arquímedes determinar si su nueva corona era de oro puro o si el orfebre había añadido plata. Arquímedes resolvió el misterio al notar que el nivel de agua subía en su bañera al introducirse en ella. Dándose cuenta de que un volumen de oro desplazaría menos agua que un volumen equivalente de plata (al ser el oro más denso), midió el volumen de agua desplazado por la corona y un lingote de oro del mismo peso, revelando el fraude del orfebre.",
-        svg: `
+  },
+  corona: {
+    title: 'El Principio de la Corona',
+    formula: 'E = ρ_fluido × g × V_desplazado',
+    desc: "La famosa historia de 'Eureka'. El rey Hierón II de Siracusa pidió a Arquímedes determinar si su nueva corona era de oro puro o si el orfebre había añadido plata. Arquímedes resolvió el misterio al notar que el nivel de agua subía en su bañera al introducirse en ella. Dándose cuenta de que un volumen de oro desplazaría menos agua que un volumen equivalente de plata (al ser el oro más denso), midió el volumen de agua desplazado por la corona y un lingote de oro del mismo peso, revelando el fraude del orfebre.",
+    svg: `
             <svg viewBox="0 0 100 60" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:100%; max-height:280px; display:block; padding:1.5rem; background:rgba(212, 175, 55, 0.02);">
                 <rect x="25" y="25" width="50" height="25" rx="2" stroke="#c5a880" stroke-width="2" fill="rgba(255,255,255,0.02)"/>
                 <path d="M25,40 Q50,38 75,40 L75,50 L25,50 Z" fill="rgba(0, 229, 255, 0.3)" stroke="#00e5ff" stroke-width="1.5"/>
@@ -215,12 +215,12 @@ const inventionDetails = {
                 <path d="M20,40 Q15,35 10,40 M80,40 Q85,35 90,40" stroke="#00e5ff" stroke-width="1" opacity="0.6"/>
             </svg>
         `
-    },
-    polea: {
-        title: "La Polea Compuesta",
-        formula: "F_esfuerzo = F_resistencia / 2^n",
-        desc: "Arquímedes demostró la fuerza de la ventaja mecánica multiplicada mediante poleas compuestas (polipastos). Cuenta la leyenda que le dijo al rey Hierón: 'Dadme un punto de apoyo y moveré el mundo'. Para demostrarlo, preparó un sistema de poleas compuestas conectado a un barco mercante de la armada real completamente cargado y tripulado. Sentado cómodamente a distancia, Arquímedes tiró de una sola cuerda sin esfuerzo físico aparente, arrastrando el barco suavemente por la arena como si flotara en el agua.",
-        svg: `
+  },
+  polea: {
+    title: 'La Polea Compuesta',
+    formula: 'F_esfuerzo = F_resistencia / 2^n',
+    desc: "Arquímedes demostró la fuerza de la ventaja mecánica multiplicada mediante poleas compuestas (polipastos). Cuenta la leyenda que le dijo al rey Hierón: 'Dadme un punto de apoyo y moveré el mundo'. Para demostrarlo, preparó un sistema de poleas compuestas conectado a un barco mercante de la armada real completamente cargado y tripulado. Sentado cómodamente a distancia, Arquímedes tiró de una sola cuerda sin esfuerzo físico aparente, arrastrando el barco suavemente por la arena como si flotara en el agua.",
+    svg: `
             <svg viewBox="0 0 100 60" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:100%; max-height:280px; display:block; padding:1.5rem; background:rgba(0, 229, 255, 0.02);">
                 <line x1="10" y1="10" x2="90" y2="10" stroke="#c5a880" stroke-width="3"/>
                 <circle cx="50" cy="22" r="8" stroke="#d4af37" stroke-width="2" fill="rgba(8,9,13,0.8)"/>
@@ -233,12 +233,12 @@ const inventionDetails = {
                 <path d="M35,50 L35,22 Q35,14 44,14 Q52,14 52,22 L52,37 Q52,43 58,37 L58,22" stroke="#a0a5b5" stroke-width="1.5" fill="none" stroke-dasharray="4 2"/>
             </svg>
         `
-    },
-    planetario: {
-        title: "El Planetario Mecánico",
-        formula: "Relación de Engranajes = N_dientes_1 / N_dientes_2",
-        desc: "Arquímedes construyó un complejo dispositivo astronómico mecánico (antecesor del mecanismo de Anticitera). Este planetario estaba hecho de engranajes de bronce de precisión y reproducía el movimiento del Sol, la Luna y los cinco planetas conocidos alrededor de la Tierra, así como las fases lunares y los eclipses. El historiador romano Cicerón escribió sobre haber visto el dispositivo, maravillado de cómo Arquímedes había logrado replicar los movimientos del cosmos en una sola esfera mecánica móvil.",
-        svg: `
+  },
+  planetario: {
+    title: 'El Planetario Mecánico',
+    formula: 'Relación de Engranajes = N_dientes_1 / N_dientes_2',
+    desc: 'Arquímedes construyó un complejo dispositivo astronómico mecánico (antecesor del mecanismo de Anticitera). Este planetario estaba hecho de engranajes de bronce de precisión y reproducía el movimiento del Sol, la Luna y los cinco planetas conocidos alrededor de la Tierra, así como las fases lunares y los eclipses. El historiador romano Cicerón escribió sobre haber visto el dispositivo, maravillado de cómo Arquímedes había logrado replicar los movimientos del cosmos en una sola esfera mecánica móvil.',
+    svg: `
             <svg viewBox="0 0 100 60" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:100%; max-height:280px; display:block; padding:1rem; background:rgba(212, 175, 55, 0.02);">
                 <circle cx="50" cy="30" r="25" stroke="rgba(255,255,255,0.04)" stroke-width="1" stroke-dasharray="3 3"/>
                 <g class="planetarium-gear-large" stroke="#c5a880" stroke-width="1.5" style="transform-origin: 45px 35px; animation: spin-gear-reverse 25s linear infinite;">
@@ -255,57 +255,57 @@ const inventionDetails = {
                 <circle cx="70" cy="48" r="3" fill="#d4af37"/>
             </svg>
         `
-    }
+  }
 };
 
 function initModals() {
-    const modal = document.getElementById('invention-modal');
-    if (!modal) return;
+  const modal = document.getElementById('invention-modal');
+  if (!modal) return;
 
-    const modalTitle = modal.querySelector('.modal-title');
-    const modalFormula = modal.querySelector('.modal-formula');
-    const modalText = modal.querySelector('.modal-text');
-    const modalSvgContainer = modal.querySelector('#modal-svg-container');
-    const closeBtn = modal.querySelector('.modal-close');
+  const modalTitle = modal.querySelector('.modal-title');
+  const modalFormula = modal.querySelector('.modal-formula');
+  const modalText = modal.querySelector('.modal-text');
+  const modalSvgContainer = modal.querySelector('#modal-svg-container');
+  const closeBtn = modal.querySelector('.modal-close');
 
-    const cards = document.querySelectorAll('.invention-card');
+  const cards = document.querySelectorAll('.invention-card');
 
-    cards.forEach(card => {
-        card.addEventListener('click', () => {
-            const invId = card.getAttribute('data-invention');
-            const data = inventionDetails[invId];
+  cards.forEach((card) => {
+    card.addEventListener('click', () => {
+      const invId = card.getAttribute('data-invention');
+      const data = inventionDetails[invId];
 
-            if (data) {
-                // Rellenar datos
-                modalTitle.textContent = data.title;
-                modalFormula.textContent = data.formula;
-                modalText.textContent = data.desc;
-                modalSvgContainer.innerHTML = data.svg;
+      if (data) {
+        // Rellenar datos
+        modalTitle.textContent = data.title;
+        modalFormula.textContent = data.formula;
+        modalText.textContent = data.desc;
+        modalSvgContainer.innerHTML = data.svg;
 
-                // Abrir modal
-                modal.classList.add('active');
-                document.body.style.overflow = 'hidden'; // Evitar scroll de fondo
-            }
-        });
+        // Abrir modal
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden'; // Evitar scroll de fondo
+      }
     });
+  });
 
-    // Cerrar Modal
-    function closeModal() {
-        modal.classList.remove('active');
-        document.body.style.overflow = '';
+  // Cerrar Modal
+  function closeModal() {
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  closeBtn.addEventListener('click', closeModal);
+
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      closeModal();
     }
+  });
 
-    closeBtn.addEventListener('click', closeModal);
-
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            closeModal();
-        }
-    });
-
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.classList.contains('active')) {
-            closeModal();
-        }
-    });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('active')) {
+      closeModal();
+    }
+  });
 }

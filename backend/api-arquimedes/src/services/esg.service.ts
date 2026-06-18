@@ -1,6 +1,12 @@
 import prisma from './prisma';
 import PDFDocument from 'pdfkit';
-import { EmissionFactor, EsgFacility, ActivityData, CarbonMarket, EsgMetrics } from 'shared-schemas';
+import {
+  EmissionFactor,
+  EsgFacility,
+  ActivityData,
+  CarbonMarket,
+  EsgMetrics
+} from 'shared-schemas';
 
 let esgBudget = 350000; // $350,000 for operations / carbon credits
 let offsetEmissions = 0; // Cumulative offset tons of CO2e purchased
@@ -12,7 +18,6 @@ let isCircularEconomyActive = false; // Reduces Scope 3 emissions if active
 const purchasedCredits: Record<string, number> = {};
 
 export class EsgService {
-
   // Reset simulation states
   async resetSimulation() {
     esgBudget = 350000;
@@ -23,7 +28,7 @@ export class EsgService {
     for (const key of Object.keys(purchasedCredits)) {
       delete purchasedCredits[key];
     }
-    
+
     // Restore original seeder values for all ActivityData
     const activities = await prisma.activityData.findMany();
     for (const act of activities) {
@@ -104,10 +109,12 @@ export class EsgService {
     activeEvent = event;
     if (event === 'AMAZON_FIRE_DEVALUATION') {
       // halving amazon reforestation available tons
-      prisma.carbonMarket.updateMany({
-        where: { projectName: { contains: 'Amazónica' } },
-        data: { availableTons: 10000 }
-      }).catch(console.error);
+      prisma.carbonMarket
+        .updateMany({
+          where: { projectName: { contains: 'Amazónica' } },
+          data: { availableTons: 10000 }
+        })
+        .catch(console.error);
     }
   }
 
@@ -136,7 +143,11 @@ export class EsgService {
       }
 
       // If Circular Economy is active, Scope 3 plastic/paper packaging emissions are reduced by 70%
-      if (isCircularEconomyActive && act.scope === 3 && (act.category === 'PLASTIC_VIRGIN' || act.category === 'PAPER_RECYCLED')) {
+      if (
+        isCircularEconomyActive &&
+        act.scope === 3 &&
+        (act.category === 'PLASTIC_VIRGIN' || act.category === 'PAPER_RECYCLED')
+      ) {
         calculated *= 0.3; // 70% reduction
       }
 
@@ -162,9 +173,9 @@ export class EsgService {
     legalFines = auditErrorsCount * finePerError;
 
     // Greenwashing check: check if RENEWABLE offset credits purchased comprise > 50% of total compensations
-    const renewableCredits = (purchasedCredits['RENEWABLE'] || 0);
+    const renewableCredits = purchasedCredits['RENEWABLE'] || 0;
     const totalPurchased = offsetEmissions;
-    const isGreenwashing = totalPurchased > 0 && (renewableCredits / totalPurchased) > 0.5;
+    const isGreenwashing = totalPurchased > 0 && renewableCredits / totalPurchased > 0.5;
 
     // Calculate reputationScore
     let repScore = 100;
@@ -250,7 +261,10 @@ export class EsgService {
   }
 
   // Purchase carbon credit
-  async buyCarbonCredits(projectId: string, tons: number): Promise<{ success: boolean; message: string; budget?: number; offset?: number }> {
+  async buyCarbonCredits(
+    projectId: string,
+    tons: number
+  ): Promise<{ success: boolean; message: string; budget?: number; offset?: number }> {
     const project = await prisma.carbonMarket.findUnique({ where: { id: projectId } });
     if (!project) throw new Error('Carbon project not found');
 
@@ -266,7 +280,7 @@ export class EsgService {
     // Deduct budget and update metrics
     esgBudget -= cost;
     offsetEmissions += tons;
-    
+
     // Track categories for Greenwashing calculations
     const pType = project.projectType;
     purchasedCredits[pType] = (purchasedCredits[pType] || 0) + tons;
@@ -290,7 +304,7 @@ export class EsgService {
     const projects = await prisma.carbonMarket.findMany();
     for (const p of projects) {
       let changePercent = (Math.random() * 4 - 2) / 100; // -2% to +2% normal fluctuation
-      
+
       // Inject events influence
       if (activeEvent === 'EU_CARBON_TAX_BOOST') {
         // High quality DAC prices spike, RENEWABLES increase slightly
@@ -331,70 +345,137 @@ export class EsgService {
 
       // Design styling
       doc.rect(0, 0, doc.page.width, doc.page.height).fill('#080d16'); // Dark theme background
-      
+
       // Header Banner
       doc.rect(30, 30, doc.page.width - 60, 80).fill('#0f172a');
-      doc.fillColor('#00e5ff').fontSize(20).text('INFORME OFICIAL DE HUELLA DE CARBONO (GEI)', 50, 45, { align: 'center' });
-      doc.fillColor('#a0a5b5').fontSize(10).text('Cumplimiento bajo el Estándar Corporativo de Gases de Efecto Invernadero (GHG Protocol)', 50, 75, { align: 'center' });
+      doc
+        .fillColor('#00e5ff')
+        .fontSize(20)
+        .text('INFORME OFICIAL DE HUELLA DE CARBONO (GEI)', 50, 45, { align: 'center' });
+      doc
+        .fillColor('#a0a5b5')
+        .fontSize(10)
+        .text(
+          'Cumplimiento bajo el Estándar Corporativo de Gases de Efecto Invernadero (GHG Protocol)',
+          50,
+          75,
+          { align: 'center' }
+        );
 
       // Left column metadata
-      doc.fillColor('#f5f6f9').fontSize(11).text(`Fecha de Declaración: ${new Date().toLocaleDateString()}`, 50, 130);
+      doc
+        .fillColor('#f5f6f9')
+        .fontSize(11)
+        .text(`Fecha de Declaración: ${new Date().toLocaleDateString()}`, 50, 130);
       doc.text(`Organización: Arquímedes Global Corp`, 50, 150);
-      doc.text(`Estado de Auditoría: ${metrics.auditErrorsCount === 0 ? 'CALIBRADO & APROBADO' : 'INCOMPLETO (ERRORES DETECTADOS)'}`, 50, 170);
+      doc.text(
+        `Estado de Auditoría: ${metrics.auditErrorsCount === 0 ? 'CALIBRADO & APROBADO' : 'INCOMPLETO (ERRORES DETECTADOS)'}`,
+        50,
+        170
+      );
 
       // Right column score
       doc.rect(doc.page.width - 200, 130, 150, 60).fill('#1e293b');
-      doc.fillColor('#00e5ff').fontSize(18).text(`${metrics.reputationScore}/100`, doc.page.width - 190, 145, { align: 'center', width: 130 });
-      doc.fillColor('#a0a5b5').fontSize(8).text('ÍNDICE DE REPUTACIÓN ESG', doc.page.width - 190, 170, { align: 'center', width: 130 });
+      doc
+        .fillColor('#00e5ff')
+        .fontSize(18)
+        .text(`${metrics.reputationScore}/100`, doc.page.width - 190, 145, {
+          align: 'center',
+          width: 130
+        });
+      doc
+        .fillColor('#a0a5b5')
+        .fontSize(8)
+        .text('ÍNDICE DE REPUTACIÓN ESG', doc.page.width - 190, 170, {
+          align: 'center',
+          width: 130
+        });
 
       // Horizontal separator
-      doc.strokeColor('#38bdf8').lineWidth(1).moveTo(50, 210).lineTo(doc.page.width - 50, 210).stroke();
+      doc
+        .strokeColor('#38bdf8')
+        .lineWidth(1)
+        .moveTo(50, 210)
+        .lineTo(doc.page.width - 50, 210)
+        .stroke();
 
       // GHG Inventory
       doc.fillColor('#00e5ff').fontSize(14).text('1. Inventario Consolidado de Emisiones', 50, 230);
       doc.moveDown(0.5);
-      
+
       doc.fillColor('#f5f6f9').fontSize(10);
-      doc.text(`- Alcance 1 (Emisiones Directas de Flota/Calderas): ${metrics.totalScope1.toFixed(2)} tCO2e`);
-      doc.text(`- Alcance 2 (Emisiones Indirectas por Electricidad): ${metrics.totalScope2.toFixed(2)} tCO2e`);
-      doc.text(`- Alcance 3 (Emisiones Indirectas de Cadena de Suministro): ${metrics.totalScope3.toFixed(2)} tCO2e`);
-      doc.fontSize(11).fillColor('#38bdf8').text(`- Emisiones Brutas Totales: ${metrics.totalEmissions.toFixed(2)} tCO2e`);
-      doc.fillColor('#eab308').text(`- Créditos de Carbono Adquiridos (Compensación): -${metrics.offsetEmissions.toFixed(2)} tCO2e`);
-      doc.fontSize(12).fillColor('#00e5ff').text(`- Emisiones Netas Declaradas: ${metrics.netEmissions.toFixed(2)} tCO2e`);
+      doc.text(
+        `- Alcance 1 (Emisiones Directas de Flota/Calderas): ${metrics.totalScope1.toFixed(2)} tCO2e`
+      );
+      doc.text(
+        `- Alcance 2 (Emisiones Indirectas por Electricidad): ${metrics.totalScope2.toFixed(2)} tCO2e`
+      );
+      doc.text(
+        `- Alcance 3 (Emisiones Indirectas de Cadena de Suministro): ${metrics.totalScope3.toFixed(2)} tCO2e`
+      );
+      doc
+        .fontSize(11)
+        .fillColor('#38bdf8')
+        .text(`- Emisiones Brutas Totales: ${metrics.totalEmissions.toFixed(2)} tCO2e`);
+      doc
+        .fillColor('#eab308')
+        .text(
+          `- Créditos de Carbono Adquiridos (Compensación): -${metrics.offsetEmissions.toFixed(2)} tCO2e`
+        );
+      doc
+        .fontSize(12)
+        .fillColor('#00e5ff')
+        .text(`- Emisiones Netas Declaradas: ${metrics.netEmissions.toFixed(2)} tCO2e`);
       doc.text(`- Trayectoria Target SBTi 2025: ${metrics.targetEmissions.toFixed(2)} tCO2e`);
 
       // Target verification banner
       doc.moveDown(1);
       const targetMet = metrics.netEmissions <= metrics.targetEmissions;
       doc.rect(50, doc.y, doc.page.width - 100, 30).fill(targetMet ? '#065f46' : '#991b1b');
-      doc.fillColor('#ffffff').fontSize(10).text(
-        targetMet 
-          ? ' Trayectoria de descarbonización CONFORME a las metas de reducción SBTi.' 
-          : ' Trayectoria NO CONFORME: Las emisiones netas superan el límite SBTi.',
-        60, doc.y + 10
-      );
+      doc
+        .fillColor('#ffffff')
+        .fontSize(10)
+        .text(
+          targetMet
+            ? ' Trayectoria de descarbonización CONFORME a las metas de reducción SBTi.'
+            : ' Trayectoria NO CONFORME: Las emisiones netas superan el límite SBTi.',
+          60,
+          doc.y + 10
+        );
 
       // Audit warning if errors exist
       doc.moveDown(2);
       if (metrics.auditErrorsCount > 0) {
         doc.rect(50, doc.y, doc.page.width - 100, 45).fill('#78350f');
-        doc.fillColor('#ffffff').fontSize(9).text(
-          `¡ATENCIÓN! Se reportan ${metrics.auditErrorsCount} discrepancias de unidades sin auditar en la base de datos de facturas. Este informe carece de validez legal bajo estándares de reporte TCFD y acumula multas de cambio climático por $${metrics.legalFines.toLocaleString()} USD.`,
-          60, doc.y + 8, { width: doc.page.width - 120 }
-        );
+        doc
+          .fillColor('#ffffff')
+          .fontSize(9)
+          .text(
+            `¡ATENCIÓN! Se reportan ${metrics.auditErrorsCount} discrepancias de unidades sin auditar en la base de datos de facturas. Este informe carece de validez legal bajo estándares de reporte TCFD y acumula multas de cambio climático por $${metrics.legalFines.toLocaleString()} USD.`,
+            60,
+            doc.y + 8,
+            { width: doc.page.width - 120 }
+          );
         doc.moveDown(1.5);
       } else {
         doc.rect(50, doc.y, doc.page.width - 100, 30).fill('#0284c7');
-        doc.fillColor('#ffffff').fontSize(10).text(
-          ' Informe auditado con 100% de coherencia en unidades. Libre de multas de cumplimiento legal.',
-          60, doc.y + 10
-        );
+        doc
+          .fillColor('#ffffff')
+          .fontSize(10)
+          .text(
+            ' Informe auditado con 100% de coherencia en unidades. Libre de multas de cumplimiento legal.',
+            60,
+            doc.y + 10
+          );
         doc.moveDown(1);
       }
 
       // Facility breakout
       doc.moveDown(1);
-      doc.fillColor('#00e5ff').fontSize(14).text('2. Desglose de Emisiones por Centro de Operación', 50, doc.y);
+      doc
+        .fillColor('#00e5ff')
+        .fontSize(14)
+        .text('2. Desglose de Emisiones por Centro de Operación', 50, doc.y);
       doc.moveDown(0.5);
 
       const facilityMap: Record<string, { s1: number; s2: number; s3: number }> = {};
@@ -410,18 +491,32 @@ export class EsgService {
       for (const [fName, scopes] of Object.entries(facilityMap)) {
         const total = scopes.s1 + scopes.s2 + scopes.s3;
         doc.text(`* ${fName} (Total: ${total.toFixed(2)} tCO2e)`);
-        doc.fillColor('#a0a5b5').text(`  - Alcance 1: ${scopes.s1.toFixed(2)} t | Alcance 2: ${scopes.s2.toFixed(2)} t | Alcance 3: ${scopes.s3.toFixed(2)} t`);
+        doc
+          .fillColor('#a0a5b5')
+          .text(
+            `  - Alcance 1: ${scopes.s1.toFixed(2)} t | Alcance 2: ${scopes.s2.toFixed(2)} t | Alcance 3: ${scopes.s3.toFixed(2)} t`
+          );
         doc.fillColor('#f5f6f9').moveDown(0.3);
       }
 
       // Legal disclaimer footer
       doc.moveDown(2);
-      doc.strokeColor('#38bdf8').lineWidth(1).moveTo(50, doc.y).lineTo(doc.page.width - 50, doc.y).stroke();
+      doc
+        .strokeColor('#38bdf8')
+        .lineWidth(1)
+        .moveTo(50, doc.y)
+        .lineTo(doc.page.width - 50, doc.y)
+        .stroke();
       doc.moveDown(1);
-      doc.fillColor('#6b7080').fontSize(8).text(
-        'Este documento es una simulación académica del reporte anual de emisiones reguladas de gases de efecto invernadero bajo el ecosistema de ingeniería digital Arquímedes Online. La información y hash presentados han sido generados por el simulador de contabilidad ESG.',
-        50, doc.y, { align: 'center', width: doc.page.width - 100 }
-      );
+      doc
+        .fillColor('#6b7080')
+        .fontSize(8)
+        .text(
+          'Este documento es una simulación académica del reporte anual de emisiones reguladas de gases de efecto invernadero bajo el ecosistema de ingeniería digital Arquímedes Online. La información y hash presentados han sido generados por el simulador de contabilidad ESG.',
+          50,
+          doc.y,
+          { align: 'center', width: doc.page.width - 100 }
+        );
 
       doc.end();
     });

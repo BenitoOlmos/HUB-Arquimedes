@@ -5,7 +5,6 @@ import { z } from 'zod';
 const agrotechService = new AgrotechService();
 
 export class AgrotechController {
-
   // Fetch zones, sensors, and current readings
   async getZones(req: Request, res: Response, next: NextFunction) {
     try {
@@ -24,7 +23,7 @@ export class AgrotechController {
         sensorType: z.enum(['SOIL_MOISTURE', 'PH', 'TEMPERATURE', 'RADIATION']),
         range: z.enum(['24h', '7d', '30d']).default('24h')
       });
-      
+
       const parsed = schema.parse({
         zoneId: req.query.zoneId,
         sensorType: req.query.sensorType,

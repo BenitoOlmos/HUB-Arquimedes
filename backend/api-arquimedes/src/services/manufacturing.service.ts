@@ -6,15 +6,17 @@ let upgradedMachines: Record<string, boolean> = {}; // track preventative mainte
 let lineBalanced = false; // track if robot arm balance applied
 
 // In-memory runtime values for the machines
-const machineStates: Record<string, {
-  status: 'OPERATIONAL' | 'DOWN' | 'DEGRADED';
-  temperature: number;
-  currentCycleTime: number;
-  energyRate: number;
-}> = {};
+const machineStates: Record<
+  string,
+  {
+    status: 'OPERATIONAL' | 'DOWN' | 'DEGRADED';
+    temperature: number;
+    currentCycleTime: number;
+    energyRate: number;
+  }
+> = {};
 
 export class ManufacturingService {
-
   // Get active line and machines with current status
   async getLineState() {
     const line = await prisma.assemblyLine.findFirst({
@@ -26,7 +28,7 @@ export class ManufacturingService {
     if (!line) return null;
 
     // Initialize in-memory state for machines if not present
-    line.machines.forEach(m => {
+    line.machines.forEach((m) => {
       if (!machineStates[m.id]) {
         machineStates[m.id] = {
           status: 'OPERATIONAL',
@@ -37,9 +39,9 @@ export class ManufacturingService {
       }
     });
 
-    const machinesWithState = line.machines.map(m => {
+    const machinesWithState = line.machines.map((m) => {
       const state = machineStates[m.id];
-      
+
       // Dynamic adjustments based on events and upgrades
       let nominal = m.nominalCycleTime;
       if (m.type === 'ROBOTIC_ARM') {
@@ -80,36 +82,37 @@ export class ManufacturingService {
 
     // 1. Availability calculation
     // Total scheduled time = last 10 batches * 8 hours = 80 hours = 288,000 seconds
-    const scheduledTimeSec = 10 * 8 * 3600; 
+    const scheduledTimeSec = 10 * 8 * 3600;
     const downtimeSum = await prisma.downtimeLog.aggregate({
       _sum: { durationSecs: true }
     });
-    
+
     let totalDowntimeSec = downtimeSum._sum.durationSecs || 0;
-    
+
     // Mantenimiento preventivo upgrade reduces downtime by 50%
-    const upgradedCount = Object.values(upgradedMachines).filter(v => v).length;
+    const upgradedCount = Object.values(upgradedMachines).filter((v) => v).length;
     if (upgradedCount > 0) {
-      totalDowntimeSec = Math.round(totalDowntimeSec * (1 - (upgradedCount * 0.12))); // 12% reduction per upgraded machine
+      totalDowntimeSec = Math.round(totalDowntimeSec * (1 - upgradedCount * 0.12)); // 12% reduction per upgraded machine
     }
 
     const operatingTimeSec = Math.max(0, scheduledTimeSec - totalDowntimeSec);
-    const availability = scheduledTimeSec > 0 ? (operatingTimeSec / scheduledTimeSec) : 0;
+    const availability = scheduledTimeSec > 0 ? operatingTimeSec / scheduledTimeSec : 0;
 
     // 2. Performance calculation
     // Total pieces produced across all batches
     const batchAgg = await prisma.productionBatch.aggregate({
       _sum: { totalProduced: true, defectsFound: true }
     });
-    
+
     const totalProduced = batchAgg._sum.totalProduced || 0;
     const totalDefects = batchAgg._sum.defectsFound || 0;
 
     // Ideal cycle time is 6.0 seconds per piece
     const idealCycleTime = 6.0;
-    
+
     // Performance = (Ideal Time * Total Produced) / Operating Time
-    const performance = operatingTimeSec > 0 ? (totalProduced * idealCycleTime) / operatingTimeSec : 0;
+    const performance =
+      operatingTimeSec > 0 ? (totalProduced * idealCycleTime) / operatingTimeSec : 0;
 
     // 3. Quality calculation
     // Quality = (Total Produced - Defects) / Total Produced
@@ -124,27 +127,29 @@ export class ManufacturingService {
       take: 10
     });
 
-    const controlChartData = batches.map((b, idx) => {
-      const batchProduced = b.totalProduced;
-      const batchDefects = b.defectsFound;
-      const defectRate = batchProduced > 0 ? (batchDefects / batchProduced) * 100 : 0;
-      
-      // Control limits calculations (based on Seis Sigma p-chart)
-      // average defect rate is ~0.5% normally, but spikes with tool wear
-      const cl = 0.5;
-      const ucl = 2.5;
-      const lcl = 0.0;
+    const controlChartData = batches
+      .map((b, idx) => {
+        const batchProduced = b.totalProduced;
+        const batchDefects = b.defectsFound;
+        const defectRate = batchProduced > 0 ? (batchDefects / batchProduced) * 100 : 0;
 
-      return {
-        batchId: b.id.substring(0, 5),
-        rate: parseFloat(defectRate.toFixed(2)),
-        CL: cl,
-        UCL: ucl,
-        LCL: lcl,
-        totalProduced: batchProduced,
-        defectsFound: batchDefects
-      };
-    }).reverse();
+        // Control limits calculations (based on Seis Sigma p-chart)
+        // average defect rate is ~0.5% normally, but spikes with tool wear
+        const cl = 0.5;
+        const ucl = 2.5;
+        const lcl = 0.0;
+
+        return {
+          batchId: b.id.substring(0, 5),
+          rate: parseFloat(defectRate.toFixed(2)),
+          CL: cl,
+          UCL: ucl,
+          LCL: lcl,
+          totalProduced: batchProduced,
+          defectsFound: batchDefects
+        };
+      })
+      .reverse();
 
     return {
       availability: parseFloat((availability * 100).toFixed(1)),
@@ -171,7 +176,7 @@ export class ManufacturingService {
       take: 15
     });
 
-    return logs.map(l => ({
+    return logs.map((l) => ({
       id: l.id,
       machineId: l.machineId,
       machineType: l.machine.type,
@@ -184,7 +189,7 @@ export class ManufacturingService {
   // Upgrade preventative maintenance for a machine
   async upgradeMachine(machineId: string) {
     upgradedMachines[machineId] = true;
-    
+
     // Instantly restore machine operational state if it was degraded
     if (machineStates[machineId]) {
       machineStates[machineId].status = 'OPERATIONAL';
@@ -280,7 +285,7 @@ export class ManufacturingService {
       if (state.status !== 'DOWN') {
         // Decalibration crisis event increases cycle time
         if (activeEvent === 'MACHINE_DECALIBRATION' && machine.sequenceOrder === 1) {
-          actual += 2.0; 
+          actual += 2.0;
           state.status = 'DEGRADED';
         } else {
           state.status = 'OPERATIONAL';
@@ -317,7 +322,7 @@ export class ManufacturingService {
         await prisma.downtimeLog.create({
           data: {
             machineId: machine.id,
-            reasonCode: Math.random() < 0.5 ? "ERR_MATERIAL_JAM" : "ERR_MOTOR_TEMP",
+            reasonCode: Math.random() < 0.5 ? 'ERR_MATERIAL_JAM' : 'ERR_MOTOR_TEMP',
             durationSecs: 300 + Math.floor(Math.random() * 900)
           }
         });
@@ -331,7 +336,7 @@ export class ManufacturingService {
           energyConsumed: parseFloat((energy * (actual / 3600)).toFixed(5)) // kWh
         }
       });
-      
+
       stepTelemetry.push(tel);
     }
 

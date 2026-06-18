@@ -3,16 +3,16 @@ import { io } from 'socket.io-client';
 import GlobeViewer from './components/GlobeViewer';
 import CustomsKanban from './components/CustomsKanban';
 import CrisisConsole from './components/CrisisConsole';
-import { 
-  Activity, 
-  Compass, 
-  ClipboardCheck, 
-  ShieldAlert, 
-  Terminal, 
-  Droplet, 
-  DollarSign, 
-  Clock, 
-  TrendingUp, 
+import {
+  Activity,
+  Compass,
+  ClipboardCheck,
+  ShieldAlert,
+  Terminal,
+  Droplet,
+  DollarSign,
+  Clock,
+  TrendingUp,
   AlertCircle,
   HelpCircle,
   FileCode,
@@ -32,12 +32,16 @@ function App() {
     logisticsCostKPI: 0
   });
   const [logs, setLogs] = useState([
-    { id: 1, time: new Date().toLocaleTimeString(), text: "Simulador Smart Port ERP iniciado. Conectando al servicio de telemetría..." }
+    {
+      id: 1,
+      time: new Date().toLocaleTimeString(),
+      text: 'Simulador Smart Port ERP iniciado. Conectando al servicio de telemetría...'
+    }
   ]);
 
   // Add entry to real-time events log
   const addLog = (text) => {
-    setLogs(prev => [
+    setLogs((prev) => [
       { id: Date.now(), time: new Date().toLocaleTimeString(), text },
       ...prev.slice(0, 49) // Keep last 50 logs
     ]);
@@ -73,8 +77,8 @@ function App() {
         });
       }
     } catch (err) {
-      console.error("Error fetching initial state:", err);
-      addLog("Error de conexión al cargar datos iniciales del puerto.");
+      console.error('Error fetching initial state:', err);
+      addLog('Error de conexión al cargar datos iniciales del puerto.');
     }
   };
 
@@ -87,21 +91,21 @@ function App() {
 
     socket.on('connect', () => {
       setIsConnected(true);
-      addLog("Enlace de Telemetría GPS Establecido (WebSocket: Activo).");
+      addLog('Enlace de Telemetría GPS Establecido (WebSocket: Activo).');
     });
 
     socket.on('disconnect', () => {
       setIsConnected(false);
-      addLog("Advertencia: Conexión de telemetría perdida.");
+      addLog('Advertencia: Conexión de telemetría perdida.');
     });
 
     // Handle real-time shipping ticks
     socket.on('ship-gps-update', (data) => {
       if (data.ships) {
         // Overlay socket coordinates onto existing ships data
-        setShips(prevShips => {
-          const shipMap = new Map(data.ships.map(s => [s.id, s]));
-          return prevShips.map(ship => {
+        setShips((prevShips) => {
+          const shipMap = new Map(data.ships.map((s) => [s.id, s]));
+          return prevShips.map((ship) => {
             const update = shipMap.get(ship.id);
             if (update) {
               return {
@@ -202,7 +206,6 @@ function App() {
 
   return (
     <div className="app-container">
-      
       {/* 1. Header */}
       <header className="glass-header">
         <div className="header-content">
@@ -212,55 +215,59 @@ function App() {
               <span className="header-title">Smart Port ERP</span>
               <span className="header-subtitle">Simulador de Logística y Cadena de Suministro</span>
             </div>
-            <span style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '4px', 
-              fontSize: '0.65rem', 
-              background: isConnected ? 'rgba(16, 185, 129, 0.08)' : 'rgba(239, 68, 68, 0.08)',
-              color: isConnected ? 'var(--color-approved)' : 'var(--color-held)',
-              border: `1px solid ${isConnected ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)'}`,
-              padding: '2px 8px',
-              borderRadius: '20px',
-              fontWeight: 'bold',
-              marginLeft: '0.5rem'
-            }}>
-              <span style={{
-                width: '6px',
-                height: '6px',
-                borderRadius: '50%',
-                background: isConnected ? 'var(--color-approved)' : 'var(--color-held)',
-                display: 'inline-block',
-                boxShadow: isConnected ? '0 0 6px var(--color-approved)' : 'none'
-              }}></span>
-              {isConnected ? "STREAM ACTIVO" : "DESCONECTADO"}
+            <span
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                fontSize: '0.65rem',
+                background: isConnected ? 'rgba(16, 185, 129, 0.08)' : 'rgba(239, 68, 68, 0.08)',
+                color: isConnected ? 'var(--color-approved)' : 'var(--color-held)',
+                border: `1px solid ${isConnected ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)'}`,
+                padding: '2px 8px',
+                borderRadius: '20px',
+                fontWeight: 'bold',
+                marginLeft: '0.5rem'
+              }}
+            >
+              <span
+                style={{
+                  width: '6px',
+                  height: '6px',
+                  borderRadius: '50%',
+                  background: isConnected ? 'var(--color-approved)' : 'var(--color-held)',
+                  display: 'inline-block',
+                  boxShadow: isConnected ? '0 0 6px var(--color-approved)' : 'none'
+                }}
+              ></span>
+              {isConnected ? 'STREAM ACTIVO' : 'DESCONECTADO'}
             </span>
           </div>
 
           {/* Role / View Tabs Navigation */}
           <nav className="role-tabs">
-            <button 
+            <button
               className={`role-btn ${activeTab === 'tracking' ? 'active tracking' : ''}`}
               onClick={() => setActiveTab('tracking')}
             >
               <Compass size={14} />
               <span>Telemetría 3D</span>
             </button>
-            <button 
+            <button
               className={`role-btn ${activeTab === 'customs' ? 'active customs' : ''}`}
               onClick={() => setActiveTab('customs')}
             >
               <ClipboardCheck size={14} />
               <span>Kanban Aduana</span>
             </button>
-            <button 
+            <button
               className={`role-btn ${activeTab === 'crisis' ? 'active crisis' : ''}`}
               onClick={() => setActiveTab('crisis')}
             >
               <ShieldAlert size={14} />
               <span>Consola Docente</span>
             </button>
-            <button 
+            <button
               className={`role-btn ${activeTab === 'api' ? 'active api-docs' : ''}`}
               onClick={() => setActiveTab('api')}
             >
@@ -274,21 +281,36 @@ function App() {
       {/* 2. Master KPIs Banner (Function Objective KPI Scoring) */}
       <section className="master-kpis-banner">
         <div className="kpi-grid">
-          
           <div className="kpi-card">
-            <div className="kpi-icon-container" style={{ background: 'rgba(6, 182, 212, 0.08)', border: '1px solid rgba(6, 182, 212, 0.2)' }}>
+            <div
+              className="kpi-icon-container"
+              style={{
+                background: 'rgba(6, 182, 212, 0.08)',
+                border: '1px solid rgba(6, 182, 212, 0.2)'
+              }}
+            >
               <Droplet size={18} color="var(--accent-cyan)" />
             </div>
             <div className="kpi-content">
               <span className="kpi-title">Costo Combustible</span>
               <span className="kpi-value" style={{ color: 'var(--accent-cyan)' }}>
-                ${kpis.fuelSpentTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                $
+                {kpis.fuelSpentTotal.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2
+                })}
               </span>
             </div>
           </div>
 
           <div className="kpi-card">
-            <div className="kpi-icon-container" style={{ background: 'rgba(234, 179, 8, 0.08)', border: '1px solid rgba(234, 179, 8, 0.2)' }}>
+            <div
+              className="kpi-icon-container"
+              style={{
+                background: 'rgba(234, 179, 8, 0.08)',
+                border: '1px solid rgba(234, 179, 8, 0.2)'
+              }}
+            >
               <DollarSign size={18} color="var(--color-anchor)" />
             </div>
             <div className="kpi-content">
@@ -300,7 +322,13 @@ function App() {
           </div>
 
           <div className="kpi-card">
-            <div className="kpi-icon-container" style={{ background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
+            <div
+              className="kpi-icon-container"
+              style={{
+                background: 'rgba(239, 68, 68, 0.08)',
+                border: '1px solid rgba(239, 68, 68, 0.2)'
+              }}
+            >
               <Clock size={18} color="var(--color-held)" />
             </div>
             <div className="kpi-content">
@@ -311,82 +339,134 @@ function App() {
             </div>
           </div>
 
-          <div className="kpi-card" style={{ border: '1px solid var(--accent-cyan)', background: 'rgba(6, 182, 212, 0.03)', boxShadow: '0 0 10px rgba(6, 182, 212, 0.08)' }}>
+          <div
+            className="kpi-card"
+            style={{
+              border: '1px solid var(--accent-cyan)',
+              background: 'rgba(6, 182, 212, 0.03)',
+              boxShadow: '0 0 10px rgba(6, 182, 212, 0.08)'
+            }}
+          >
             <div className="kpi-icon-container" style={{ background: 'rgba(6, 182, 212, 0.15)' }}>
               <TrendingUp size={18} color="var(--accent-cyan)" />
             </div>
             <div className="kpi-content">
-              <span className="kpi-title" style={{ color: 'var(--text-primary)', fontWeight: 'bold' }}>Costo Logístico Total</span>
+              <span
+                className="kpi-title"
+                style={{ color: 'var(--text-primary)', fontWeight: 'bold' }}
+              >
+                Costo Logístico Total
+              </span>
               <span className="kpi-value" style={{ color: '#fff', fontSize: '1.25rem' }}>
-                ${kpis.logisticsCostKPI.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                $
+                {kpis.logisticsCostKPI.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2
+                })}
               </span>
             </div>
           </div>
-
         </div>
       </section>
 
       {/* 3. Main Workspace Area */}
       <main className="main-view">
-        
         {/* Dynamic Tab Views */}
         {activeTab === 'tracking' && (
-          <GlobeViewer 
-            ships={ships} 
-            activeCrises={activeCrises} 
-            onRerouteShip={handleRerouteShip} 
+          <GlobeViewer
+            ships={ships}
+            activeCrises={activeCrises}
+            onRerouteShip={handleRerouteShip}
             onTriggerAlert={addLog}
           />
         )}
 
         {activeTab === 'customs' && (
-          <CustomsKanban 
-            manifests={manifests} 
-            onUpdateManifestStatus={handleUpdateManifestStatus} 
+          <CustomsKanban
+            manifests={manifests}
+            onUpdateManifestStatus={handleUpdateManifestStatus}
             onTriggerAlert={addLog}
           />
         )}
 
         {activeTab === 'crisis' && (
-          <CrisisConsole 
-            activeCrises={activeCrises} 
-            onTriggerEvent={handleTriggerEvent} 
-            onResolveAll={handleResolveAllCrises} 
+          <CrisisConsole
+            activeCrises={activeCrises}
+            onTriggerEvent={handleTriggerEvent}
+            onResolveAll={handleResolveAllCrises}
             onTriggerAlert={addLog}
           />
         )}
 
         {activeTab === 'api' && (
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
-            
             {/* API Endpoints & Docs */}
             <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column' }}>
               <div className="panel-header">
                 <div className="panel-title">
-                  <FileCode size={18} color="var(--accent-cyan)" /> API Abierta para Modelos Matemáticos
+                  <FileCode size={18} color="var(--accent-cyan)" /> API Abierta para Modelos
+                  Matemáticos
                 </div>
               </div>
-              <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '1rem', lineHeight: '1.45' }}>
+              <div
+                style={{
+                  fontSize: '0.82rem',
+                  color: 'var(--text-secondary)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '1rem',
+                  lineHeight: '1.45'
+                }}
+              >
                 <p>
-                  El simulador portuario expone endpoints REST abiertos para que los estudiantes de semestres avanzados o materias de Investigación de Operaciones / Ingeniería de Métodos puedan programar sus propios solvers en <strong>Python, R, MATLAB o Excel (Solver VBA)</strong>.
+                  El simulador portuario expone endpoints REST abiertos para que los estudiantes de
+                  semestres avanzados o materias de Investigación de Operaciones / Ingeniería de
+                  Métodos puedan programar sus propios solvers en{' '}
+                  <strong>Python, R, MATLAB o Excel (Solver VBA)</strong>.
                 </p>
                 <p>
-                  Esto les permite leer periódicamente la telemetría del puerto y automatizar decisiones de ruteo y liberación documental para minimizar la función de costo objetivo:
+                  Esto les permite leer periódicamente la telemetría del puerto y automatizar
+                  decisiones de ruteo y liberación documental para minimizar la función de costo
+                  objetivo:
                 </p>
-                <div style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid var(--border-glass)', padding: '0.8rem', borderRadius: '6px', fontFamily: 'monospace', color: 'var(--accent-cyan)' }}>
+                <div
+                  style={{
+                    background: 'rgba(0,0,0,0.2)',
+                    border: '1px solid var(--border-glass)',
+                    padding: '0.8rem',
+                    borderRadius: '6px',
+                    fontFamily: 'monospace',
+                    color: 'var(--accent-cyan)'
+                  }}
+                >
                   Minimizar Z = (Combustible * Días) + (Multas Aduaneras) + (Pérdidas por Retraso)
                 </div>
 
-                <div style={{ borderTop: '1px solid var(--border-glass)', paddingTop: '0.8rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                <div
+                  style={{
+                    borderTop: '1px solid var(--border-glass)',
+                    paddingTop: '0.8rem',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.6rem'
+                  }}
+                >
                   <div>
-                    <strong style={{ color: 'var(--text-primary)' }}>GET /api/port/current-state</strong>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Retorna el estado de todos los buques, sus coordenadas, y la lista de crisis meteorológicas/huelgas activas.</div>
+                    <strong style={{ color: 'var(--text-primary)' }}>
+                      GET /api/port/current-state
+                    </strong>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                      Retorna el estado de todos los buques, sus coordenadas, y la lista de crisis
+                      meteorológicas/huelgas activas.
+                    </div>
                   </div>
                   <div>
                     <strong style={{ color: 'var(--text-primary)' }}>POST /api/port/reroute</strong>
                     <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                      Cuerpo: <code>{`{ "shipId": "ship-xxxx", "routeOption": "DETOUR" | "DEFAULT" }`}</code>.
-                      Permite desviar un barco por la ruta del Cabo (+35% combustible) o retornar a la ruta de canal normal.
+                      Cuerpo:{' '}
+                      <code>{`{ "shipId": "ship-xxxx", "routeOption": "DETOUR" | "DEFAULT" }`}</code>
+                      . Permite desviar un barco por la ruta del Cabo (+35% combustible) o retornar
+                      a la ruta de canal normal.
                     </div>
                   </div>
                 </div>
@@ -397,24 +477,29 @@ function App() {
             <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column' }}>
               <div className="panel-header">
                 <div className="panel-title">
-                  <Terminal size={18} color="var(--accent-purple)" /> Plantilla del Script Solver (Python)
+                  <Terminal size={18} color="var(--accent-purple)" /> Plantilla del Script Solver
+                  (Python)
                 </div>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Copia este script para conectar tu optimizador matemático:</span>
-                <pre style={{
-                  background: 'rgba(5, 7, 12, 0.95)',
-                  border: '1px solid var(--border-glass)',
-                  padding: '1rem',
-                  borderRadius: '8px',
-                  color: '#10b981',
-                  fontFamily: 'monospace',
-                  fontSize: '0.7rem',
-                  overflowX: 'auto',
-                  lineHeight: '1.4',
-                  maxHeight: '350px'
-                }}>
-{`import requests
+                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                  Copia este script para conectar tu optimizador matemático:
+                </span>
+                <pre
+                  style={{
+                    background: 'rgba(5, 7, 12, 0.95)',
+                    border: '1px solid var(--border-glass)',
+                    padding: '1rem',
+                    borderRadius: '8px',
+                    color: '#10b981',
+                    fontFamily: 'monospace',
+                    fontSize: '0.7rem',
+                    overflowX: 'auto',
+                    lineHeight: '1.4',
+                    maxHeight: '350px'
+                  }}
+                >
+                  {`import requests
 import time
 
 API_URL = "http://localhost:20001/api/port"
@@ -450,24 +535,50 @@ if __name__ == "__main__":
                 </pre>
               </div>
             </div>
-
           </div>
         )}
 
         {/* 4. Real-time Micro Log Feed (Console footer of active view) */}
         <div className="glass-panel" style={{ padding: '1rem', marginTop: '1.5rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-              <Terminal size={14} color="var(--accent-cyan)" /> Registro de Operaciones del Terminal (Live Feed)
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '0.5rem'
+            }}
+          >
+            <span
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                fontSize: '0.75rem',
+                fontWeight: 'bold',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px'
+              }}
+            >
+              <Terminal size={14} color="var(--accent-cyan)" /> Registro de Operaciones del Terminal
+              (Live Feed)
             </span>
             {activeCrises.length > 0 && (
-              <span style={{ color: 'var(--color-held)', fontSize: '0.7rem', display: 'flex', alignItems: 'center', gap: '3px', fontWeight: 'bold' }}>
+              <span
+                style={{
+                  color: 'var(--color-held)',
+                  fontSize: '0.7rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '3px',
+                  fontWeight: 'bold'
+                }}
+              >
                 <AlertCircle size={12} /> {activeCrises.length} Crisis Activa(s)
               </span>
             )}
           </div>
           <div className="event-log-container">
-            {logs.map(log => (
+            {logs.map((log) => (
               <div key={log.id} className="event-log-entry">
                 <span className="event-log-time">[{log.time}]</span>
                 <span>{log.text}</span>
@@ -475,19 +586,27 @@ if __name__ == "__main__":
             ))}
           </div>
         </div>
-
       </main>
 
       {/* 5. Footer */}
       <footer className="app-footer">
-        <div style={{ display: 'flex', justifyContent: 'space-between', maxW: '1600px', margin: '0 auto', opacity: 0.6 }}>
-          <span>© {new Date().getFullYear()} HUB-Arquímedes - Licenciado para Entornos Universitarios</span>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            maxW: '1600px',
+            margin: '0 auto',
+            opacity: 0.6
+          }}
+        >
+          <span>
+            © {new Date().getFullYear()} HUB-Arquímedes - Licenciado para Entornos Universitarios
+          </span>
           <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
             <BookOpen size={12} /> Laboratorio de Comercio Internacional y Operaciones Industriales
           </span>
         </div>
       </footer>
-
     </div>
   );
 }

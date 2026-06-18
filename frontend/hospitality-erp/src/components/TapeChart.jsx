@@ -17,11 +17,16 @@ const TapeChart = ({ rooms, reservations, onSelectReservation }) => {
 
   // Find if a room is occupied or reserved on a specific date string
   const getReservationForRoomOnDate = (roomId, dateStr) => {
-    return reservations.find(res => {
+    return reservations.find((res) => {
       if (res.roomId !== roomId) return false;
       const checkIn = new Date(res.checkInDate).toISOString().substring(0, 10);
       const checkOut = new Date(res.checkOutDate).toISOString().substring(0, 10);
-      return dateStr >= checkIn && dateStr < checkOut && res.status !== 'CANCELLED' && res.status !== 'NO_SHOW';
+      return (
+        dateStr >= checkIn &&
+        dateStr < checkOut &&
+        res.status !== 'CANCELLED' &&
+        res.status !== 'NO_SHOW'
+      );
     });
   };
 
@@ -46,7 +51,10 @@ const TapeChart = ({ rooms, reservations, onSelectReservation }) => {
 
           {/* Room Rows */}
           {rooms.map((room) => (
-            <div key={room.id} className="grid grid-cols-11 border-b border-slate-850 hover:bg-slate-950/10 last:border-b-0">
+            <div
+              key={room.id}
+              className="grid grid-cols-11 border-b border-slate-850 hover:bg-slate-950/10 last:border-b-0"
+            >
               {/* Room label column */}
               <div className="p-2.5 border-r border-slate-800 text-center font-bold text-slate-200 flex justify-between items-center px-3 text-xxs">
                 <span>{room.roomNumber}</span>
@@ -76,14 +84,20 @@ const TapeChart = ({ rooms, reservations, onSelectReservation }) => {
                         {/* Tooltip detail card */}
                         <div className="absolute left-1/2 bottom-full mb-2 -translate-x-1/2 w-48 p-2.5 bg-slate-950 text-slate-300 rounded border border-slate-800 hidden group-hover:block z-30 font-mono shadow-xl text-xxs leading-relaxed">
                           <div className="font-bold text-cyan-400 mb-1 flex items-center">
-                            {res.status === 'CHECKED_IN' ? <UserCheck size={10} className="mr-1" /> : <User size={10} className="mr-1" />}
+                            {res.status === 'CHECKED_IN' ? (
+                              <UserCheck size={10} className="mr-1" />
+                            ) : (
+                              <User size={10} className="mr-1" />
+                            )}
                             {res.guestName}
                           </div>
                           <div>Canal: {res.channel}</div>
                           <div>Check-in: {new Date(res.checkInDate).toLocaleDateString()}</div>
                           <div>Check-out: {new Date(res.checkOutDate).toLocaleDateString()}</div>
                           <div>Monto: ${res.totalPrice}</div>
-                          <div className="text-xxxxs text-slate-500 mt-1 italic">Hacer clic para gestionar en Front-Desk</div>
+                          <div className="text-xxxxs text-slate-500 mt-1 italic">
+                            Hacer clic para gestionar en Front-Desk
+                          </div>
                         </div>
                       </div>
                     ) : (
@@ -96,10 +110,16 @@ const TapeChart = ({ rooms, reservations, onSelectReservation }) => {
           ))}
         </div>
       </div>
-      
+
       <div className="mt-4 flex space-x-4 justify-end text-xxs text-slate-400">
-        <div className="flex items-center"><span className="w-2.5 h-2.5 rounded bg-blue-950 border border-blue-800 mr-2"></span>Check-in Activo</div>
-        <div className="flex items-center"><span className="w-2.5 h-2.5 rounded bg-amber-950 border border-amber-900 mr-2"></span>Confirmada Previa</div>
+        <div className="flex items-center">
+          <span className="w-2.5 h-2.5 rounded bg-blue-950 border border-blue-800 mr-2"></span>
+          Check-in Activo
+        </div>
+        <div className="flex items-center">
+          <span className="w-2.5 h-2.5 rounded bg-amber-950 border border-amber-900 mr-2"></span>
+          Confirmada Previa
+        </div>
       </div>
     </div>
   );

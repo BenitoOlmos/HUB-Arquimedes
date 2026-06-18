@@ -6,7 +6,7 @@ const PharmacyPanel = ({ onTriggerAlert }) => {
   const [categoryFilter, setCategoryFilter] = useState('');
   const [page, setPage] = useState(1);
   const [inventoryData, setInventoryData] = useState({ data: [], total: 0, totalPages: 1 });
-  
+
   // Purchase quantities state
   const [buyQuantities, setBuyQuantities] = useState({});
   const [purchaseSuccess, setPurchaseSuccess] = useState(null);
@@ -14,13 +14,15 @@ const PharmacyPanel = ({ onTriggerAlert }) => {
   // Load paginated data
   const loadInventory = async () => {
     try {
-      const res = await fetch(`/api/his/pharmacy?page=${page}&pageSize=10&search=${encodeURIComponent(searchTerm)}&category=${encodeURIComponent(categoryFilter)}`);
+      const res = await fetch(
+        `/api/his/pharmacy?page=${page}&pageSize=10&search=${encodeURIComponent(searchTerm)}&category=${encodeURIComponent(categoryFilter)}`
+      );
       if (res.ok) {
         const data = await res.json();
         setInventoryData(data);
       }
     } catch (err) {
-      console.error("Error loading pharmacy inventory:", err);
+      console.error('Error loading pharmacy inventory:', err);
     }
   };
 
@@ -43,12 +45,14 @@ const PharmacyPanel = ({ onTriggerAlert }) => {
       });
       if (response.ok) {
         const item = await response.json();
-        onTriggerAlert(`Compra: Orden de ${qty} unidades enviada para ${item.name} (Prov: ${item.provider})`);
+        onTriggerAlert(
+          `Compra: Orden de ${qty} unidades enviada para ${item.name} (Prov: ${item.provider})`
+        );
         setPurchaseSuccess(`Compra exitosa: ${qty} unidades en tránsito para ${item.name}`);
         setTimeout(() => setPurchaseSuccess(null), 4000);
-        
+
         // Reset input qty
-        setBuyQuantities(prev => ({ ...prev, [skuId]: '' }));
+        setBuyQuantities((prev) => ({ ...prev, [skuId]: '' }));
         loadInventory();
       } else {
         const err = await response.json();
@@ -60,7 +64,7 @@ const PharmacyPanel = ({ onTriggerAlert }) => {
   };
 
   const handleQtyChange = (skuId, val) => {
-    setBuyQuantities(prev => ({ ...prev, [skuId]: val }));
+    setBuyQuantities((prev) => ({ ...prev, [skuId]: val }));
   };
 
   const handleExport = async (format, dataset) => {
@@ -77,18 +81,26 @@ const PharmacyPanel = ({ onTriggerAlert }) => {
       const res = await fetch(url);
       if (!res.ok) throw new Error('Error al descargar datos');
       const resultData = await res.json();
-      
+
       let exportData = [];
       if (dataset === 'pacientes') {
         exportData = resultData.data;
       } else if (dataset === 'historial') {
-        exportData = resultData.recentHistory.map(log => ({
+        exportData = resultData.recentHistory.map((log) => ({
           id: log.id,
           date: (log.arrivalTime || '').split('T')[0],
           patientId: log.patient?.rut || log.patientId,
           patientName: log.patient?.fullName || 'Paciente',
           triageLevel: log.assignedEsi,
-          waitTime: log.attentionTime ? Math.max(0, Math.floor((new Date(log.attentionTime).getTime() - new Date(log.arrivalTime).getTime()) / 60000)) : 0,
+          waitTime: log.attentionTime
+            ? Math.max(
+                0,
+                Math.floor(
+                  (new Date(log.attentionTime).getTime() - new Date(log.arrivalTime).getTime()) /
+                    60000
+                )
+              )
+            : 0,
           diagnosis: log.symptoms,
           outcome: log.status
         }));
@@ -98,9 +110,9 @@ const PharmacyPanel = ({ onTriggerAlert }) => {
 
       if (format === 'json') {
         const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(exportData, null, 2))}`;
-        const link = document.createElement("a");
-        link.setAttribute("href", jsonString);
-        link.setAttribute("download", `${dataset}_db_seed.json`);
+        const link = document.createElement('a');
+        link.setAttribute('href', jsonString);
+        link.setAttribute('download', `${dataset}_db_seed.json`);
         document.body.appendChild(link);
         link.click();
         link.remove();
@@ -109,21 +121,24 @@ const PharmacyPanel = ({ onTriggerAlert }) => {
         if (exportData.length === 0) return;
         const headers = Object.keys(exportData[0]);
         const csvRows = [];
-        csvRows.push(headers.join(","));
+        csvRows.push(headers.join(','));
 
-        exportData.forEach(item => {
-          const values = headers.map(header => {
+        exportData.forEach((item) => {
+          const values = headers.map((header) => {
             const val = item[header];
-            const escaped = ("" + (val !== null && val !== undefined ? val : '')).replace(/"/g, '\\"');
+            const escaped = ('' + (val !== null && val !== undefined ? val : '')).replace(
+              /"/g,
+              '\\"'
+            );
             return `"${escaped}"`;
           });
-          csvRows.push(values.join(","));
+          csvRows.push(values.join(','));
         });
 
-        const csvContent = "data:text/csv;charset=utf-8," + encodeURIComponent(csvRows.join("\n"));
-        const link = document.createElement("a");
-        link.setAttribute("href", csvContent);
-        link.setAttribute("download", `${dataset}_db_seed.csv`);
+        const csvContent = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvRows.join('\n'));
+        const link = document.createElement('a');
+        link.setAttribute('href', csvContent);
+        link.setAttribute('download', `${dataset}_db_seed.csv`);
         document.body.appendChild(link);
         link.click();
         link.remove();
@@ -136,12 +151,12 @@ const PharmacyPanel = ({ onTriggerAlert }) => {
 
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1.5rem' }}>
-      
       {/* Searchable Inventory List */}
       <div className="glass-panel">
         <div className="panel-header">
           <div className="panel-title">
-            <Package size={18} color="var(--esi-3-urg)" /> Bodega de Farmacia e Insumos (1,000+ SKUs)
+            <Package size={18} color="var(--esi-3-urg)" /> Bodega de Farmacia e Insumos (1,000+
+            SKUs)
           </div>
           <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 'bold' }}>
             Mostrando {inventoryData.total} items
@@ -149,23 +164,38 @@ const PharmacyPanel = ({ onTriggerAlert }) => {
         </div>
 
         {/* Filters */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '1rem', marginBottom: '1.25rem' }}>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1.2fr 1fr',
+            gap: '1rem',
+            marginBottom: '1.25rem'
+          }}
+        >
           <div style={{ position: 'relative' }}>
-            <Search size={16} style={{ position: 'absolute', left: '10px', top: '11px', color: 'var(--text-muted)' }} />
+            <Search
+              size={16}
+              style={{
+                position: 'absolute',
+                left: '10px',
+                top: '11px',
+                color: 'var(--text-muted)'
+              }}
+            />
             <input
               type="text"
               placeholder="Buscar SKU por nombre, ID o proveedor..."
               className="form-input"
               style={{ paddingLeft: '32px' }}
               value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
 
           <select
             className="form-select"
             value={categoryFilter}
-            onChange={e => setCategoryFilter(e.target.value)}
+            onChange={(e) => setCategoryFilter(e.target.value)}
           >
             <option value="">Todas las Categorías</option>
             <option value="Medicamentos Urgencia">Medicamentos de Urgencia</option>
@@ -176,18 +206,20 @@ const PharmacyPanel = ({ onTriggerAlert }) => {
         </div>
 
         {purchaseSuccess && (
-          <div style={{
-            background: 'rgba(16, 185, 129, 0.12)',
-            border: '1px solid var(--bed-free)',
-            borderRadius: '6px',
-            color: 'var(--bed-free)',
-            padding: '0.6rem 0.8rem',
-            fontSize: '0.8rem',
-            marginBottom: '1rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem'
-          }}>
+          <div
+            style={{
+              background: 'rgba(16, 185, 129, 0.12)',
+              border: '1px solid var(--bed-free)',
+              borderRadius: '6px',
+              color: 'var(--bed-free)',
+              padding: '0.6rem 0.8rem',
+              fontSize: '0.8rem',
+              marginBottom: '1rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem'
+            }}
+          >
             <CheckCircle size={14} />
             {purchaseSuccess}
           </div>
@@ -209,45 +241,69 @@ const PharmacyPanel = ({ onTriggerAlert }) => {
             <tbody>
               {inventoryData.data.length === 0 ? (
                 <tr>
-                  <td colSpan="7" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
+                  <td
+                    colSpan="7"
+                    style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}
+                  >
                     No se encontraron insumos para la búsqueda actual.
                   </td>
                 </tr>
               ) : (
-                inventoryData.data.map(item => {
+                inventoryData.data.map((item) => {
                   const isLowStock = item.stock <= item.reorderPoint;
                   return (
-                    <tr key={item.id} style={{
-                      background: isLowStock ? 'rgba(234, 179, 8, 0.03)' : 'transparent'
-                    }}>
+                    <tr
+                      key={item.id}
+                      style={{
+                        background: isLowStock ? 'rgba(234, 179, 8, 0.03)' : 'transparent'
+                      }}
+                    >
                       <td style={{ fontFamily: 'monospace', fontWeight: 'bold' }}>{item.id}</td>
                       <td>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                           <span>{item.name}</span>
                           {item.isCritical && (
-                            <span style={{
-                              fontSize: '0.55rem',
-                              background: 'rgba(239, 68, 68, 0.15)',
-                              color: 'var(--esi-1-resus)',
-                              padding: '2px 5px',
-                              borderRadius: '4px',
-                              fontWeight: 'bold'
-                            }}>CRÍTICO</span>
+                            <span
+                              style={{
+                                fontSize: '0.55rem',
+                                background: 'rgba(239, 68, 68, 0.15)',
+                                color: 'var(--esi-1-resus)',
+                                padding: '2px 5px',
+                                borderRadius: '4px',
+                                fontWeight: 'bold'
+                              }}
+                            >
+                              CRÍTICO
+                            </span>
                           )}
                         </div>
-                        <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>Prov: {item.provider}</div>
+                        <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>
+                          Prov: {item.provider}
+                        </div>
                       </td>
-                      <td style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{item.category}</td>
+                      <td style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                        {item.category}
+                      </td>
                       <td style={{ fontFamily: 'monospace' }}>${item.cost}</td>
                       <td>
-                        <span style={{
-                          fontWeight: 'bold',
-                          color: isLowStock ? 'var(--esi-3-urg)' : 'var(--bed-free)'
-                        }}>
+                        <span
+                          style={{
+                            fontWeight: 'bold',
+                            color: isLowStock ? 'var(--esi-3-urg)' : 'var(--bed-free)'
+                          }}
+                        >
                           {item.stock}
                         </span>
                         {isLowStock && (
-                          <div style={{ fontSize: '0.65rem', color: 'var(--esi-3-urg)', display: 'flex', alignItems: 'center', gap: '2px' }}>
+                          <div
+                            style={{
+                              fontSize: '0.65rem',
+                              color: 'var(--esi-3-urg)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '2px'
+                            }}
+                          >
                             <AlertCircle size={8} /> Min: {item.reorderPoint}
                           </div>
                         )}
@@ -263,7 +319,7 @@ const PharmacyPanel = ({ onTriggerAlert }) => {
                             className="form-input"
                             style={{ width: '55px', padding: '0.3rem 0.4rem', fontSize: '0.75rem' }}
                             value={buyQuantities[item.id] || ''}
-                            onChange={e => handleQtyChange(item.id, e.target.value)}
+                            onChange={(e) => handleQtyChange(item.id, e.target.value)}
                           />
                           <button
                             className="btn-primary"
@@ -289,7 +345,7 @@ const PharmacyPanel = ({ onTriggerAlert }) => {
             className="btn-secondary"
             style={{ padding: '0.35rem 0.8rem', fontSize: '0.75rem' }}
             disabled={page === 1}
-            onClick={() => setPage(prev => Math.max(1, prev - 1))}
+            onClick={() => setPage((prev) => Math.max(1, prev - 1))}
           >
             Anterior
           </button>
@@ -300,7 +356,7 @@ const PharmacyPanel = ({ onTriggerAlert }) => {
             className="btn-secondary"
             style={{ padding: '0.35rem 0.8rem', fontSize: '0.75rem' }}
             disabled={page === inventoryData.totalPages}
-            onClick={() => setPage(prev => prev + 1)}
+            onClick={() => setPage((prev) => prev + 1)}
           >
             Siguiente
           </button>
@@ -315,52 +371,106 @@ const PharmacyPanel = ({ onTriggerAlert }) => {
           </div>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', fontSize: '0.8rem' }}>
+        <div
+          style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', fontSize: '0.8rem' }}
+        >
           <p style={{ color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-            Este módulo simula la base de datos de poblamiento clínico e inventario hospitalario. Los docentes pueden descargar los archivos de seed estructurados para su uso en laboratorios de computación o para restablecer la sesión.
+            Este módulo simula la base de datos de poblamiento clínico e inventario hospitalario.
+            Los docentes pueden descargar los archivos de seed estructurados para su uso en
+            laboratorios de computación o para restablecer la sesión.
           </p>
 
           {/* Pacientes Seed */}
-          <div style={{ border: '1px solid var(--border-glass)', borderRadius: '8px', padding: '0.85rem', background: 'rgba(255, 255, 255, 0.01)' }}>
-            <strong style={{ display: 'block', marginBottom: '6px' }}>Seeder 1: Pacientes Clínicos (10,000+ Fichas)</strong>
+          <div
+            style={{
+              border: '1px solid var(--border-glass)',
+              borderRadius: '8px',
+              padding: '0.85rem',
+              background: 'rgba(255, 255, 255, 0.01)'
+            }}
+          >
+            <strong style={{ display: 'block', marginBottom: '6px' }}>
+              Seeder 1: Pacientes Clínicos (10,000+ Fichas)
+            </strong>
             <div style={{ display: 'flex', gap: '6px' }}>
-              <button className="btn-secondary" style={{ flex: 1, fontSize: '0.72rem', padding: '0.4rem' }} onClick={() => handleExport('json', 'pacientes')}>
+              <button
+                className="btn-secondary"
+                style={{ flex: 1, fontSize: '0.72rem', padding: '0.4rem' }}
+                onClick={() => handleExport('json', 'pacientes')}
+              >
                 Descargar JSON
               </button>
-              <button className="btn-secondary" style={{ flex: 1, fontSize: '0.72rem', padding: '0.4rem' }} onClick={() => handleExport('csv', 'pacientes')}>
+              <button
+                className="btn-secondary"
+                style={{ flex: 1, fontSize: '0.72rem', padding: '0.4rem' }}
+                onClick={() => handleExport('csv', 'pacientes')}
+              >
                 Descargar CSV
               </button>
             </div>
           </div>
 
           {/* Historial Urgencias Seed */}
-          <div style={{ border: '1px solid var(--border-glass)', borderRadius: '8px', padding: '0.85rem', background: 'rgba(255, 255, 255, 0.01)' }}>
-            <strong style={{ display: 'block', marginBottom: '6px' }}>Seeder 2: Historial Urgencias (50,000+ Casos)</strong>
+          <div
+            style={{
+              border: '1px solid var(--border-glass)',
+              borderRadius: '8px',
+              padding: '0.85rem',
+              background: 'rgba(255, 255, 255, 0.01)'
+            }}
+          >
+            <strong style={{ display: 'block', marginBottom: '6px' }}>
+              Seeder 2: Historial Urgencias (50,000+ Casos)
+            </strong>
             <div style={{ display: 'flex', gap: '6px' }}>
-              <button className="btn-secondary" style={{ flex: 1, fontSize: '0.72rem', padding: '0.4rem' }} onClick={() => handleExport('json', 'historial')}>
+              <button
+                className="btn-secondary"
+                style={{ flex: 1, fontSize: '0.72rem', padding: '0.4rem' }}
+                onClick={() => handleExport('json', 'historial')}
+              >
                 Descargar JSON
               </button>
-              <button className="btn-secondary" style={{ flex: 1, fontSize: '0.72rem', padding: '0.4rem' }} onClick={() => handleExport('csv', 'historial')}>
+              <button
+                className="btn-secondary"
+                style={{ flex: 1, fontSize: '0.72rem', padding: '0.4rem' }}
+                onClick={() => handleExport('csv', 'historial')}
+              >
                 Descargar CSV
               </button>
             </div>
           </div>
 
           {/* Farmacia Seed */}
-          <div style={{ border: '1px solid var(--border-glass)', borderRadius: '8px', padding: '0.85rem', background: 'rgba(255, 255, 255, 0.01)' }}>
-            <strong style={{ display: 'block', marginBottom: '6px' }}>Seeder 3: Bodega Farmacia (1,000+ SKUs)</strong>
+          <div
+            style={{
+              border: '1px solid var(--border-glass)',
+              borderRadius: '8px',
+              padding: '0.85rem',
+              background: 'rgba(255, 255, 255, 0.01)'
+            }}
+          >
+            <strong style={{ display: 'block', marginBottom: '6px' }}>
+              Seeder 3: Bodega Farmacia (1,000+ SKUs)
+            </strong>
             <div style={{ display: 'flex', gap: '6px' }}>
-              <button className="btn-secondary" style={{ flex: 1, fontSize: '0.72rem', padding: '0.4rem' }} onClick={() => handleExport('json', 'farmacia')}>
+              <button
+                className="btn-secondary"
+                style={{ flex: 1, fontSize: '0.72rem', padding: '0.4rem' }}
+                onClick={() => handleExport('json', 'farmacia')}
+              >
                 Descargar JSON
               </button>
-              <button className="btn-secondary" style={{ flex: 1, fontSize: '0.72rem', padding: '0.4rem' }} onClick={() => handleExport('csv', 'farmacia')}>
+              <button
+                className="btn-secondary"
+                style={{ flex: 1, fontSize: '0.72rem', padding: '0.4rem' }}
+                onClick={() => handleExport('csv', 'farmacia')}
+              >
                 Descargar CSV
               </button>
             </div>
           </div>
         </div>
       </div>
-
     </div>
   );
 };

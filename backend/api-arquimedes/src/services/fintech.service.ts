@@ -5,11 +5,10 @@ let studentWebhookUrl: string | null = null;
 // Evaluation statistics tracked in memory per simulation session
 let totalLegitimatePassed = 0;
 let totalLegitimateBlocked = 0; // False Positives (Friction)
-let totalFraudPassed = 0;       // False Negatives (Direct losses)
-let totalFraudBlocked = 0;      // True Positives (Good ML classification)
+let totalFraudPassed = 0; // False Negatives (Direct losses)
+let totalFraudBlocked = 0; // True Positives (Good ML classification)
 
 export class FintechService {
-
   getWebhookUrl() {
     return studentWebhookUrl;
   }
@@ -26,9 +25,10 @@ export class FintechService {
 
     const fpRate = totalLegitimate > 0 ? (totalLegitimateBlocked / totalLegitimate) * 100 : 0;
     const fnRate = totalFraud > 0 ? (totalFraudPassed / totalFraud) * 100 : 0;
-    const accuracy = (totalLegitimate + totalFraud) > 0 
-      ? ((totalLegitimatePassed + totalFraudBlocked) / (totalLegitimate + totalFraud)) * 100 
-      : 100;
+    const accuracy =
+      totalLegitimate + totalFraud > 0
+        ? ((totalLegitimatePassed + totalFraudBlocked) / (totalLegitimate + totalFraud)) * 100
+        : 100;
 
     return {
       falsePositives: totalLegitimateBlocked,
@@ -107,7 +107,7 @@ export class FintechService {
     const receiver = await prisma.finAccount.findUnique({ where: { id: data.receiverId } });
 
     if (!sender || !receiver) {
-      throw new Error("Sender or Receiver account not found");
+      throw new Error('Sender or Receiver account not found');
     }
 
     if (sender.isFrozen) {
@@ -126,8 +126,8 @@ export class FintechService {
     // Rule A: Amount >= $10,000 or close boundary ($9,990 USD)
     const isLendingLimit = data.amount >= 9900;
     // Rule B: Darkweb Tor exit nodes (mock IPs starting with 192.42 or 85.204)
-    const isDarkWeb = data.ipAddress.startsWith("192.42") || data.ipAddress.startsWith("85.204");
-    
+    const isDarkWeb = data.ipAddress.startsWith('192.42') || data.ipAddress.startsWith('85.204');
+
     const isFlagged = isLendingLimit || isDarkWeb;
 
     // 2. Query Student Python/FastAPI ML model if active
@@ -140,7 +140,7 @@ export class FintechService {
           receiverAccount: receiver.accountNumber,
           amount: data.amount,
           ipAddress: data.ipAddress,
-          deviceFingerprint: data.deviceFingerprint || "unknown",
+          deviceFingerprint: data.deviceFingerprint || 'unknown',
           senderRiskScore: sender.riskScore
         };
 
@@ -158,7 +158,10 @@ export class FintechService {
           }
         }
       } catch (err: any) {
-        console.warn("Student Webhook failed to respond. Defaulting to standard AML checks:", err?.message || err);
+        console.warn(
+          'Student Webhook failed to respond. Defaulting to standard AML checks:',
+          err?.message || err
+        );
       }
     }
 
@@ -169,7 +172,9 @@ export class FintechService {
       } else {
         totalLegitimateBlocked += 1; // False Positive (friction penalty)
       }
-      throw new Error("Transacción bloqueada por el Optimizador de Riesgos de Inteligencia Artificial (ML).");
+      throw new Error(
+        'Transacción bloqueada por el Optimizador de Riesgos de Inteligencia Artificial (ML).'
+      );
     } else {
       if (data.isFraud) {
         totalFraudPassed += 1; // False Negative (fraud loss)
@@ -212,8 +217,8 @@ export class FintechService {
       await prisma.amlAlert.create({
         data: {
           transactionId: tx.id,
-          ruleTriggered: isLendingLimit ? "LIMITE_DETECTOR_UAF" : "IP_CONEXION_DARKWEB",
-          severity: isLendingLimit ? "HIGH" : "CRITICAL",
+          ruleTriggered: isLendingLimit ? 'LIMITE_DETECTOR_UAF' : 'IP_CONEXION_DARKWEB',
+          severity: isLendingLimit ? 'HIGH' : 'CRITICAL',
           resolved: false
         }
       });
@@ -250,19 +255,19 @@ export class FintechService {
       const choice = Math.random();
       if (choice < 0.35) {
         // Template A: Carding Velocity
-        amount = 12.50 + Math.random() * 5;
-        ipAddress = "192.42.116.89"; // Dark web
-        deviceFingerprint = "fp-carder-bot";
+        amount = 12.5 + Math.random() * 5;
+        ipAddress = '192.42.116.89'; // Dark web
+        deviceFingerprint = 'fp-carder-bot';
       } else if (choice < 0.7) {
         // Template B: Smurfing transfer boundary
-        amount = 9990.00;
-        ipAddress = "85.204.116.12"; // Tor exit
-        deviceFingerprint = "fp-smurf-device";
+        amount = 9990.0;
+        ipAddress = '85.204.116.12'; // Tor exit
+        deviceFingerprint = 'fp-smurf-device';
       } else {
         // Template C: Large transfer mismatch
-        amount = 15000.00 + Math.random() * 10000;
-        ipAddress = "192.42.116.5";
-        deviceFingerprint = "fp-layering-layer";
+        amount = 15000.0 + Math.random() * 10000;
+        ipAddress = '192.42.116.5';
+        deviceFingerprint = 'fp-layering-layer';
       }
     }
 

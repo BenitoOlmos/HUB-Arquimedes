@@ -5,12 +5,11 @@ import { z } from 'zod';
 const scadaService = new ScadaService();
 
 // Auto initialize live state
-scadaService.initializeState().catch(err => {
-  console.error("Error initializing SCADA service state:", err);
+scadaService.initializeState().catch((err) => {
+  console.error('Error initializing SCADA service state:', err);
 });
 
 export class ScadaController {
-
   // Fetch list of plant assets with their current telemetries
   async getAssets(req: Request, res: Response, next: NextFunction) {
     try {
@@ -54,17 +53,19 @@ export class ScadaController {
       const limit = req.query.limit ? parseInt(req.query.limit as string) : 50;
 
       if (!tagId || !parameter) {
-        res.status(400).json({ error: "tagId and parameter are required query strings" });
+        res.status(400).json({ error: 'tagId and parameter are required query strings' });
         return;
       }
 
       const history = await scadaService.getTelemetryHistory(tagId, parameter, limit);
-      
+
       // Map database logs to client chart structure
-      const formatted = history.map(h => ({
-        timestamp: h.timestamp,
-        value: h.value
-      })).reverse(); // Oldest first for plotting
+      const formatted = history
+        .map((h) => ({
+          timestamp: h.timestamp,
+          value: h.value
+        }))
+        .reverse(); // Oldest first for plotting
 
       res.status(200).json(formatted);
     } catch (error) {

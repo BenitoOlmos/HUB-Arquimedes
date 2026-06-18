@@ -1,5 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Activity, ShieldAlert, Award, FileText, Database, Radio, Volume2, VolumeX } from 'lucide-react';
+import {
+  Activity,
+  ShieldAlert,
+  Award,
+  FileText,
+  Database,
+  Radio,
+  Volume2,
+  VolumeX
+} from 'lucide-react';
 import { io } from 'socket.io-client';
 import TriagePanel from './components/TriagePanel';
 import BedManagementPanel from './components/BedManagementPanel';
@@ -10,11 +19,11 @@ import HistoryPanel from './components/HistoryPanel';
 function App() {
   // Navigation role tabs
   const [currentRole, setCurrentRole] = useState('TRIAGE'); // TRIAGE, BEDS, PHARMACY, CONSOLE, HISTORY
-  
+
   // Simulation Clock
   const [simTime, setSimTime] = useState({ hour: 8, minute: 0, day: 18, month: 6, year: 2026 });
   const [clockSpeed, setClockSpeed] = useState(1); // 0 = Pausa, 1 = Normal, 5 = Rápido, 10 = Ultra
-  
+
   // Main states
   const [activePatients, setActivePatients] = useState([]); // Waiting list
   const [beds, setBeds] = useState([]); // Beds map
@@ -66,15 +75,16 @@ function App() {
     return { arrivalMult, consMult };
   };
 
-  const { arrivalMult: arrivalMultiplier, consMult: consumptionMultiplier } = getActiveCrisisMultiplier();
+  const { arrivalMult: arrivalMultiplier, consMult: consumptionMultiplier } =
+    getActiveCrisisMultiplier();
 
   // Trigger audio-visual alert
   const triggerSystemAlert = (msg, alertTime = null) => {
     setAlertTriggered(true);
     setTimeout(() => setAlertTriggered(false), 3000);
-    
+
     const timeStr = alertTime || formatTime(simTime.hour, simTime.minute);
-    setNetworkEvents(prev => [
+    setNetworkEvents((prev) => [
       { time: timeStr, message: msg },
       ...prev.slice(0, 19) // Keep last 20 events
     ]);
@@ -93,7 +103,7 @@ function App() {
         osc.start();
         osc.stop(audioCtx.currentTime + 0.15);
       } catch (e) {
-        console.log("Audio not supported");
+        console.log('Audio not supported');
       }
     }
   };
@@ -109,7 +119,7 @@ function App() {
         setActiveCrises(data.activeCrises);
         if (data.kpis) setKpis(data.kpis);
       }
-      
+
       const resBeds = await fetch('/api/his/beds');
       if (resBeds.ok) {
         const bedsData = await resBeds.json();
@@ -122,7 +132,7 @@ function App() {
         setActivePatients(triageData);
       }
     } catch (e) {
-      console.error("Error fetching initial HIS states:", e);
+      console.error('Error fetching initial HIS states:', e);
     }
   };
 
@@ -256,15 +266,18 @@ function App() {
 
   return (
     <div className="app-container">
-      
       {/* Header bar */}
-      <header className="glass-header" style={{
-        boxShadow: alertTriggered ? '0 0 25px rgba(239, 68, 68, 0.25)' : '0 8px 32px rgba(0, 0, 0, 0.4)',
-        borderColor: alertTriggered ? 'var(--esi-1-resus)' : 'var(--border-glass)',
-        transition: 'all 0.3s ease'
-      }}>
+      <header
+        className="glass-header"
+        style={{
+          boxShadow: alertTriggered
+            ? '0 0 25px rgba(239, 68, 68, 0.25)'
+            : '0 8px 32px rgba(0, 0, 0, 0.4)',
+          borderColor: alertTriggered ? 'var(--esi-1-resus)' : 'var(--border-glass)',
+          transition: 'all 0.3s ease'
+        }}
+      >
         <div className="header-content">
-          
           <div className="header-brand">
             <div className="header-logo">
               <Activity size={26} />
@@ -277,43 +290,64 @@ function App() {
 
           {/* Role selector tabs */}
           <div className="role-tabs">
-            <button className={`role-btn triage ${currentRole === 'TRIAGE' ? 'active' : ''}`} onClick={() => setCurrentRole('TRIAGE')}>
+            <button
+              className={`role-btn triage ${currentRole === 'TRIAGE' ? 'active' : ''}`}
+              onClick={() => setCurrentRole('TRIAGE')}
+            >
               Médico de Triage
             </button>
-            <button className={`role-btn beds ${currentRole === 'BEDS' ? 'active' : ''}`} onClick={() => setCurrentRole('BEDS')}>
+            <button
+              className={`role-btn beds ${currentRole === 'BEDS' ? 'active' : ''}`}
+              onClick={() => setCurrentRole('BEDS')}
+            >
               Coordinador Camas
             </button>
-            <button className={`role-btn pharmacy ${currentRole === 'PHARMACY' ? 'active' : ''}`} onClick={() => setCurrentRole('PHARMACY')}>
+            <button
+              className={`role-btn pharmacy ${currentRole === 'PHARMACY' ? 'active' : ''}`}
+              onClick={() => setCurrentRole('PHARMACY')}
+            >
               Logística / Farmacia
             </button>
-            <button className={`role-btn console ${currentRole === 'CONSOLE' ? 'active' : ''}`} onClick={() => setCurrentRole('CONSOLE')}>
+            <button
+              className={`role-btn console ${currentRole === 'CONSOLE' ? 'active' : ''}`}
+              onClick={() => setCurrentRole('CONSOLE')}
+            >
               Consola Crisis
             </button>
-            <button className={`role-btn history ${currentRole === 'HISTORY' ? 'active' : ''}`} onClick={() => setCurrentRole('HISTORY')}>
+            <button
+              className={`role-btn history ${currentRole === 'HISTORY' ? 'active' : ''}`}
+              onClick={() => setCurrentRole('HISTORY')}
+            >
               Historial
             </button>
           </div>
 
           {/* Time & speed controls */}
           <div className="header-controls">
-            <button 
-              onClick={() => setSoundEnabled(!soundEnabled)} 
-              className="btn-secondary" 
+            <button
+              onClick={() => setSoundEnabled(!soundEnabled)}
+              className="btn-secondary"
               style={{ padding: '0.4rem', border: 'none', background: 'transparent' }}
-              title={soundEnabled ? "Desactivar audio" : "Activar audio"}
+              title={soundEnabled ? 'Desactivar audio' : 'Activar audio'}
             >
-              {soundEnabled ? <Volume2 size={16} color="var(--accent-cyan)" /> : <VolumeX size={16} color="var(--text-muted)" />}
+              {soundEnabled ? (
+                <Volume2 size={16} color="var(--accent-cyan)" />
+              ) : (
+                <VolumeX size={16} color="var(--text-muted)" />
+              )}
             </button>
 
             <div className="sim-controls">
               <div className="sim-time-display">
                 <span>Día {simTime.day}</span>
-                <span style={{ color: 'var(--accent-cyan)' }}>{formatTime(simTime.hour, simTime.minute)}</span>
+                <span style={{ color: 'var(--accent-cyan)' }}>
+                  {formatTime(simTime.hour, simTime.minute)}
+                </span>
               </div>
-              <select 
+              <select
                 className="sim-speed-selector"
                 value={clockSpeed}
-                onChange={e => handleClockSpeedChange(Number(e.target.value))}
+                onChange={(e) => handleClockSpeedChange(Number(e.target.value))}
               >
                 <option value="0">⏸️ PAUSA</option>
                 <option value="1">⏱️ 1x VEL</option>
@@ -322,16 +356,17 @@ function App() {
               </select>
             </div>
           </div>
-
         </div>
       </header>
 
       {/* Hospital Metrics KPIs Banner */}
       <section className="master-kpis-banner">
         <div className="kpi-grid">
-          
           <div className="kpi-card">
-            <div className="kpi-icon-container" style={{ background: 'rgba(6, 182, 212, 0.1)', color: 'var(--accent-cyan)' }}>
+            <div
+              className="kpi-icon-container"
+              style={{ background: 'rgba(6, 182, 212, 0.1)', color: 'var(--accent-cyan)' }}
+            >
               <Activity size={18} />
             </div>
             <div className="kpi-content">
@@ -341,17 +376,28 @@ function App() {
           </div>
 
           <div className="kpi-card">
-            <div className="kpi-icon-container" style={{ background: 'rgba(239, 68, 68, 0.1)', color: 'var(--esi-1-resus)' }}>
+            <div
+              className="kpi-icon-container"
+              style={{ background: 'rgba(239, 68, 68, 0.1)', color: 'var(--esi-1-resus)' }}
+            >
               <Award size={18} />
             </div>
             <div className="kpi-content">
               <span className="kpi-title">Decesos en Espera</span>
-              <strong className="kpi-value" style={{ color: kpis.mortality > 0 ? 'var(--esi-1-resus)' : 'inherit' }}>{kpis.mortality}</strong>
+              <strong
+                className="kpi-value"
+                style={{ color: kpis.mortality > 0 ? 'var(--esi-1-resus)' : 'inherit' }}
+              >
+                {kpis.mortality}
+              </strong>
             </div>
           </div>
 
           <div className="kpi-card">
-            <div className="kpi-icon-container" style={{ background: 'rgba(139, 92, 246, 0.1)', color: 'var(--accent-purple)' }}>
+            <div
+              className="kpi-icon-container"
+              style={{ background: 'rgba(139, 92, 246, 0.1)', color: 'var(--accent-purple)' }}
+            >
               <Database size={18} />
             </div>
             <div className="kpi-content">
@@ -361,22 +407,29 @@ function App() {
           </div>
 
           <div className="kpi-card">
-            <div className="kpi-icon-container" style={{ background: 'rgba(234, 179, 8, 0.1)', color: 'var(--esi-3-urg)' }}>
+            <div
+              className="kpi-icon-container"
+              style={{ background: 'rgba(234, 179, 8, 0.1)', color: 'var(--esi-3-urg)' }}
+            >
               <ShieldAlert size={18} />
             </div>
             <div className="kpi-content">
               <span className="kpi-title">Quiebres Farmacia (SKUs 0)</span>
-              <strong className="kpi-value" style={{ color: kpis.stockouts > 0 ? 'var(--esi-3-urg)' : 'inherit' }}>{kpis.stockouts}</strong>
+              <strong
+                className="kpi-value"
+                style={{ color: kpis.stockouts > 0 ? 'var(--esi-3-urg)' : 'inherit' }}
+              >
+                {kpis.stockouts}
+              </strong>
             </div>
           </div>
-
         </div>
       </section>
 
       {/* Main Workspace */}
       <main className="main-view">
         {currentRole === 'TRIAGE' && (
-          <TriagePanel 
+          <TriagePanel
             activePatients={activePatients}
             onAdmitPatient={handleAdmitPatient}
             onTriggerAlert={triggerSystemAlert}
@@ -385,7 +438,7 @@ function App() {
         )}
 
         {currentRole === 'BEDS' && (
-          <BedManagementPanel 
+          <BedManagementPanel
             beds={beds}
             activePatients={activePatients}
             onTransferPatient={handleTransferPatient}
@@ -394,14 +447,10 @@ function App() {
           />
         )}
 
-        {currentRole === 'PHARMACY' && (
-          <PharmacyPanel 
-            onTriggerAlert={triggerSystemAlert}
-          />
-        )}
+        {currentRole === 'PHARMACY' && <PharmacyPanel onTriggerAlert={triggerSystemAlert} />}
 
         {currentRole === 'CONSOLE' && (
-          <CrisisConsole 
+          <CrisisConsole
             activeCrises={activeCrises}
             onTriggerCrisis={handleTriggerCrisis}
             onResolveCrises={handleResolveCrises}
@@ -411,14 +460,22 @@ function App() {
           />
         )}
 
-        {currentRole === 'HISTORY' && (
-          <HistoryPanel />
-        )}
+        {currentRole === 'HISTORY' && <HistoryPanel />}
 
         {/* Real-time Simulated Network Events Feed */}
         <div className="glass-panel" style={{ marginTop: '1.5rem', padding: '1rem' }}>
-          <div style={{ fontSize: '0.78rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--text-secondary)' }}>
-            <Radio size={14} color="var(--accent-cyan)" /> Feed de Red y Sincronización WebSockets (Tiempo Real)
+          <div
+            style={{
+              fontSize: '0.78rem',
+              fontWeight: 'bold',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              color: 'var(--text-secondary)'
+            }}
+          >
+            <Radio size={14} color="var(--accent-cyan)" /> Feed de Red y Sincronización WebSockets
+            (Tiempo Real)
           </div>
           <div className="network-feed-container">
             {networkEvents.map((evt, idx) => (
@@ -434,9 +491,11 @@ function App() {
       {/* Footer */}
       <footer className="app-footer">
         <p>"El Triage no es solo clasificar, es decidir quién vive bajo el peso de la escasez."</p>
-        <p style={{ marginTop: '4px' }}>&copy; 2026 Ecosistema Hospitalario - HIS Triage Táctico - Laboratorio de Medicina y Administración en Salud.</p>
+        <p style={{ marginTop: '4px' }}>
+          &copy; 2026 Ecosistema Hospitalario - HIS Triage Táctico - Laboratorio de Medicina y
+          Administración en Salud.
+        </p>
       </footer>
-
     </div>
   );
 }

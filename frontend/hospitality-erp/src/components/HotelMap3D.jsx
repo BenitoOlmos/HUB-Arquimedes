@@ -82,7 +82,7 @@ const HotelMap3D = ({ rooms, reservations, onSelectRoom, selectedRoomNumber }) =
       for (let r = 1; r <= 8; r++) {
         const roomNumber = `${floor}0${r}`;
         const isLeftCol = r <= 4;
-        
+
         // Z side corridors
         const zPos = isLeftCol ? -1.5 : 1.5;
         // X position along floor
@@ -162,13 +162,13 @@ const HotelMap3D = ({ rooms, reservations, onSelectRoom, selectedRoomNumber }) =
       const currentRooms = roomsRef.current || [];
       const currentReservations = reservationsRef.current || [];
 
-      roomsGroup.children.forEach(group => {
+      roomsGroup.children.forEach((group) => {
         const roomNum = group.userData.roomNumber;
-        const roomData = currentRooms.find(r => r.roomNumber === roomNum);
-        
+        const roomData = currentRooms.find((r) => r.roomNumber === roomNum);
+
         // Find if this room is currently occupied (CHECKED_IN guest)
         const isOccupied = currentReservations.some(
-          res => res.room?.roomNumber === roomNum && res.status === 'CHECKED_IN'
+          (res) => res.room?.roomNumber === roomNum && res.status === 'CHECKED_IN'
         );
 
         let targetColor = statusColors.CLEAN;
@@ -247,16 +247,31 @@ const HotelMap3D = ({ rooms, reservations, onSelectRoom, selectedRoomNumber }) =
     <div className="relative w-full h-full min-h-[420px] rounded-xl overflow-hidden border border-slate-800 bg-[#090d16] flex flex-col">
       <div className="absolute top-4 left-4 z-10 flex items-center space-x-2 bg-slate-950/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-cyan-500/30">
         <span className="w-2.5 h-2.5 rounded-full bg-cyan-500 animate-pulse"></span>
-        <span className="text-xs font-mono text-cyan-400 tracking-wider">3D PISOS DEL HOTEL - LIVE FEED</span>
+        <span className="text-xs font-mono text-cyan-400 tracking-wider">
+          3D PISOS DEL HOTEL - LIVE FEED
+        </span>
       </div>
       <div className="absolute bottom-4 right-4 z-10 bg-slate-950/80 backdrop-blur-md p-3 rounded-lg border border-slate-800 text-xxs font-mono text-slate-400 flex flex-col space-y-1">
-        <div className="flex items-center"><span className="w-2.5 h-2.5 rounded bg-emerald-500 mr-2"></span>INSPECTED (LISTA)</div>
-        <div className="flex items-center"><span className="w-2.5 h-2.5 rounded bg-yellow-500 mr-2"></span>CLEAN (LIMPIA NO INSP)</div>
-        <div className="flex items-center"><span className="w-2.5 h-2.5 rounded bg-red-500 mr-2"></span>DIRTY (SUCIA)</div>
-        <div className="flex items-center"><span className="w-2.5 h-2.5 rounded bg-blue-500 mr-2"></span>OCCUPIED (OCUPADA)</div>
-        <div className="flex items-center"><span className="w-2.5 h-2.5 rounded bg-slate-500 mr-2"></span>OUT OF ORDER (OOO)</div>
+        <div className="flex items-center">
+          <span className="w-2.5 h-2.5 rounded bg-emerald-500 mr-2"></span>INSPECTED (LISTA)
+        </div>
+        <div className="flex items-center">
+          <span className="w-2.5 h-2.5 rounded bg-yellow-500 mr-2"></span>CLEAN (LIMPIA NO INSP)
+        </div>
+        <div className="flex items-center">
+          <span className="w-2.5 h-2.5 rounded bg-red-500 mr-2"></span>DIRTY (SUCIA)
+        </div>
+        <div className="flex items-center">
+          <span className="w-2.5 h-2.5 rounded bg-blue-500 mr-2"></span>OCCUPIED (OCUPADA)
+        </div>
+        <div className="flex items-center">
+          <span className="w-2.5 h-2.5 rounded bg-slate-500 mr-2"></span>OUT OF ORDER (OOO)
+        </div>
       </div>
-      <div ref={containerRef} className="w-full h-full flex-grow flex items-center justify-center" />
+      <div
+        ref={containerRef}
+        className="w-full h-full flex-grow flex items-center justify-center"
+      />
     </div>
   );
 };

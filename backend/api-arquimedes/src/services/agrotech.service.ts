@@ -10,7 +10,6 @@ let totalWaterUsedLiters = 0;
 let cropHealthMultiplier = 1.0; // 1.0 is healthy, drops with stress
 
 export class AgrotechService {
-
   // Get active agricultural crisis
   getActiveEvent() {
     return activeAgroEvent;
@@ -42,41 +41,49 @@ export class AgrotechService {
     });
 
     // Map each sensor to include its current value (latest telemetry reading)
-    const enrichedZones = await Promise.all(zones.map(async zone => {
-      const enrichedSensors = await Promise.all(zone.sensors.map(async sensor => {
-        const latestReading = await prisma.agroTelemetry.findFirst({
-          where: { sensorId: sensor.id },
-          orderBy: { timestamp: 'desc' }
-        });
-        return {
-          id: sensor.id,
-          zoneId: sensor.zoneId,
-          type: sensor.type as any,
-          isActive: sensor.isActive,
-          currentValue: latestReading ? latestReading.value : 0
-        };
-      }));
+    const enrichedZones = await Promise.all(
+      zones.map(async (zone) => {
+        const enrichedSensors = await Promise.all(
+          zone.sensors.map(async (sensor) => {
+            const latestReading = await prisma.agroTelemetry.findFirst({
+              where: { sensorId: sensor.id },
+              orderBy: { timestamp: 'desc' }
+            });
+            return {
+              id: sensor.id,
+              zoneId: sensor.zoneId,
+              type: sensor.type as any,
+              isActive: sensor.isActive,
+              currentValue: latestReading ? latestReading.value : 0
+            };
+          })
+        );
 
-      return {
-        id: zone.id,
-        name: zone.name,
-        cropType: zone.cropType,
-        sensors: enrichedSensors,
-        valves: zone.valves.map(v => ({
-          id: v.id,
-          name: v.name,
-          status: v.status,
-          lastActivated: v.lastActivated ? v.lastActivated.toISOString() : null
-        }))
-      };
-    }));
+        return {
+          id: zone.id,
+          name: zone.name,
+          cropType: zone.cropType,
+          sensors: enrichedSensors,
+          valves: zone.valves.map((v) => ({
+            id: v.id,
+            name: v.name,
+            status: v.status,
+            lastActivated: v.lastActivated ? v.lastActivated.toISOString() : null
+          }))
+        };
+      })
+    );
 
     return enrichedZones;
   }
 
   // Get aggregated historical data to prevent browser memory leaks
   // Range options: '24h' (grouped by hour), '7d' (grouped by day), '30d' (grouped by day)
-  async getHistoricalTelemetry(zoneId: string, sensorType: string, range: '24h' | '7d' | '30d' = '24h') {
+  async getHistoricalTelemetry(
+    zoneId: string,
+    sensorType: string,
+    range: '24h' | '7d' | '30d' = '24h'
+  ) {
     const sensor = await prisma.agroSensor.findFirst({
       where: { zoneId, type: sensorType }
     });
@@ -106,8 +113,8 @@ export class AgrotechService {
     // (programmatic is safer across different timezone behaviors in PostgreSQL/SQLite)
     if (range === '24h') {
       // Group by hour
-      const hourlyData: { [key: string]: { sum: number, count: number, timestamp: Date } } = {};
-      readings.forEach(r => {
+      const hourlyData: { [key: string]: { sum: number; count: number; timestamp: Date } } = {};
+      readings.forEach((r) => {
         const d = new Date(r.timestamp);
         d.setMinutes(0, 0, 0); // Round to hour
         const key = d.toISOString();
@@ -118,14 +125,14 @@ export class AgrotechService {
         hourlyData[key].count += 1;
       });
 
-      return Object.values(hourlyData).map(h => ({
+      return Object.values(hourlyData).map((h) => ({
         timestamp: h.timestamp.toISOString(),
         value: parseFloat((h.sum / h.count).toFixed(2))
       }));
     } else {
       // Group by day
-      const dailyData: { [key: string]: { sum: number, count: number, timestamp: Date } } = {};
-      readings.forEach(r => {
+      const dailyData: { [key: string]: { sum: number; count: number; timestamp: Date } } = {};
+      readings.forEach((r) => {
         const d = new Date(r.timestamp);
         d.setHours(0, 0, 0, 0); // Round to day
         const key = d.toISOString().split('T')[0];
@@ -136,7 +143,7 @@ export class AgrotechService {
         dailyData[key].count += 1;
       });
 
-      return Object.values(dailyData).map(d => ({
+      return Object.values(dailyData).map((d) => ({
         timestamp: d.timestamp.toISOString().split('T')[0],
         value: parseFloat((d.sum / d.count).toFixed(2))
       }));
@@ -226,7 +233,7 @@ export class AgrotechService {
         // So let's check if the valve's programmed duration has elapsed.
         // If elapsedMinutes > ruleDuration (scaled)
         // Let's find matching active rule for this zone
-        const matchingRule = rules.find(r => r.zoneId === zone.id);
+        const matchingRule = rules.find((r) => r.zoneId === zone.id);
         if (matchingRule) {
           // Duration in simulated minutes
           // Let's say if it exceeds the duration:
@@ -260,14 +267,14 @@ export class AgrotechService {
           // Simulating day cycle
           const hrOfDay = now.getHours();
           if (hrOfDay >= 6 && hrOfDay <= 18) {
-            const cycle = Math.sin((hrOfDay - 6) / 12 * Math.PI);
+            const cycle = Math.sin(((hrOfDay - 6) / 12) * Math.PI);
             currentVal = 400 + cycle * 500 + Math.random() * 20;
           } else {
             currentVal = 0;
           }
         } else if (sensor.type === 'TEMPERATURE') {
           const hrOfDay = now.getHours();
-          const cycle = Math.sin((hrOfDay - 8) / 24 * 2 * Math.PI);
+          const cycle = Math.sin(((hrOfDay - 8) / 24) * 2 * Math.PI);
           let baseTemp = 20 + cycle * 8 + Math.random() * 1.5;
 
           // Crisis modifiers
@@ -321,7 +328,9 @@ export class AgrotechService {
         // 3. Evaluate rules engine
         // If soil moisture is low, trigger rule
         if (sensor.type === 'SOIL_MOISTURE') {
-          const zoneRules = rules.filter(r => r.zoneId === zone.id && r.sensorType === 'SOIL_MOISTURE');
+          const zoneRules = rules.filter(
+            (r) => r.zoneId === zone.id && r.sensorType === 'SOIL_MOISTURE'
+          );
           for (const rule of zoneRules) {
             let matches = false;
             if (rule.operator === 'LT' && currentVal < rule.thresholdValue) {

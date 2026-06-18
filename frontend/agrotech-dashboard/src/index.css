@@ -10,14 +10,14 @@
   --text-muted: #3f624c;
 
   /* AgroTech Specific Colors */
-  --color-moisture: #0ea5e9;   /* Moisture Cyan-Blue */
-  --color-ph: #a855f7;         /* pH Purple */
-  --color-temp: #eab308;       /* Temperature Amber */
-  --color-radiation: #f97316;  /* Radiation Orange */
-  
+  --color-moisture: #0ea5e9; /* Moisture Cyan-Blue */
+  --color-ph: #a855f7; /* pH Purple */
+  --color-temp: #eab308; /* Temperature Amber */
+  --color-radiation: #f97316; /* Radiation Orange */
+
   --color-valve-open: #10b981; /* Open Green */
   --color-valve-closed: #ef4444; /* Closed Red */
-  
+
   /* Accents */
   --accent-emerald: #10b981;
   --accent-emerald-glow: rgba(16, 185, 129, 0.35);
@@ -72,12 +72,20 @@ body::after {
 }
 
 @keyframes float-blob {
-  0% { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(-50px, 30px) scale(1.08); }
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    transform: translate(-50px, 30px) scale(1.08);
+  }
 }
 @keyframes float-blob-reverse {
-  0% { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(40px, -30px) scale(1.12); }
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    transform: translate(40px, -30px) scale(1.12);
+  }
 }
 
 /* Scrollbars */
@@ -370,7 +378,8 @@ body::after {
   box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
 }
 
-.form-select, .form-input {
+.form-select,
+.form-input {
   background: rgba(2, 6, 4, 0.85);
   border: 1px solid var(--border-glass);
   border-radius: 6px;
@@ -382,7 +391,8 @@ body::after {
   transition: var(--transition-smooth);
   width: 100%;
 }
-.form-select:focus, .form-input:focus {
+.form-select:focus,
+.form-input:focus {
   border-color: var(--accent-emerald);
   box-shadow: 0 0 8px rgba(16, 185, 129, 0.2);
 }
@@ -455,7 +465,8 @@ body::after {
 }
 
 @keyframes pulse-glow {
-  0%, 100% {
+  0%,
+  100% {
     filter: drop-shadow(0 0 2px rgba(16, 185, 129, 0.2));
   }
   50% {

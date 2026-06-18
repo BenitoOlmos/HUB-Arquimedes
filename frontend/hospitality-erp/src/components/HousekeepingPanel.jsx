@@ -7,13 +7,18 @@ const HousekeepingPanel = ({ tasks, housekeepers, onAssign, onComplete }) => {
       {/* Staff workload credits summary */}
       <div className="grid grid-cols-1 md_grid-cols-3 gap-4">
         {housekeepers.map((hk, idx) => (
-          <div key={idx} className="bg-slate-900 border border-slate-800 p-4 rounded-xl flex items-center justify-between">
+          <div
+            key={idx}
+            className="bg-slate-900 border border-slate-800 p-4 rounded-xl flex items-center justify-between"
+          >
             <div>
               <span className="text-xxxxs text-slate-500 uppercase font-bold">MUCAMA / STAFF</span>
               <div className="text-xs font-bold text-slate-200 mt-0.5">{hk.name}</div>
             </div>
             <div className="text-right">
-              <span className="text-xxxxs text-slate-500 uppercase font-bold">CRÉDITOS ASIGNADOS</span>
+              <span className="text-xxxxs text-slate-500 uppercase font-bold">
+                CRÉDITOS ASIGNADOS
+              </span>
               <div className="text-sm font-bold text-cyan-400 mt-0.5">{hk.assignedCredits} CR</div>
             </div>
           </div>
@@ -42,7 +47,9 @@ const HousekeepingPanel = ({ tasks, housekeepers, onAssign, onComplete }) => {
             <tbody>
               {tasks.map((task) => (
                 <tr key={task.id} className="border-b border-slate-850 hover:bg-slate-950/20">
-                  <td className="py-3 font-bold text-slate-200">Hab. {task.room?.roomNumber || '101'}</td>
+                  <td className="py-3 font-bold text-slate-200">
+                    Hab. {task.room?.roomNumber || '101'}
+                  </td>
                   <td className="py-3 text-slate-450">{task.room?.category}</td>
                   <td className="py-3 text-cyan-400 font-bold">{task.credits} Créditos</td>
                   <td className="py-3">
@@ -53,11 +60,15 @@ const HousekeepingPanel = ({ tasks, housekeepers, onAssign, onComplete }) => {
                     )}
                   </td>
                   <td className="py-3">
-                    <span className={`px-2 py-0.5 rounded text-xxxxs font-bold ${
-                      task.status === 'COMPLETED' ? 'bg-emerald-950 border border-emerald-900 text-emerald-300' :
-                      task.status === 'IN_PROGRESS' ? 'bg-amber-950 border border-amber-900 text-amber-300 animate-pulse' :
-                      'bg-red-950 border border-red-900 text-red-300'
-                    }`}>
+                    <span
+                      className={`px-2 py-0.5 rounded text-xxxxs font-bold ${
+                        task.status === 'COMPLETED'
+                          ? 'bg-emerald-950 border border-emerald-900 text-emerald-300'
+                          : task.status === 'IN_PROGRESS'
+                            ? 'bg-amber-950 border border-amber-900 text-amber-300 animate-pulse'
+                            : 'bg-red-950 border border-red-900 text-red-300'
+                      }`}
+                    >
                       {task.status}
                     </span>
                   </td>
@@ -70,7 +81,7 @@ const HousekeepingPanel = ({ tasks, housekeepers, onAssign, onComplete }) => {
                             <UserPlus size={10} />
                             <span>Asignar</span>
                           </button>
-                          
+
                           <div className="absolute right-0 bottom-full mb-1 w-36 bg-slate-950 border border-slate-850 rounded shadow-xl hidden group-hover:block z-30">
                             {housekeepers.map((hk, hIdx) => (
                               <button
@@ -123,8 +134,15 @@ const HousekeepingPanel = ({ tasks, housekeepers, onAssign, onComplete }) => {
           <ShieldCheck size={14} className="mr-1.5" />
           INDICACIONES DE PLANIFICACIÓN LOGÍSTICA (PIES):
         </div>
-        <p>1. <strong>VIP Check-in Prioritario:</strong> Las habitaciones SUITES (30 créditos) tienen un tiempo estimado de limpieza superior. Asigna mucamas eficientemente para liberar habitaciones VIP antes del check-in.</p>
-        <p>2. <strong>Balance de Carga:</strong> Distribuye equitativamente la carga de créditos entre las mucamas para evitar el cobro de horas extras por turnos de limpieza excesivos.</p>
+        <p>
+          1. <strong>VIP Check-in Prioritario:</strong> Las habitaciones SUITES (30 créditos) tienen
+          un tiempo estimado de limpieza superior. Asigna mucamas eficientemente para liberar
+          habitaciones VIP antes del check-in.
+        </p>
+        <p>
+          2. <strong>Balance de Carga:</strong> Distribuye equitativamente la carga de créditos
+          entre las mucamas para evitar el cobro de horas extras por turnos de limpieza excesivos.
+        </p>
       </div>
     </div>
   );

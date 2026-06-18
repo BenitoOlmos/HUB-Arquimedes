@@ -4,25 +4,25 @@
   --bg-dark: #081020;
   --bg-glass: rgba(10, 20, 40, 0.7);
   --border-glass: rgba(255, 255, 255, 0.08);
-  
+
   --text-primary: #f8fafc;
   --text-secondary: #94a3b8;
   --text-muted: #475569;
-  
+
   /* Logistical / Maritime Colors */
-  --color-route: #06b6d4;      /* Route Cyan */
-  --color-detour: #a855f7;     /* Detour Purple */
-  --color-anchor: #eab308;     /* Anchor Yellow */
-  --color-held: #ef4444;       /* Customs Held Red */
-  --color-approved: #10b981;   /* Customs Approved Green */
-  
+  --color-route: #06b6d4; /* Route Cyan */
+  --color-detour: #a855f7; /* Detour Purple */
+  --color-anchor: #eab308; /* Anchor Yellow */
+  --color-held: #ef4444; /* Customs Held Red */
+  --color-approved: #10b981; /* Customs Approved Green */
+
   /* Accent Colors */
   --accent-blue: #2563eb;
   --accent-cyan: #06b6d4;
   --accent-cyan-glow: rgba(6, 182, 212, 0.35);
   --accent-purple: #8b5cf6;
   --accent-purple-glow: rgba(139, 92, 246, 0.3);
-  
+
   --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
@@ -73,12 +73,20 @@ body::after {
 }
 
 @keyframes float-blob {
-  0% { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(-60px, 40px) scale(1.1); }
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    transform: translate(-60px, 40px) scale(1.1);
+  }
 }
 @keyframes float-blob-reverse {
-  0% { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(50px, -40px) scale(1.15); }
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    transform: translate(50px, -40px) scale(1.15);
+  }
 }
 
 /* Scrollbars */
@@ -378,7 +386,8 @@ body::after {
   box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
 }
 
-.form-select, .form-input {
+.form-select,
+.form-input {
   background: rgba(5, 7, 12, 0.8);
   border: 1px solid var(--border-glass);
   border-radius: 6px;
@@ -390,7 +399,8 @@ body::after {
   transition: var(--transition-smooth);
   width: 100%;
 }
-.form-select:focus, .form-input:focus {
+.form-select:focus,
+.form-input:focus {
   border-color: var(--accent-cyan);
   box-shadow: 0 0 8px rgba(6, 182, 212, 0.2);
 }
@@ -426,10 +436,18 @@ body::after {
   align-items: center;
 }
 
-.kanban-column-header.pendiente { color: var(--text-secondary); }
-.kanban-column-header.revision { color: var(--color-anchor); }
-.kanban-column-header.aprobado { color: var(--color-approved); }
-.kanban-column-header.retenido { color: var(--color-held); }
+.kanban-column-header.pendiente {
+  color: var(--text-secondary);
+}
+.kanban-column-header.revision {
+  color: var(--color-anchor);
+}
+.kanban-column-header.aprobado {
+  color: var(--color-approved);
+}
+.kanban-column-header.retenido {
+  color: var(--color-held);
+}
 
 .kanban-cards-container {
   display: flex;
@@ -472,7 +490,8 @@ body::after {
 
 /* Animations */
 @keyframes pulse-glow {
-  0%, 100% {
+  0%,
+  100% {
     filter: drop-shadow(0 0 2px rgba(6, 182, 212, 0.2));
   }
   50% {

@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
-import { 
-  ShieldAlert, 
-  Terminal as TermIcon, 
-  Activity, 
-  Database, 
-  RefreshCw, 
-  FileDown, 
-  Share2, 
-  AlertTriangle 
+import {
+  ShieldAlert,
+  Terminal as TermIcon,
+  Activity,
+  Database,
+  RefreshCw,
+  FileDown,
+  Share2,
+  AlertTriangle
 } from 'lucide-react';
 import NetworkGraph3D from './components/NetworkGraph3D';
 import TransactionTerminal from './components/TransactionTerminal';
@@ -30,7 +30,7 @@ export default function App() {
     directLossesUSD: 0,
     frictionLossesUSD: 0
   });
-  
+
   // API Webhook status
   const [webhookUrlInput, setWebhookUrlInput] = useState('');
   const [activeWebhook, setActiveWebhook] = useState(null);
@@ -45,12 +45,12 @@ export default function App() {
         const data = await accRes.json();
         setAccounts(data);
       }
-      
+
       const txRes = await fetch('/api/finance/transactions?limit=60');
       if (txRes.ok) {
         const data = await txRes.json();
         // Flatten nested service structure if exists
-        const formatted = data.map(t => ({
+        const formatted = data.map((t) => ({
           id: t.id,
           sender: t.sender.accountNumber,
           receiver: t.receiver.accountNumber,
@@ -77,7 +77,7 @@ export default function App() {
         setWebhookUrlInput(data.webhookUrl || '');
       }
     } catch (error) {
-      console.error("Error fetching sandbox data:", error);
+      console.error('Error fetching sandbox data:', error);
     }
   };
 
@@ -96,10 +96,10 @@ export default function App() {
       setTransactions(data.transactions);
       setActiveAlerts(data.alerts);
       setEvalStats(data.evalStats);
-      
+
       // Update account balances occasionally by re-fetching
       fetch('/api/finance/accounts')
-        .then(res => res.json())
+        .then((res) => res.json())
         .then(setAccounts)
         .catch(console.error);
     });
@@ -119,10 +119,10 @@ export default function App() {
       });
       if (res.ok) {
         // Sync accounts
-        setAccounts(prev => prev.map(a => a.id === accountId ? { ...a, isFrozen } : a));
+        setAccounts((prev) => prev.map((a) => (a.id === accountId ? { ...a, isFrozen } : a)));
       }
     } catch (error) {
-      console.error("Error setting account freeze status:", error);
+      console.error('Error setting account freeze status:', error);
     }
   };
 
@@ -133,10 +133,10 @@ export default function App() {
         method: 'POST'
       });
       if (res.ok) {
-        setActiveAlerts(prev => prev.filter(a => a.id !== alertId));
+        setActiveAlerts((prev) => prev.filter((a) => a.id !== alertId));
       }
     } catch (error) {
-      console.error("Error resolving AML alert:", error);
+      console.error('Error resolving AML alert:', error);
     }
   };
 
@@ -155,7 +155,7 @@ export default function App() {
         setActiveWebhook(data.url);
       }
     } catch (error) {
-      console.error("Error updating webhook registration:", error);
+      console.error('Error updating webhook registration:', error);
     } finally {
       setSavingWebhook(false);
     }
@@ -163,7 +163,7 @@ export default function App() {
 
   // 6. Reset Simulation Session
   const handleResetSimulation = async () => {
-    if (!window.confirm("¿Seguro que deseas purgar la sesión de entrenamiento actual?")) return;
+    if (!window.confirm('¿Seguro que deseas purgar la sesión de entrenamiento actual?')) return;
     try {
       const res = await fetch('/api/finance/reset', { method: 'POST' });
       if (res.ok) {
@@ -171,7 +171,7 @@ export default function App() {
         setFraudOutbreakActive(false);
       }
     } catch (error) {
-      console.error("Error resetting simulation:", error);
+      console.error('Error resetting simulation:', error);
     }
   };
 
@@ -188,18 +188,18 @@ export default function App() {
   const handleExportCSV = () => {
     if (transactions.length === 0) return;
 
-    let csvContent = "data:text/csv;charset=utf-8,";
-    csvContent += "ID,Timestamp,Sender,Receiver,Amount,IPAddress,IsFlagged,IsFraud\n";
+    let csvContent = 'data:text/csv;charset=utf-8,';
+    csvContent += 'ID,Timestamp,Sender,Receiver,Amount,IPAddress,IsFlagged,IsFraud\n';
 
-    transactions.forEach(t => {
+    transactions.forEach((t) => {
       const row = `${t.id},${t.timestamp},${t.sender},${t.receiver},${t.amount},${t.ipAddress},${t.isFlagged},${t.isFraud}`;
-      csvContent += row + "\n";
+      csvContent += row + '\n';
     });
 
     const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `fintech_ledger_${Date.now()}.csv`);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `fintech_ledger_${Date.now()}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -207,12 +207,11 @@ export default function App() {
 
   // Simple handler to auto-select an account in details
   const handleSelectAccountFromGraph = (node) => {
-    console.log("Graph selected account:", node);
+    console.log('Graph selected account:', node);
   };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
-      
       {/* 1. Header Navigation Bar */}
       <header className="app-header">
         <div className="header-brand">
@@ -224,19 +223,19 @@ export default function App() {
         </div>
 
         <nav className="header-nav">
-          <button 
+          <button
             className={`nav-tab ${activeTab === 'terminal' ? 'active' : ''}`}
             onClick={() => setActiveTab('terminal')}
           >
             <TermIcon size={16} /> CONSOLA EN VIVO
           </button>
-          <button 
+          <button
             className={`nav-tab ${activeTab === 'graph' ? 'active' : ''}`}
             onClick={() => setActiveTab('graph')}
           >
             <Activity size={16} /> GRAFO WEBGL 3D
           </button>
-          <button 
+          <button
             className={`nav-tab ${activeTab === 'credit' ? 'active' : ''}`}
             onClick={() => setActiveTab('credit')}
           >
@@ -246,7 +245,14 @@ export default function App() {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <span className="pulse-dot active"></span>
-          <span style={{ fontSize: '11px', fontFamily: 'var(--font-mono)', fontWeight: '700', color: 'var(--neon-green)' }}>
+          <span
+            style={{
+              fontSize: '11px',
+              fontFamily: 'var(--font-mono)',
+              fontWeight: '700',
+              color: 'var(--neon-green)'
+            }}
+          >
             SIMULACIÓN EN VIVO
           </span>
         </div>
@@ -254,17 +260,16 @@ export default function App() {
 
       {/* 2. Main Dashboard Panel Split */}
       <div className="dashboard-container">
-        
         {/* Left Side: SecOps parameters / Webhooks / Scoreboards */}
         <aside className="sidebar-panel">
-          
           {/* ML Webhook Connector */}
           <div className="cyber-card cyan">
             <div className="card-title">
               <Share2 size={16} /> Webhook de IA (Estudiante)
             </div>
             <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '12px' }}>
-              Registra tu URL local de Jupyter / FastAPI (POST `/predict`). Recibirás payloads de cada transacción para clasificarlos.
+              Registra tu URL local de Jupyter / FastAPI (POST `/predict`). Recibirás payloads de
+              cada transacción para clasificarlos.
             </p>
             <form onSubmit={handleSaveWebhook} className="form-group">
               <input
@@ -274,9 +279,9 @@ export default function App() {
                 value={webhookUrlInput}
                 onChange={(e) => setWebhookUrlInput(e.target.value)}
               />
-              <button 
-                type="submit" 
-                className="cyber-button" 
+              <button
+                type="submit"
+                className="cyber-button"
                 disabled={savingWebhook}
                 style={{ width: '100%', marginTop: '8px' }}
               >
@@ -296,12 +301,16 @@ export default function App() {
 
           {/* Outbreak banner */}
           {fraudOutbreakActive && (
-            <div className="cyber-card magenta" style={{ borderLeftWidth: '4px', animation: 'pulse 2s infinite' }}>
+            <div
+              className="cyber-card magenta"
+              style={{ borderLeftWidth: '4px', animation: 'pulse 2s infinite' }}
+            >
               <div className="card-title" style={{ color: 'var(--neon-magenta)' }}>
                 <AlertTriangle size={18} /> BROTE DE FRAUDE EN CURSO
               </div>
               <p style={{ fontSize: '12px', color: 'var(--text-bright)' }}>
-                El docente ha gatillado un ataque masivo de Carding a través de IPs Tor. Ajusta tu algoritmo o congela las cuentas asociadas.
+                El docente ha gatillado un ataque masivo de Carding a través de IPs Tor. Ajusta tu
+                algoritmo o congela las cuentas asociadas.
               </p>
             </div>
           )}
@@ -311,71 +320,119 @@ export default function App() {
             <div className="card-title">
               <Activity size={16} /> Evaluación SecOps (Modelo ML)
             </div>
-            
+
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                <div style={{ background: 'rgba(0,0,0,0.25)', padding: '10px', borderRadius: '6px' }}>
+                <div
+                  style={{ background: 'rgba(0,0,0,0.25)', padding: '10px', borderRadius: '6px' }}
+                >
                   <span className="metric-subtitle">Precisión (Acc)</span>
-                  <div className="metric-value" style={{ color: 'var(--neon-cyan)', fontSize: '20px' }}>
+                  <div
+                    className="metric-value"
+                    style={{ color: 'var(--neon-cyan)', fontSize: '20px' }}
+                  >
                     {evalStats.accuracy}%
                   </div>
                 </div>
-                <div style={{ background: 'rgba(0,0,0,0.25)', padding: '10px', borderRadius: '6px' }}>
+                <div
+                  style={{ background: 'rgba(0,0,0,0.25)', padding: '10px', borderRadius: '6px' }}
+                >
                   <span className="metric-subtitle">Falsos Positivos</span>
-                  <div className="metric-value" style={{ color: 'var(--neon-yellow)', fontSize: '20px' }}>
+                  <div
+                    className="metric-value"
+                    style={{ color: 'var(--neon-yellow)', fontSize: '20px' }}
+                  >
                     {evalStats.falsePositives}
                   </div>
-                  <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>Fricción al cliente</span>
+                  <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>
+                    Fricción al cliente
+                  </span>
                 </div>
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                <div style={{ background: 'rgba(0,0,0,0.25)', padding: '10px', borderRadius: '6px' }}>
+                <div
+                  style={{ background: 'rgba(0,0,0,0.25)', padding: '10px', borderRadius: '6px' }}
+                >
                   <span className="metric-subtitle">Falsos Negativos</span>
-                  <div className="metric-value" style={{ color: 'var(--neon-magenta)', fontSize: '20px' }}>
+                  <div
+                    className="metric-value"
+                    style={{ color: 'var(--neon-magenta)', fontSize: '20px' }}
+                  >
                     {evalStats.falseNegatives}
                   </div>
-                  <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>Fraudes filtrados</span>
+                  <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>
+                    Fraudes filtrados
+                  </span>
                 </div>
-                <div style={{ background: 'rgba(0,0,0,0.25)', padding: '10px', borderRadius: '6px' }}>
+                <div
+                  style={{ background: 'rgba(0,0,0,0.25)', padding: '10px', borderRadius: '6px' }}
+                >
                   <span className="metric-subtitle">FPR / FNR Rates</span>
-                  <div style={{ fontSize: '11px', fontFamily: 'var(--font-mono)', marginTop: '6px' }}>
-                    FPR: <span style={{ color: 'var(--neon-yellow)' }}>{evalStats.falsePositiveRate}%</span>
+                  <div
+                    style={{ fontSize: '11px', fontFamily: 'var(--font-mono)', marginTop: '6px' }}
+                  >
+                    FPR:{' '}
+                    <span style={{ color: 'var(--neon-yellow)' }}>
+                      {evalStats.falsePositiveRate}%
+                    </span>
                     <br />
-                    FNR: <span style={{ color: 'var(--neon-magenta)' }}>{evalStats.falseNegativeRate}%</span>
+                    FNR:{' '}
+                    <span style={{ color: 'var(--neon-magenta)' }}>
+                      {evalStats.falseNegativeRate}%
+                    </span>
                   </div>
                 </div>
               </div>
 
               {/* Financial Balance / Losses */}
               <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '12px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: '4px' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    fontSize: '12px',
+                    marginBottom: '4px'
+                  }}
+                >
                   <span>Pérdida por Fraudes:</span>
                   <span style={{ color: 'var(--neon-magenta)', fontFamily: 'var(--font-mono)' }}>
                     -${evalStats.directLossesUSD.toLocaleString('es-ES')} USD
                   </span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: '8px' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    fontSize: '12px',
+                    marginBottom: '8px'
+                  }}
+                >
                   <span>Multas por Fricción:</span>
                   <span style={{ color: 'var(--neon-yellow)', fontFamily: 'var(--font-mono)' }}>
                     -${evalStats.frictionLossesUSD.toLocaleString('es-ES')} USD
                   </span>
                 </div>
-                <div style={{ 
-                  display: 'flex', 
-                  justifyContent: 'space-between', 
-                  fontSize: '13px', 
-                  fontWeight: '700',
-                  borderTop: '1px dashed rgba(255,255,255,0.1)',
-                  paddingTop: '8px'
-                }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    fontSize: '13px',
+                    fontWeight: '700',
+                    borderTop: '1px dashed rgba(255,255,255,0.1)',
+                    paddingTop: '8px'
+                  }}
+                >
                   <span>Impacto Financiero:</span>
                   <span style={{ color: 'var(--text-bright)', fontFamily: 'var(--font-mono)' }}>
-                    -${(evalStats.directLossesUSD + evalStats.frictionLossesUSD).toLocaleString('es-ES')} USD
+                    -$
+                    {(evalStats.directLossesUSD + evalStats.frictionLossesUSD).toLocaleString(
+                      'es-ES'
+                    )}{' '}
+                    USD
                   </span>
                 </div>
               </div>
-
             </div>
           </div>
 
@@ -384,10 +441,10 @@ export default function App() {
             <div className="card-title">
               <RefreshCw size={16} /> Centro de Comando Docente
             </div>
-            
+
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <button 
-                onClick={handleTriggerOutbreak} 
+              <button
+                onClick={handleTriggerOutbreak}
                 className="cyber-button danger"
                 disabled={fraudOutbreakActive}
                 style={{ width: '100%' }}
@@ -395,16 +452,12 @@ export default function App() {
                 Gatillar Brote de Fraude
               </button>
 
-              <button 
-                onClick={handleExportCSV} 
-                className="cyber-button"
-                style={{ width: '100%' }}
-              >
+              <button onClick={handleExportCSV} className="cyber-button" style={{ width: '100%' }}>
                 <FileDown size={14} style={{ marginRight: '6px' }} /> Exportar Transacciones (CSV)
               </button>
 
-              <button 
-                onClick={handleResetSimulation} 
+              <button
+                onClick={handleResetSimulation}
                 className="cyber-button"
                 style={{ width: '100%', borderColor: '#888', color: '#888' }}
               >
@@ -412,14 +465,13 @@ export default function App() {
               </button>
             </div>
           </div>
-
         </aside>
 
         {/* Right Side: Main Dynamic Workspaces */}
         <main className="main-workspace">
           {activeTab === 'terminal' && (
-            <TransactionTerminal 
-              transactions={transactions} 
+            <TransactionTerminal
+              transactions={transactions}
               accounts={accounts}
               onToggleFreeze={handleToggleFreeze}
               activeAlerts={activeAlerts}
@@ -428,22 +480,16 @@ export default function App() {
           )}
 
           {activeTab === 'graph' && (
-            <NetworkGraph3D 
+            <NetworkGraph3D
               accounts={accounts}
               transactions={transactions}
               onSelectAccount={handleSelectAccountFromGraph}
             />
           )}
 
-          {activeTab === 'credit' && (
-            <CreditDashboard 
-              accounts={accounts}
-            />
-          )}
+          {activeTab === 'credit' && <CreditDashboard accounts={accounts} />}
         </main>
-
       </div>
-
     </div>
   );
 }

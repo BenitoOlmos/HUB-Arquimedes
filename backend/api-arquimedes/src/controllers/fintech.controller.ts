@@ -5,7 +5,6 @@ import { z } from 'zod';
 const fintechService = new FintechService();
 
 export class FintechController {
-
   // Fetch accounts list
   async getAccounts(req: Request, res: Response, next: NextFunction) {
     try {
@@ -82,13 +81,13 @@ export class FintechController {
     try {
       const accounts = await fintechService.getAccounts();
       const transactions = await fintechService.getTransactions(10000); // Get all
-      
+
       const balanceTotal = accounts.reduce((acc, curr) => acc + curr.balance.toNumber(), 0);
       const totalTransacted = transactions.reduce((acc, curr) => acc + curr.amount.toNumber(), 0);
-      
-      const fraudCount = transactions.filter(t => t.isFraud).length;
+
+      const fraudCount = transactions.filter((t) => t.isFraud).length;
       const fraudRate = transactions.length > 0 ? (fraudCount / transactions.length) * 100 : 0;
-      
+
       const evaluation = fintechService.getEvaluationStats();
       const webhookUrl = fintechService.getWebhookUrl();
 

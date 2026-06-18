@@ -4,18 +4,23 @@ const SankeyEmissions = ({ activities }) => {
   const [hoveredLink, setHoveredLink] = useState(null);
 
   // Filter and aggregate Scope 3 activities
-  const scope3Activities = activities.filter(act => act.scope === 3);
+  const scope3Activities = activities.filter((act) => act.scope === 3);
 
   // Group emissions by category
   const categoriesMap = {
     FLIGHT: { name: 'Viajes Aéreos', type: 'Travel', flow: 'Upstream', val: 0 },
     LOGISTICS_ROAD: { name: 'Logística Terrestre', type: 'Transport', flow: 'Upstream', val: 0 },
     WASTE_LANDFILL: { name: 'Residuos Vertedero', type: 'Disposal', flow: 'Downstream', val: 0 },
-    PLASTIC_VIRGIN: { name: 'Materiales (Plásticos)', type: 'Procurement', flow: 'Upstream', val: 0 },
+    PLASTIC_VIRGIN: {
+      name: 'Materiales (Plásticos)',
+      type: 'Procurement',
+      flow: 'Upstream',
+      val: 0
+    },
     PAPER_RECYCLED: { name: 'Materiales (Papel)', type: 'Procurement', flow: 'Upstream', val: 0 }
   };
 
-  scope3Activities.forEach(act => {
+  scope3Activities.forEach((act) => {
     if (categoriesMap[act.category]) {
       categoriesMap[act.category].val += act.calculatedCo2e;
     }
@@ -27,22 +32,72 @@ const SankeyEmissions = ({ activities }) => {
   // Column 3: Destination (Scope 3 Upstream vs Scope 3 Downstream)
 
   const col1 = [
-    { id: 'src_procure', label: 'Adquisición de Materias Primas', val: categoriesMap.PLASTIC_VIRGIN.val + categoriesMap.PAPER_RECYCLED.val, color: '#a855f7' },
-    { id: 'src_transport', label: 'Transporte y Distribución', val: categoriesMap.LOGISTICS_ROAD.val, color: '#f59e0b' },
-    { id: 'src_travel', label: 'Viajes de Negocio', val: categoriesMap.FLIGHT.val, color: '#3b82f6' },
-    { id: 'src_waste', label: 'Fin de Vida de Productos', val: categoriesMap.WASTE_LANDFILL.val, color: '#10b981' }
+    {
+      id: 'src_procure',
+      label: 'Adquisición de Materias Primas',
+      val: categoriesMap.PLASTIC_VIRGIN.val + categoriesMap.PAPER_RECYCLED.val,
+      color: '#a855f7'
+    },
+    {
+      id: 'src_transport',
+      label: 'Transporte y Distribución',
+      val: categoriesMap.LOGISTICS_ROAD.val,
+      color: '#f59e0b'
+    },
+    {
+      id: 'src_travel',
+      label: 'Viajes de Negocio',
+      val: categoriesMap.FLIGHT.val,
+      color: '#3b82f6'
+    },
+    {
+      id: 'src_waste',
+      label: 'Fin de Vida de Productos',
+      val: categoriesMap.WASTE_LANDFILL.val,
+      color: '#10b981'
+    }
   ];
 
   const col2 = [
-    { id: 'cat_plastic', label: 'Plásticos Vírgenes', val: categoriesMap.PLASTIC_VIRGIN.val, color: '#8b5cf6' },
-    { id: 'cat_paper', label: 'Papel Reciclado', val: categoriesMap.PAPER_RECYCLED.val, color: '#a78bfa' },
-    { id: 'cat_road', label: 'Fletes Terrestres', val: categoriesMap.LOGISTICS_ROAD.val, color: '#fbbf24' },
-    { id: 'cat_flight', label: 'Vuelos Comerciales', val: categoriesMap.FLIGHT.val, color: '#60a5fa' },
-    { id: 'cat_landfill', label: 'Residuos en Vertedero', val: categoriesMap.WASTE_LANDFILL.val, color: '#34d399' }
+    {
+      id: 'cat_plastic',
+      label: 'Plásticos Vírgenes',
+      val: categoriesMap.PLASTIC_VIRGIN.val,
+      color: '#8b5cf6'
+    },
+    {
+      id: 'cat_paper',
+      label: 'Papel Reciclado',
+      val: categoriesMap.PAPER_RECYCLED.val,
+      color: '#a78bfa'
+    },
+    {
+      id: 'cat_road',
+      label: 'Fletes Terrestres',
+      val: categoriesMap.LOGISTICS_ROAD.val,
+      color: '#fbbf24'
+    },
+    {
+      id: 'cat_flight',
+      label: 'Vuelos Comerciales',
+      val: categoriesMap.FLIGHT.val,
+      color: '#60a5fa'
+    },
+    {
+      id: 'cat_landfill',
+      label: 'Residuos en Vertedero',
+      val: categoriesMap.WASTE_LANDFILL.val,
+      color: '#34d399'
+    }
   ];
 
   const col3 = [
-    { id: 'dest_upstream', label: 'Alcance 3 (Upstream)', val: col1[0].val + col1[1].val + col1[2].val, color: '#00e5ff' },
+    {
+      id: 'dest_upstream',
+      label: 'Alcance 3 (Upstream)',
+      val: col1[0].val + col1[1].val + col1[2].val,
+      color: '#00e5ff'
+    },
     { id: 'dest_downstream', label: 'Alcance 3 (Downstream)', val: col1[3].val, color: '#10b981' }
   ];
 
@@ -70,23 +125,47 @@ const SankeyEmissions = ({ activities }) => {
   let yOffset = 0;
   const nodes = {};
 
-  col1.forEach(node => {
+  col1.forEach((node) => {
     const h = Math.max(8, node.val * scaleY1);
-    nodes[node.id] = { x: xCol1, y: yOffset, w: nodeWidth, h, color: node.color, label: node.label, val: node.val };
+    nodes[node.id] = {
+      x: xCol1,
+      y: yOffset,
+      w: nodeWidth,
+      h,
+      color: node.color,
+      label: node.label,
+      val: node.val
+    };
     yOffset += h + spacing;
   });
 
   yOffset = 0;
-  col2.forEach(node => {
+  col2.forEach((node) => {
     const h = Math.max(8, node.val * scaleY2);
-    nodes[node.id] = { x: xCol2, y: yOffset, w: nodeWidth, h, color: node.color, label: node.label, val: node.val };
+    nodes[node.id] = {
+      x: xCol2,
+      y: yOffset,
+      w: nodeWidth,
+      h,
+      color: node.color,
+      label: node.label,
+      val: node.val
+    };
     yOffset += h + spacing;
   });
 
   yOffset = 0;
-  col3.forEach(node => {
+  col3.forEach((node) => {
     const h = Math.max(8, node.val * scaleY3);
-    nodes[node.id] = { x: xCol3, y: yOffset, w: nodeWidth, h, color: node.color, label: node.label, val: node.val };
+    nodes[node.id] = {
+      x: xCol3,
+      y: yOffset,
+      w: nodeWidth,
+      h,
+      color: node.color,
+      label: node.label,
+      val: node.val
+    };
     yOffset += h + spacing;
   });
 
@@ -96,7 +175,7 @@ const SankeyEmissions = ({ activities }) => {
   // Track output offsets for node columns to stack link flows
   const outOffsets = {};
   const inOffsets = {};
-  Object.keys(nodes).forEach(id => {
+  Object.keys(nodes).forEach((id) => {
     outOffsets[id] = 0;
     inOffsets[id] = 0;
   });
@@ -112,7 +191,7 @@ const SankeyEmissions = ({ activities }) => {
     if (val <= 0) return;
     const sNode = nodes[sourceId];
     const tNode = nodes[targetId];
-    
+
     // Scale link heights locally
     const sH = (val / sNode.val) * sNode.h;
     const tH = (val / tNode.val) * tNode.h;
@@ -167,10 +246,15 @@ const SankeyEmissions = ({ activities }) => {
           Sin datos de Alcance 3 auditados
         </div>
       ) : (
-        <svg viewBox={`0 0 ${canvasWidth} ${canvasHeight}`} width="100%" height="100%" className="max-h-[350px]">
+        <svg
+          viewBox={`0 0 ${canvasWidth} ${canvasHeight}`}
+          width="100%"
+          height="100%"
+          className="max-h-[350px]"
+        >
           {/* Render links */}
           <g>
-            {links.map(link => {
+            {links.map((link) => {
               const isHovered = hoveredLink === link.id;
               return (
                 <path
@@ -215,17 +299,20 @@ const SankeyEmissions = ({ activities }) => {
       )}
 
       {/* Hover Info Tooltip */}
-      {hoveredLink && (() => {
-        const link = links.find(l => l.id === hoveredLink);
-        if (!link) return null;
-        const sourceLabel = nodes[link.source].label;
-        const targetLabel = nodes[link.target].label;
-        return (
-          <div className="absolute bottom-2 left-4 bg-slate-950/90 border border-cyan-500/30 px-3 py-1.5 rounded text-xxs font-mono text-slate-300">
-            Flujo: <span className="text-cyan-400 font-bold">{sourceLabel}</span> ➔ <span className="text-emerald-400 font-bold">{targetLabel}</span>: <span className="text-white font-bold">{link.val.toFixed(2)} tCO2e</span>
-          </div>
-        );
-      })()}
+      {hoveredLink &&
+        (() => {
+          const link = links.find((l) => l.id === hoveredLink);
+          if (!link) return null;
+          const sourceLabel = nodes[link.source].label;
+          const targetLabel = nodes[link.target].label;
+          return (
+            <div className="absolute bottom-2 left-4 bg-slate-950/90 border border-cyan-500/30 px-3 py-1.5 rounded text-xxs font-mono text-slate-300">
+              Flujo: <span className="text-cyan-400 font-bold">{sourceLabel}</span> ➔{' '}
+              <span className="text-emerald-400 font-bold">{targetLabel}</span>:{' '}
+              <span className="text-white font-bold">{link.val.toFixed(2)} tCO2e</span>
+            </div>
+          );
+        })()}
     </div>
   );
 };

@@ -11,9 +11,9 @@ const PestPredictor = ({ zones, pestHistory, onTriggerAlert }) => {
   useEffect(() => {
     const newPredictions = [];
 
-    zones.forEach(zone => {
-      const tempSensor = zone.sensors.find(s => s.type === 'TEMPERATURE');
-      const humSensor = zone.sensors.find(s => s.type === 'SOIL_MOISTURE'); // Humedad del suelo/ambiente correlacionada
+    zones.forEach((zone) => {
+      const tempSensor = zone.sensors.find((s) => s.type === 'TEMPERATURE');
+      const humSensor = zone.sensors.find((s) => s.type === 'SOIL_MOISTURE'); // Humedad del suelo/ambiente correlacionada
 
       const currentTemp = tempSensor ? tempSensor.currentValue : 20;
       const currentHum = humSensor ? humSensor.currentValue : 40;
@@ -24,7 +24,7 @@ const PestPredictor = ({ zones, pestHistory, onTriggerAlert }) => {
 
       let risk = 'LOW';
       let probability = 10;
-      let recommendation = "Condiciones estables. No se requiere intervención química.";
+      let recommendation = 'Condiciones estables. No se requiere intervención química.';
 
       if (isInTempWindow && isInHumWindow) {
         risk = 'CRITICAL';
@@ -38,7 +38,7 @@ const PestPredictor = ({ zones, pestHistory, onTriggerAlert }) => {
 
       newPredictions.push({
         zoneName: zone.name,
-        pestName: "Botrytis (Moho Gris)",
+        pestName: 'Botrytis (Moho Gris)',
         risk,
         probability,
         currentTemp,
@@ -50,9 +50,11 @@ const PestPredictor = ({ zones, pestHistory, onTriggerAlert }) => {
     setPredictions(newPredictions);
 
     // Trigger alert if there's a critical threat
-    const criticalZones = newPredictions.filter(p => p.risk === 'CRITICAL');
+    const criticalZones = newPredictions.filter((p) => p.risk === 'CRITICAL');
     if (criticalZones.length > 0) {
-      onTriggerAlert(`Alerta Fitosanitaria: Riesgo crítico de Botrytis detectado en ${criticalZones.map(z => z.zoneName).join(', ')}.`);
+      onTriggerAlert(
+        `Alerta Fitosanitaria: Riesgo crítico de Botrytis detectado en ${criticalZones.map((z) => z.zoneName).join(', ')}.`
+      );
     }
   }, [zones, minTemp, maxTemp, minHumidity]);
 
@@ -64,7 +66,6 @@ const PestPredictor = ({ zones, pestHistory, onTriggerAlert }) => {
 
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '1.5rem' }}>
-      
       {/* Blackbox ML Parameters & Live Risk */}
       <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column' }}>
         <div className="panel-header">
@@ -73,50 +74,90 @@ const PestPredictor = ({ zones, pestHistory, onTriggerAlert }) => {
           </div>
         </div>
 
-        <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '1rem', lineHeight: '1.4' }}>
-          Configura los umbrales climáticos del algoritmo predictor. Analiza los registros históricos de la derecha para calibrar la ventana exacta en que se incuban las plagas.
+        <div
+          style={{
+            fontSize: '0.8rem',
+            color: 'var(--text-secondary)',
+            marginBottom: '1rem',
+            lineHeight: '1.4'
+          }}
+        >
+          Configura los umbrales climáticos del algoritmo predictor. Analiza los registros
+          históricos de la derecha para calibrar la ventana exacta en que se incuban las plagas.
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', borderBottom: '1px solid var(--border-glass)', paddingBottom: '1rem', marginBottom: '1rem', fontSize: '0.82rem' }}>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.85rem',
+            borderBottom: '1px solid var(--border-glass)',
+            paddingBottom: '1rem',
+            marginBottom: '1rem',
+            fontSize: '0.82rem'
+          }}
+        >
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
             <div>
-              <label style={{ display: 'block', marginBottom: '2px', fontWeight: 'bold' }}>Temp Mínima de Incubación (°C):</label>
-              <input 
-                type="number" 
-                className="form-input" 
-                value={minTemp} 
-                onChange={e => setMinTemp(parseFloat(e.target.value))} 
+              <label style={{ display: 'block', marginBottom: '2px', fontWeight: 'bold' }}>
+                Temp Mínima de Incubación (°C):
+              </label>
+              <input
+                type="number"
+                className="form-input"
+                value={minTemp}
+                onChange={(e) => setMinTemp(parseFloat(e.target.value))}
               />
             </div>
             <div>
-              <label style={{ display: 'block', marginBottom: '2px', fontWeight: 'bold' }}>Temp Máxima de Incubación (°C):</label>
-              <input 
-                type="number" 
-                className="form-input" 
-                value={maxTemp} 
-                onChange={e => setMaxTemp(parseFloat(e.target.value))} 
+              <label style={{ display: 'block', marginBottom: '2px', fontWeight: 'bold' }}>
+                Temp Máxima de Incubación (°C):
+              </label>
+              <input
+                type="number"
+                className="form-input"
+                value={maxTemp}
+                onChange={(e) => setMaxTemp(parseFloat(e.target.value))}
               />
             </div>
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '2px', fontWeight: 'bold' }}>Humedad Mínima de Suelo/Follaje (%):</label>
-            <input 
-              type="number" 
-              className="form-input" 
-              value={minHumidity} 
-              onChange={e => setMinHumidity(parseFloat(e.target.value))} 
+            <label style={{ display: 'block', marginBottom: '2px', fontWeight: 'bold' }}>
+              Humedad Mínima de Suelo/Follaje (%):
+            </label>
+            <input
+              type="number"
+              className="form-input"
+              value={minHumidity}
+              onChange={(e) => setMinHumidity(parseFloat(e.target.value))}
             />
           </div>
         </div>
 
-        <h3 style={{ fontSize: '0.85rem', marginBottom: '0.65rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+        <h3
+          style={{
+            fontSize: '0.85rem',
+            marginBottom: '0.65rem',
+            color: 'var(--text-secondary)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px'
+          }}
+        >
           Alertas Preventivas Activas por Cuadrante
         </h3>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', overflowY: 'auto', maxHeight: '180px' }}>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.6rem',
+            overflowY: 'auto',
+            maxHeight: '180px'
+          }}
+        >
           {predictions.map((p, idx) => (
-            <div 
-              key={idx} 
+            <div
+              key={idx}
               style={{
                 border: '1px solid var(--border-glass)',
                 borderLeft: `4px solid ${getRiskColor(p.risk)}`,
@@ -127,14 +168,29 @@ const PestPredictor = ({ zones, pestHistory, onTriggerAlert }) => {
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold' }}>
-                <span>{p.zoneName} - {p.pestName}</span>
-                <span style={{ color: getRiskColor(p.risk) }}>RIESGO: {p.risk} ({p.probability}%)</span>
+                <span>
+                  {p.zoneName} - {p.pestName}
+                </span>
+                <span style={{ color: getRiskColor(p.risk) }}>
+                  RIESGO: {p.risk} ({p.probability}%)
+                </span>
               </div>
               <div style={{ color: 'var(--text-muted)', fontSize: '0.7rem', marginTop: '2px' }}>
                 Condiciones: {p.currentTemp.toFixed(1)}°C | Humedad: {p.currentHum.toFixed(1)}%
               </div>
-              <div style={{ marginTop: '4px', fontSize: '0.72rem', color: 'var(--text-secondary)', display: 'flex', gap: '3px', alignItems: 'center' }}>
-                {p.risk === 'CRITICAL' && <AlertTriangle size={12} color="var(--color-valve-closed)" />}
+              <div
+                style={{
+                  marginTop: '4px',
+                  fontSize: '0.72rem',
+                  color: 'var(--text-secondary)',
+                  display: 'flex',
+                  gap: '3px',
+                  alignItems: 'center'
+                }}
+              >
+                {p.risk === 'CRITICAL' && (
+                  <AlertTriangle size={12} color="var(--color-valve-closed)" />
+                )}
                 {p.recommendation}
               </div>
             </div>
@@ -143,7 +199,10 @@ const PestPredictor = ({ zones, pestHistory, onTriggerAlert }) => {
       </div>
 
       {/* Historical Outbreaks Database */}
-      <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', height: '450px' }}>
+      <div
+        className="glass-panel"
+        style={{ display: 'flex', flexDirection: 'column', height: '450px' }}
+      >
         <div className="panel-header">
           <div className="panel-title">
             <BookOpen size={18} color="var(--color-ph)" /> Base Histórica de Brotes (10 Años)
@@ -151,9 +210,21 @@ const PestPredictor = ({ zones, pestHistory, onTriggerAlert }) => {
         </div>
 
         <div style={{ flexGrow: 1, overflowY: 'auto', paddingRight: '4px' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.75rem', textAlign: 'left' }}>
+          <table
+            style={{
+              width: '100%',
+              borderCollapse: 'collapse',
+              fontSize: '0.75rem',
+              textAlign: 'left'
+            }}
+          >
             <thead>
-              <tr style={{ borderBottom: '1px solid var(--border-glass)', color: 'var(--text-muted)' }}>
+              <tr
+                style={{
+                  borderBottom: '1px solid var(--border-glass)',
+                  color: 'var(--text-muted)'
+                }}
+              >
                 <th style={{ padding: '0.4rem' }}>Plaga</th>
                 <th style={{ padding: '0.4rem' }}>Temp Prom.</th>
                 <th style={{ padding: '0.4rem' }}>Humedad Prom.</th>
@@ -162,18 +233,25 @@ const PestPredictor = ({ zones, pestHistory, onTriggerAlert }) => {
             </thead>
             <tbody>
               {pestHistory.map((record) => (
-                <tr key={record.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.02)', color: 'var(--text-secondary)' }}>
+                <tr
+                  key={record.id}
+                  style={{
+                    borderBottom: '1px solid rgba(255,255,255,0.02)',
+                    color: 'var(--text-secondary)'
+                  }}
+                >
                   <td style={{ padding: '0.4rem', fontWeight: 'bold' }}>{record.pestName}</td>
                   <td style={{ padding: '0.4rem' }}>{record.avgTemp.toFixed(1)} °C</td>
                   <td style={{ padding: '0.4rem' }}>{record.avgHumidity.toFixed(1)} %</td>
-                  <td style={{ padding: '0.4rem', color: 'var(--color-valve-closed)' }}>-{record.cropLost}%</td>
+                  <td style={{ padding: '0.4rem', color: 'var(--color-valve-closed)' }}>
+                    -{record.cropLost}%
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       </div>
-
     </div>
   );
 };

@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Activity, 
-  TrendingUp, 
-  Clock, 
-  ShieldCheck, 
-  FileText, 
-  User, 
-  Calendar, 
-  ArrowUpRight, 
+import {
+  Activity,
+  TrendingUp,
+  Clock,
+  ShieldCheck,
+  FileText,
+  User,
+  Calendar,
+  ArrowUpRight,
   BarChart3,
   Thermometer,
   Gauge
@@ -26,7 +26,8 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
       status: 'Operational',
       statusLabel: 'Operativo',
       component: 'Eje y Acoplamiento',
-      details: 'Se detectó vibración elevada (3.8 mm/s RMS) en rodamiento radial del cuerpo de la bomba. Se procedió con alineación láser de precisión usando shims calibrados. Desviación final residual angular de 0.02 mm (tolerancia nominal < 0.05 mm). Se balanceó estáticamente el rodete retirando 4g de material acumulado por sedimentos.',
+      details:
+        'Se detectó vibración elevada (3.8 mm/s RMS) en rodamiento radial del cuerpo de la bomba. Se procedió con alineación láser de precisión usando shims calibrados. Desviación final residual angular de 0.02 mm (tolerancia nominal < 0.05 mm). Se balanceó estáticamente el rodete retirando 4g de material acumulado por sedimentos.',
       duration: '3.5 Hrs'
     },
     {
@@ -37,7 +38,8 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
       status: 'Operational',
       statusLabel: 'Operativo',
       component: 'Sello Mecánico / Carcasa',
-      details: 'Goteo continuo observado en prensaestopas superando límites de diseño. Desmontaje completo del prensa, eje e impulsor. Se instaló sello mecánico de cartucho de silicio-silicio con juntas tóricas de Viton. Inspección de álabes del rodete no mostró desgaste abrasivo ni cavitación tipo panal. Limpieza interna de voluta completada.',
+      details:
+        'Goteo continuo observado en prensaestopas superando límites de diseño. Desmontaje completo del prensa, eje e impulsor. Se instaló sello mecánico de cartucho de silicio-silicio con juntas tóricas de Viton. Inspección de álabes del rodete no mostró desgaste abrasivo ni cavitación tipo panal. Limpieza interna de voluta completada.',
       duration: '5.0 Hrs'
     },
     {
@@ -48,7 +50,8 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
       status: 'Operational',
       statusLabel: 'Operativo',
       component: 'Motor Eléctrico - Cojinetes',
-      details: 'Mantenimiento preventivo cíclico. Limpieza de cámara de rodamientos del motor eléctrico de 5.5 kW. Inyección de grasa sintética Mobilith SHC 100 en cojinete delantero y trasero. La temperatura de operación nominal del estator disminuyó de 58°C a 44°C tras completar el servicio de lubricación.',
+      details:
+        'Mantenimiento preventivo cíclico. Limpieza de cámara de rodamientos del motor eléctrico de 5.5 kW. Inyección de grasa sintética Mobilith SHC 100 en cojinete delantero y trasero. La temperatura de operación nominal del estator disminuyó de 58°C a 44°C tras completar el servicio de lubricación.',
       duration: '2.0 Hrs'
     },
     {
@@ -59,17 +62,22 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
       status: 'Operational',
       statusLabel: 'Operativo',
       component: 'Bomba Completa',
-      details: 'Montaje inicial e instalación de la bomba centrífuga estándar GLB en el banco de ensayos del Laboratorio de Hidráulica. Calibración de transductores de presión piezoeléctricos (succión/descarga), sensor infrarrojo de cojinete y acelerómetro triaxial de vibraciones. Comprobación de sentido de giro del eje motor exitosa.',
+      details:
+        'Montaje inicial e instalación de la bomba centrífuga estándar GLB en el banco de ensayos del Laboratorio de Hidráulica. Calibración de transductores de presión piezoeléctricos (succión/descarga), sensor infrarrojo de cojinete y acelerómetro triaxial de vibraciones. Comprobación de sentido de giro del eje motor exitosa.',
       duration: '8.0 Hrs'
     }
   ];
 
   // 1. Vibration Trend Data (14 days)
   const vibrationTrend = [1.2, 1.3, 1.1, 1.4, 2.5, 3.8, 1.2, 1.3, 1.4, 1.2, 1.1, 1.3, 1.5, 1.3];
-  
+
   // 2. Temp Trend Data (24 hours) - Bearing & Motor Coil
-  const bearingTempTrend = [35, 37, 38, 41, 44, 45, 43, 42, 41, 40, 39, 38, 42, 45, 46, 44, 43, 42, 41, 40, 39, 38, 37, 36];
-  const coilTempTrend = [45, 48, 51, 55, 57, 58, 55, 53, 52, 51, 49, 48, 52, 56, 58, 56, 54, 53, 51, 50, 48, 47, 46, 45];
+  const bearingTempTrend = [
+    35, 37, 38, 41, 44, 45, 43, 42, 41, 40, 39, 38, 42, 45, 46, 44, 43, 42, 41, 40, 39, 38, 37, 36
+  ];
+  const coilTempTrend = [
+    45, 48, 51, 55, 57, 58, 55, 53, 52, 51, 49, 48, 52, 56, 58, 56, 54, 53, 51, 50, 48, 47, 46, 45
+  ];
 
   // 3. Flow-Pressure Correlation (Valve opening trials: 0% to 100%)
   const flowRateTrial = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]; // m3/h
@@ -81,7 +89,7 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
       const saved = localStorage.getItem('hub_historical_logs');
       if (saved) return JSON.parse(saved);
     } catch (e) {
-      console.warn("Error reading logs from localStorage", e);
+      console.warn('Error reading logs from localStorage', e);
     }
     return historicalLogs;
   });
@@ -102,15 +110,15 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
         localStorage.setItem('hub_historical_logs', JSON.stringify(historicalLogs));
       }
     } catch (e) {
-      console.warn("Error sync logs in HistoryPanel", e);
+      console.warn('Error sync logs in HistoryPanel', e);
     }
   }, []);
-  
+
   // Helper to format date for input field in local timezone
   const getLocalDateTimeString = () => {
     const now = new Date();
     const tzOffset = now.getTimezoneOffset() * 60000;
-    return (new Date(now - tzOffset)).toISOString().slice(0, 16);
+    return new Date(now - tzOffset).toISOString().slice(0, 16);
   };
 
   const [formData, setFormData] = useState({
@@ -124,7 +132,7 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
 
   const handleFormChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: value
     }));
@@ -138,29 +146,29 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
 
   const handleMouseMove = (e) => {
     if (draggingIndex === null) return;
-    
+
     const svg = e.currentTarget;
     const rect = svg.getBoundingClientRect();
-    
+
     // Scale clientY into the viewBox coordinates (viewBox height is dynamic)
     const viewBoxAttr = svg.getAttribute('viewBox');
     const viewBoxHeight = viewBoxAttr ? parseFloat(viewBoxAttr.split(' ')[3]) : 150;
     const scaleY = viewBoxHeight / rect.height;
     const mouseY = (e.clientY - rect.top) * scaleY;
-    
+
     const height = viewBoxHeight;
     const paddingBottom = 25;
     const paddingTop = 20;
     const chartHeight = height - paddingTop - paddingBottom;
     const maxVal = 6.0;
-    
+
     let newVal = ((height - paddingBottom - mouseY) / chartHeight) * maxVal;
-    
+
     // Clamp newVal between 0 and 6 bar
     newVal = Math.max(0, Math.min(maxVal, newVal));
     // Round to 1 decimal place for neatness
     newVal = Math.round(newVal * 10) / 10;
-    
+
     const updated = [...customPressureTrial];
     updated[draggingIndex] = newVal;
     setCustomPressureTrial(updated);
@@ -173,7 +181,7 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
   const generateReportText = (data) => {
     const divider = '='.repeat(60);
     const subDivider = '-'.repeat(60);
-    
+
     let text = `${divider}\n`;
     text += ` INFORME TÉCNICO DE ENSAYO DE CAMPO - SIMULACIÓN DE BOMBA\n`;
     text += `${divider}\n\n`;
@@ -186,17 +194,17 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
     text += `Área / Ubicación:       ${data.area}\n`;
     text += `Sistema / Subsistema:   ${data.system}\n`;
     text += `Estado Final:           SIMULADO (Modificado por Operador)\n\n`;
-    
+
     text += `CURVA DE RENDIMIENTO SIMULADA (PRESIÓN VS CAUDAL):\n`;
     text += `${subDivider}\n`;
     text += `Punto   Caudal (m³/h)   Presión (bar)   Altura Equivalente (m)\n`;
-    
+
     flowRateTrial.forEach((flow, i) => {
       const pressure = customPressureTrial[i];
       const heightVal = pressure * 10;
       text += `${String(i + 1).padEnd(8)}${String(flow).padEnd(16)}${String(pressure.toFixed(2)).padEnd(16)}${heightVal.toFixed(1)} m\n`;
     });
-    
+
     text += `\n`;
     text += `DIAGNÓSTICO Y NOTAS TÉCNICAS:\n`;
     text += `${subDivider}\n`;
@@ -209,13 +217,13 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
     text += `${divider}\n`;
     text += ` Fin del Reporte\n`;
     text += `${divider}\n`;
-    
+
     return text;
   };
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    
+
     // Create new log entry
     const newLog = {
       id: `hlog-sim-${Date.now()}`,
@@ -228,13 +236,13 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
       details: `Reporte de simulación de terreno en el área ${formData.area}, sistema ${formData.system}, tag ${formData.tag}. Curva H-Q modificada manualmente. Puntos de ensayo (Caudal m³/h -> Presión bar): ${flowRateTrial.map((f, i) => `${f}:${customPressureTrial[i].toFixed(1)}`).join(', ')}.`,
       duration: '0.5 Hrs'
     };
-    
+
     // Add to logsList
     setLogsList([newLog, ...logsList]);
-    
+
     // Generate text report content
     const reportText = generateReportText(formData);
-    
+
     // Download text report
     const blob = new Blob([reportText], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
@@ -245,7 +253,7 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-    
+
     // Reset and close form
     setShowForm(false);
   };
@@ -270,7 +278,7 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
     }, '');
 
     const areaD = `${pathD} L ${points[points.length - 1].x} ${height - padding} L ${points[0].x} ${height - padding} Z`;
-    
+
     // Y-coordinate for Alarm limit (4.5 mm/s)
     const yAlarm = height - padding - (4.5 / maxVal) * chartHeight;
     // Y-coordinate for Warning limit (2.8 mm/s)
@@ -286,21 +294,77 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
         </defs>
 
         {/* Warning & Critical Threshold lines */}
-        <line x1={padding} y1={yAlarm} x2={width - padding} y2={yAlarm} stroke="var(--status-replace)" strokeDasharray="3,3" strokeWidth="1" className="chart-grid-line" />
-        <text x={width - padding - 5} y={yAlarm - 4} fill="var(--status-replace)" fontSize="7" fontWeight="bold" textAnchor="end">CRÍTICO (4.5 mm/s)</text>
+        <line
+          x1={padding}
+          y1={yAlarm}
+          x2={width - padding}
+          y2={yAlarm}
+          stroke="var(--status-replace)"
+          strokeDasharray="3,3"
+          strokeWidth="1"
+          className="chart-grid-line"
+        />
+        <text
+          x={width - padding - 5}
+          y={yAlarm - 4}
+          fill="var(--status-replace)"
+          fontSize="7"
+          fontWeight="bold"
+          textAnchor="end"
+        >
+          CRÍTICO (4.5 mm/s)
+        </text>
 
-        <line x1={padding} y1={yWarning} x2={width - padding} y2={yWarning} stroke="var(--status-inspect)" strokeDasharray="3,3" strokeWidth="1" className="chart-grid-line" />
-        <text x={width - padding - 5} y={yWarning - 4} fill="var(--status-inspect)" fontSize="7" fontWeight="bold" textAnchor="end">PREVENTIVO (2.8 mm/s)</text>
+        <line
+          x1={padding}
+          y1={yWarning}
+          x2={width - padding}
+          y2={yWarning}
+          stroke="var(--status-inspect)"
+          strokeDasharray="3,3"
+          strokeWidth="1"
+          className="chart-grid-line"
+        />
+        <text
+          x={width - padding - 5}
+          y={yWarning - 4}
+          fill="var(--status-inspect)"
+          fontSize="7"
+          fontWeight="bold"
+          textAnchor="end"
+        >
+          PREVENTIVO (2.8 mm/s)
+        </text>
 
         {/* Grid lines */}
-        <line x1={padding} y1={height - padding} x2={width - padding} y2={height - padding} stroke="rgba(15, 23, 42, 0.15)" strokeWidth="1.5" />
-        <line x1={padding} y1={padding} x2={width - padding} y2={padding} stroke="rgba(15, 23, 42, 0.03)" strokeDasharray="3,3" />
+        <line
+          x1={padding}
+          y1={height - padding}
+          x2={width - padding}
+          y2={height - padding}
+          stroke="rgba(15, 23, 42, 0.15)"
+          strokeWidth="1.5"
+        />
+        <line
+          x1={padding}
+          y1={padding}
+          x2={width - padding}
+          y2={padding}
+          stroke="rgba(15, 23, 42, 0.03)"
+          strokeDasharray="3,3"
+        />
 
         {/* Area under curve */}
         <path d={areaD} fill="url(#vib-glow-history)" />
 
         {/* Chart curve */}
-        <path d={pathD} fill="none" stroke="var(--accent-cyan)" strokeWidth="2" className="chart-line-animate" />
+        <path
+          d={pathD}
+          fill="none"
+          stroke="var(--accent-cyan)"
+          strokeWidth="2"
+          className="chart-line-animate"
+        />
 
         {/* Data points */}
         {points.map((p, i) => (
@@ -308,20 +372,39 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
             {(i === 5 || i === points.length - 1) && (
               <circle cx={p.x} cy={p.y} r="3" fill="var(--accent-cyan)">
                 <animate attributeName="r" values="3;7;3" dur="2s" repeatCount="indefinite" />
-                <animate attributeName="opacity" values="0.8;0;0.8" dur="2s" repeatCount="indefinite" />
+                <animate
+                  attributeName="opacity"
+                  values="0.8;0;0.8"
+                  dur="2s"
+                  repeatCount="indefinite"
+                />
               </circle>
             )}
-            <circle 
-              cx={p.x} 
-              cy={p.y} 
-              r="2.5" 
-              fill={p.val >= 4.5 ? "var(--status-replace)" : (p.val >= 2.8 ? "var(--status-inspect)" : "var(--accent-cyan)")} 
-              stroke="#ffffff" 
-              strokeWidth="1" 
+            <circle
+              cx={p.x}
+              cy={p.y}
+              r="2.5"
+              fill={
+                p.val >= 4.5
+                  ? 'var(--status-replace)'
+                  : p.val >= 2.8
+                    ? 'var(--status-inspect)'
+                    : 'var(--accent-cyan)'
+              }
+              stroke="#ffffff"
+              strokeWidth="1"
             />
             {/* Show value label for peak */}
             {i === 5 && (
-              <text x={p.x} y={p.y - 8} fill="var(--status-replace)" fontSize="8" fontWeight="bold" textAnchor="middle" fontFamily="monospace">
+              <text
+                x={p.x}
+                y={p.y - 8}
+                fill="var(--status-replace)"
+                fontSize="8"
+                fontWeight="bold"
+                textAnchor="middle"
+                fontFamily="monospace"
+              >
                 {p.val} mm/s
               </text>
             )}
@@ -329,9 +412,27 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
         ))}
 
         {/* X axis labels */}
-        <text x={padding} y={height - 8} fill="var(--text-muted)" fontSize="8">Día 1</text>
-        <text x={width / 2} y={height - 8} fill="var(--text-muted)" fontSize="8" textAnchor="middle">Mantenimiento (Día 6)</text>
-        <text x={width - padding} y={height - 8} fill="var(--text-muted)" fontSize="8" textAnchor="end">Día 14</text>
+        <text x={padding} y={height - 8} fill="var(--text-muted)" fontSize="8">
+          Día 1
+        </text>
+        <text
+          x={width / 2}
+          y={height - 8}
+          fill="var(--text-muted)"
+          fontSize="8"
+          textAnchor="middle"
+        >
+          Mantenimiento (Día 6)
+        </text>
+        <text
+          x={width - padding}
+          y={height - 8}
+          fill="var(--text-muted)"
+          fontSize="8"
+          textAnchor="end"
+        >
+          Día 14
+        </text>
       </svg>
     );
   };
@@ -368,30 +469,112 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
     return (
       <svg viewBox={`0 0 ${width} ${height}`} width="100%" height={height}>
         {/* Grid lines */}
-        <line x1={padding} y1={height - padding} x2={width - padding} y2={height - padding} stroke="rgba(15, 23, 42, 0.15)" strokeWidth="1.5" />
-        <line x1={padding} y1={padding} x2={width - padding} y2={padding} stroke="rgba(15, 23, 42, 0.03)" strokeDasharray="3,3" />
-        
+        <line
+          x1={padding}
+          y1={height - padding}
+          x2={width - padding}
+          y2={height - padding}
+          stroke="rgba(15, 23, 42, 0.15)"
+          strokeWidth="1.5"
+        />
+        <line
+          x1={padding}
+          y1={padding}
+          x2={width - padding}
+          y2={padding}
+          stroke="rgba(15, 23, 42, 0.03)"
+          strokeDasharray="3,3"
+        />
+
         {/* Threshold indicator line for coils */}
-        <line x1={padding} y1={height - padding - (80 / maxVal) * chartHeight} x2={width - padding} y2={height - padding - (80 / maxVal) * chartHeight} stroke="rgba(239, 68, 68, 0.15)" strokeDasharray="2,2" />
+        <line
+          x1={padding}
+          y1={height - padding - (80 / maxVal) * chartHeight}
+          x2={width - padding}
+          y2={height - padding - (80 / maxVal) * chartHeight}
+          stroke="rgba(239, 68, 68, 0.15)"
+          strokeDasharray="2,2"
+        />
 
         {/* Coil Temp curve */}
-        <path d={coilPathD} fill="none" stroke="var(--status-replace)" strokeWidth="2" className="chart-line-animate" />
+        <path
+          d={coilPathD}
+          fill="none"
+          stroke="var(--status-replace)"
+          strokeWidth="2"
+          className="chart-line-animate"
+        />
 
         {/* Bearing Temp curve */}
-        <path d={bearingPathD} fill="none" stroke="var(--status-inspect)" strokeWidth="1.8" className="chart-line-animate" style={{ animationDelay: '0.3s' }} />
+        <path
+          d={bearingPathD}
+          fill="none"
+          stroke="var(--status-inspect)"
+          strokeWidth="1.8"
+          className="chart-line-animate"
+          style={{ animationDelay: '0.3s' }}
+        />
 
         {/* Peak dots */}
-        <circle cx={bearingPoints[14].x} cy={bearingPoints[14].y} r="2.5" fill="var(--status-inspect)" stroke="#ffffff" strokeWidth="1" />
-        <circle cx={coilPoints[14].x} cy={coilPoints[14].y} r="2.5" fill="var(--status-replace)" stroke="#ffffff" strokeWidth="1" />
+        <circle
+          cx={bearingPoints[14].x}
+          cy={bearingPoints[14].y}
+          r="2.5"
+          fill="var(--status-inspect)"
+          stroke="#ffffff"
+          strokeWidth="1"
+        />
+        <circle
+          cx={coilPoints[14].x}
+          cy={coilPoints[14].y}
+          r="2.5"
+          fill="var(--status-replace)"
+          stroke="#ffffff"
+          strokeWidth="1"
+        />
 
         {/* Text Labels */}
-        <text x={bearingPoints[14].x + 5} y={bearingPoints[14].y + 2} fill="var(--status-inspect)" fontSize="7" fontWeight="bold">46°C</text>
-        <text x={coilPoints[14].x + 5} y={coilPoints[14].y - 4} fill="var(--status-replace)" fontSize="7" fontWeight="bold">58°C</text>
+        <text
+          x={bearingPoints[14].x + 5}
+          y={bearingPoints[14].y + 2}
+          fill="var(--status-inspect)"
+          fontSize="7"
+          fontWeight="bold"
+        >
+          46°C
+        </text>
+        <text
+          x={coilPoints[14].x + 5}
+          y={coilPoints[14].y - 4}
+          fill="var(--status-replace)"
+          fontSize="7"
+          fontWeight="bold"
+        >
+          58°C
+        </text>
 
         {/* X axis labels */}
-        <text x={padding} y={height - 8} fill="var(--text-muted)" fontSize="8">00:00</text>
-        <text x={width / 2} y={height - 8} fill="var(--text-muted)" fontSize="8" textAnchor="middle">12:00</text>
-        <text x={width - padding} y={height - 8} fill="var(--text-muted)" fontSize="8" textAnchor="end">23:00</text>
+        <text x={padding} y={height - 8} fill="var(--text-muted)" fontSize="8">
+          00:00
+        </text>
+        <text
+          x={width / 2}
+          y={height - 8}
+          fill="var(--text-muted)"
+          fontSize="8"
+          textAnchor="middle"
+        >
+          12:00
+        </text>
+        <text
+          x={width - padding}
+          y={height - 8}
+          fill="var(--text-muted)"
+          fontSize="8"
+          textAnchor="end"
+        >
+          23:00
+        </text>
       </svg>
     );
   };
@@ -430,9 +613,9 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
     }, '');
 
     return (
-      <svg 
-        viewBox={`0 0 ${width} ${height}`} 
-        width="100%" 
+      <svg
+        viewBox={`0 0 ${width} ${height}`}
+        width="100%"
         height={height}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
@@ -440,15 +623,36 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
         style={{ userSelect: 'none' }}
       >
         {/* Left Y Axis (Altura in meters) */}
-        <line x1={paddingLeft} y1={paddingTop} x2={paddingLeft} y2={height - paddingBottom} stroke="rgba(15, 23, 42, 0.3)" strokeWidth="1.5" />
-        
+        <line
+          x1={paddingLeft}
+          y1={paddingTop}
+          x2={paddingLeft}
+          y2={height - paddingBottom}
+          stroke="rgba(15, 23, 42, 0.3)"
+          strokeWidth="1.5"
+        />
+
         {/* Ticks and Labels for Altura (m) */}
         {[0, 20, 40, 60].map((h) => {
           const yTick = height - paddingBottom - (h / 60) * chartHeight;
           return (
             <g key={h}>
-              <line x1={paddingLeft - 4} y1={yTick} x2={paddingLeft} y2={yTick} stroke="rgba(15, 23, 42, 0.3)" strokeWidth="1" />
-              <text x={paddingLeft - 8} y={yTick + 3} fill="var(--text-secondary)" fontSize="8" textAnchor="end" fontWeight="600">
+              <line
+                x1={paddingLeft - 4}
+                y1={yTick}
+                x2={paddingLeft}
+                y2={yTick}
+                stroke="rgba(15, 23, 42, 0.3)"
+                strokeWidth="1"
+              />
+              <text
+                x={paddingLeft - 8}
+                y={yTick + 3}
+                fill="var(--text-secondary)"
+                fontSize="8"
+                textAnchor="end"
+                fontWeight="600"
+              >
                 {h}m
               </text>
             </g>
@@ -456,57 +660,91 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
         })}
 
         {/* Y Axis Label */}
-        <text 
+        <text
           transform="rotate(-90 12 72)"
-          x={12} 
-          y={72} 
-          fill="var(--text-secondary)" 
-          fontSize="8" 
-          fontWeight="bold" 
+          x={12}
+          y={72}
+          fill="var(--text-secondary)"
+          fontSize="8"
+          fontWeight="bold"
           textAnchor="middle"
         >
           Altura (m)
         </text>
 
         {/* Grid lines */}
-        <line x1={paddingLeft} y1={height - paddingBottom} x2={width - paddingRight} y2={height - paddingBottom} stroke="rgba(15, 23, 42, 0.15)" strokeWidth="1.5" />
-        <line x1={paddingLeft} y1={paddingTop} x2={width - paddingRight} y2={paddingTop} stroke="rgba(15, 23, 42, 0.03)" strokeDasharray="3,3" />
+        <line
+          x1={paddingLeft}
+          y1={height - paddingBottom}
+          x2={width - paddingRight}
+          y2={height - paddingBottom}
+          stroke="rgba(15, 23, 42, 0.15)"
+          strokeWidth="1.5"
+        />
+        <line
+          x1={paddingLeft}
+          y1={paddingTop}
+          x2={width - paddingRight}
+          y2={paddingTop}
+          stroke="rgba(15, 23, 42, 0.03)"
+          strokeDasharray="3,3"
+        />
 
         {/* Reference Original Curve (only when interactive mode is active) */}
         {isInteractive && (
-          <path d={originalPathD} fill="none" stroke="rgba(99, 102, 241, 0.25)" strokeWidth="1.5" strokeDasharray="3,3" />
+          <path
+            d={originalPathD}
+            fill="none"
+            stroke="rgba(99, 102, 241, 0.25)"
+            strokeWidth="1.5"
+            strokeDasharray="3,3"
+          />
         )}
 
         {/* Area / Slope */}
-        <path d={pathD} fill="none" stroke="var(--accent-indigo)" strokeWidth="2.5" className={isInteractive ? "" : "chart-line-animate"} />
+        <path
+          d={pathD}
+          fill="none"
+          stroke="var(--accent-indigo)"
+          strokeWidth="2.5"
+          className={isInteractive ? '' : 'chart-line-animate'}
+        />
 
         {/* Dots */}
         {points.map((p, i) => {
           const isDraggable = isInteractive;
-          const showDot = isDraggable || (i % 2 === 0 || i === points.length - 1);
+          const showDot = isDraggable || i % 2 === 0 || i === points.length - 1;
           if (!showDot) return null;
 
           return (
             <g key={i} style={{ cursor: isDraggable ? 'ns-resize' : 'default' }}>
               {isDraggable && (
-                <circle 
-                  cx={p.x} 
-                  cy={p.y} 
-                  r="7" 
-                  fill="var(--accent-indigo)" 
+                <circle
+                  cx={p.x}
+                  cy={p.y}
+                  r="7"
+                  fill="var(--accent-indigo)"
                   opacity={draggingIndex === i ? 0.4 : 0.15}
                 />
               )}
-              <circle 
-                cx={p.x} 
-                cy={p.y} 
-                r={isDraggable ? "4" : "2.5"} 
-                fill={isDraggable ? "var(--accent-cyan)" : "var(--accent-indigo)"} 
-                stroke="#ffffff" 
+              <circle
+                cx={p.x}
+                cy={p.y}
+                r={isDraggable ? '4' : '2.5'}
+                fill={isDraggable ? 'var(--accent-cyan)' : 'var(--accent-indigo)'}
+                stroke="#ffffff"
                 strokeWidth={isDraggable ? 1.5 : 1}
                 onMouseDown={(e) => handleMouseDown(e, i)}
               />
-              <text x={p.x} y={p.y - (isDraggable ? 10 : 8)} fill="var(--text-secondary)" fontSize="7" fontWeight="600" textAnchor="middle" fontFamily="monospace">
+              <text
+                x={p.x}
+                y={p.y - (isDraggable ? 10 : 8)}
+                fill="var(--text-secondary)"
+                fontSize="7"
+                fontWeight="600"
+                textAnchor="middle"
+                fontFamily="monospace"
+              >
                 {p.val.toFixed(1)}b
               </text>
             </g>
@@ -514,45 +752,105 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
         })}
 
         {/* X axis labels */}
-        <text x={paddingLeft} y={height - 6} fill="var(--text-muted)" fontSize="8">0 m³/h (Válvula Cerrada)</text>
-        <text x={paddingLeft + chartWidth / 2} y={height - 6} fill="var(--text-muted)" fontSize="8" textAnchor="middle">50 m³/h</text>
-        <text x={width - paddingRight} y={height - 6} fill="var(--text-muted)" fontSize="8" textAnchor="end">100 m³/h (Apertura Total)</text>
+        <text x={paddingLeft} y={height - 6} fill="var(--text-muted)" fontSize="8">
+          0 m³/h (Válvula Cerrada)
+        </text>
+        <text
+          x={paddingLeft + chartWidth / 2}
+          y={height - 6}
+          fill="var(--text-muted)"
+          fontSize="8"
+          textAnchor="middle"
+        >
+          50 m³/h
+        </text>
+        <text
+          x={width - paddingRight}
+          y={height - 6}
+          fill="var(--text-muted)"
+          fontSize="8"
+          textAnchor="end"
+        >
+          100 m³/h (Apertura Total)
+        </text>
       </svg>
     );
   };
 
   // Filtered logs list for Technical view
-  const filteredLogs = logsList.filter(log => {
+  const filteredLogs = logsList.filter((log) => {
     if (userRole === 'Tech' && techFilter.trim() !== '') {
       const query = techFilter.toLowerCase();
-      return log.tech.toLowerCase().includes(query) || 
-             log.action.toLowerCase().includes(query) ||
-             log.component.toLowerCase().includes(query);
+      return (
+        log.tech.toLowerCase().includes(query) ||
+        log.action.toLowerCase().includes(query) ||
+        log.component.toLowerCase().includes(query)
+      );
     }
     return true;
   });
 
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto', color: 'var(--text-primary)', display: 'flex', flexDirection: 'column', gap: '24px', width: '100%' }}>
-      
+    <div
+      style={{
+        maxWidth: '1200px',
+        margin: '0 auto',
+        color: 'var(--text-primary)',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '24px',
+        width: '100%'
+      }}
+    >
       {/* Title */}
-      <div style={{ borderBottom: '1px solid var(--border-glass)', paddingBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+      <div
+        style={{
+          borderBottom: '1px solid var(--border-glass)',
+          paddingBottom: '20px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '12px'
+        }}
+      >
         <div>
-          <h1 style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--accent-cyan)', letterSpacing: '-0.03em' }}>Historial y Telemetría Predictiva</h1>
-          <p style={{ fontSize: '1.05rem', color: 'var(--text-secondary)', marginTop: '8px', lineHeight: '1.6' }}>
-            Análisis de tendencias a largo plazo e informes de auditoría del piloto técnico. Permite evaluar patrones de vibración, perfiles térmicos y el registro histórico acumulado de bitácoras.
+          <h1
+            style={{
+              fontSize: '2.2rem',
+              fontWeight: 800,
+              color: 'var(--accent-cyan)',
+              letterSpacing: '-0.03em'
+            }}
+          >
+            Historial y Telemetría Predictiva
+          </h1>
+          <p
+            style={{
+              fontSize: '1.05rem',
+              color: 'var(--text-secondary)',
+              marginTop: '8px',
+              lineHeight: '1.6'
+            }}
+          >
+            Análisis de tendencias a largo plazo e informes de auditoría del piloto técnico. Permite
+            evaluar patrones de vibración, perfiles térmicos y el registro histórico acumulado de
+            bitácoras.
           </p>
         </div>
-        <div style={{
-          background: userRole === 'Leader' ? 'rgba(79, 70, 229, 0.08)' : 'rgba(16, 185, 129, 0.08)',
-          border: `1px solid ${userRole === 'Leader' ? 'var(--accent-indigo)' : 'var(--status-operational)'}`,
-          padding: '6px 14px',
-          borderRadius: '20px',
-          fontSize: '0.8rem',
-          fontWeight: 'bold',
-          color: userRole === 'Leader' ? 'var(--accent-indigo)' : 'var(--status-operational)',
-          textTransform: 'uppercase'
-        }}>
+        <div
+          style={{
+            background:
+              userRole === 'Leader' ? 'rgba(79, 70, 229, 0.08)' : 'rgba(16, 185, 129, 0.08)',
+            border: `1px solid ${userRole === 'Leader' ? 'var(--accent-indigo)' : 'var(--status-operational)'}`,
+            padding: '6px 14px',
+            borderRadius: '20px',
+            fontSize: '0.8rem',
+            fontWeight: 'bold',
+            color: userRole === 'Leader' ? 'var(--accent-indigo)' : 'var(--status-operational)',
+            textTransform: 'uppercase'
+          }}
+        >
           Perfil: {userRole === 'Leader' ? 'Líder de Mantención' : 'Técnico Operativo'}
         </div>
       </div>
@@ -588,7 +886,9 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
             <span className="kpi-title">
               <BarChart3 size={14} color="var(--accent-indigo)" /> Salud de Equipo
             </span>
-            <strong className="kpi-value" style={{ color: 'var(--accent-indigo)' }}>92%</strong>
+            <strong className="kpi-value" style={{ color: 'var(--accent-indigo)' }}>
+              92%
+            </strong>
             <span className="kpi-subtitle">Índice predictivo general</span>
           </div>
         </div>
@@ -596,19 +896,31 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
 
       {/* Dashboard Analítico Integral (Leader only) */}
       {userRole === 'Leader' && (
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
-          gap: '20px', 
-          background: 'var(--bg-glass)', 
-          border: '1px solid var(--border-glass)', 
-          borderRadius: '12px', 
-          padding: '20px', 
-          boxShadow: 'var(--shadow-premium)' 
-        }}>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+            gap: '20px',
+            background: 'var(--bg-glass)',
+            border: '1px solid var(--border-glass)',
+            borderRadius: '12px',
+            padding: '20px',
+            boxShadow: 'var(--shadow-premium)'
+          }}
+        >
           {/* Component failure analysis */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <h3 style={{ fontSize: '0.95rem', fontWeight: '800', color: 'var(--accent-indigo)', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <h3
+              style={{
+                fontSize: '0.95rem',
+                fontWeight: '800',
+                color: 'var(--accent-indigo)',
+                margin: 0,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}
+            >
               📊 Alertas e Intervenciones por Componente
             </h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -622,12 +934,35 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
                 const pct = Math.round((count / total) * 100);
                 return (
                   <div key={comp}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', marginBottom: '4px' }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        fontSize: '0.75rem',
+                        marginBottom: '4px'
+                      }}
+                    >
                       <span style={{ fontWeight: '600' }}>{comp}</span>
-                      <span style={{ color: 'var(--text-muted)' }}>{count} ({pct}%)</span>
+                      <span style={{ color: 'var(--text-muted)' }}>
+                        {count} ({pct}%)
+                      </span>
                     </div>
-                    <div style={{ height: '6px', background: 'rgba(0,0,0,0.05)', borderRadius: '3px', overflow: 'hidden' }}>
-                      <div style={{ height: '100%', width: `${pct}%`, background: 'var(--accent-indigo)', borderRadius: '3px' }}></div>
+                    <div
+                      style={{
+                        height: '6px',
+                        background: 'rgba(0,0,0,0.05)',
+                        borderRadius: '3px',
+                        overflow: 'hidden'
+                      }}
+                    >
+                      <div
+                        style={{
+                          height: '100%',
+                          width: `${pct}%`,
+                          background: 'var(--accent-indigo)',
+                          borderRadius: '3px'
+                        }}
+                      ></div>
                     </div>
                   </div>
                 );
@@ -637,10 +972,29 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
 
           {/* Maintainer performance analysis */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <h3 style={{ fontSize: '0.95rem', fontWeight: '800', color: 'var(--accent-cyan)', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <h3
+              style={{
+                fontSize: '0.95rem',
+                fontWeight: '800',
+                color: 'var(--accent-cyan)',
+                margin: 0,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}
+            >
               👷 Historial de Intervenciones por Mantenedor
             </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '180px', overflowY: 'auto', paddingRight: '4px' }}>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px',
+                maxHeight: '180px',
+                overflowY: 'auto',
+                paddingRight: '4px'
+              }}
+            >
               {Object.entries(
                 logsList.reduce((acc, log) => {
                   acc[log.tech] = (acc[log.tech] || 0) + 1;
@@ -648,12 +1002,40 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
                 }, {})
               ).map(([tech, count]) => {
                 return (
-                  <div key={tech} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.78rem', padding: '6px 10px', background: 'var(--bg-sidebar-header)', borderRadius: '6px', border: '1px solid var(--border-glass)' }}>
-                    <span style={{ fontWeight: '600', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <div
+                    key={tech}
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      fontSize: '0.78rem',
+                      padding: '6px 10px',
+                      background: 'var(--bg-sidebar-header)',
+                      borderRadius: '6px',
+                      border: '1px solid var(--border-glass)'
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontWeight: '600',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px'
+                      }}
+                    >
                       <User size={12} style={{ color: 'var(--accent-cyan)' }} />
                       {tech}
                     </span>
-                    <span style={{ background: 'var(--accent-cyan)', color: 'white', padding: '2px 8px', borderRadius: '10px', fontSize: '0.7rem', fontWeight: 'bold' }}>
+                    <span
+                      style={{
+                        background: 'var(--accent-cyan)',
+                        color: 'white',
+                        padding: '2px 8px',
+                        borderRadius: '10px',
+                        fontSize: '0.7rem',
+                        fontWeight: 'bold'
+                      }}
+                    >
                       {count} {count === 1 ? 'tarea' : 'tareas'}
                     </span>
                   </div>
@@ -667,7 +1049,6 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
       {/* Charts Grid (Leader only) */}
       {userRole === 'Leader' && (
         <div className="charts-grid">
-          
           {/* Chart 1: Vibration History */}
           <div className="history-chart-card">
             <div className="history-chart-header">
@@ -682,11 +1063,15 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
                 </span>
               </div>
             </div>
-            <div className="zoomable-graph-container" onClick={() => setFullscreenGraph('vibration')}>
+            <div
+              className="zoomable-graph-container"
+              onClick={() => setFullscreenGraph('vibration')}
+            >
               {renderVibrationHistoryChart()}
             </div>
             <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: '1.4' }}>
-              * El pico en el Día 6 (3.8 mm/s) representa el reporte de desalineación radial antes de aplicar corrección por alineación láser y balanceo.
+              * El pico en el Día 6 (3.8 mm/s) representa el reporte de desalineación radial antes
+              de aplicar corrección por alineación láser y balanceo.
             </p>
           </div>
 
@@ -708,60 +1093,109 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
                 </span>
               </div>
             </div>
-            <div className="zoomable-graph-container" onClick={() => setFullscreenGraph('temperature')}>
+            <div
+              className="zoomable-graph-container"
+              onClick={() => setFullscreenGraph('temperature')}
+            >
               {renderTempHistoryChart()}
             </div>
             <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: '1.4' }}>
-              * Las temperaturas se mantienen en límites normales (estator nominal &lt; 80°C, cojinetes &lt; 65°C) tras la inyección de grasa sintética Mobilith.
+              * Las temperaturas se mantienen en límites normales (estator nominal &lt; 80°C,
+              cojinetes &lt; 65°C) tras la inyección de grasa sintética Mobilith.
             </p>
           </div>
-
         </div>
       )}
 
       {/* Technician specific quick filter bar */}
       {userRole === 'Tech' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', background: 'var(--bg-glass)', border: '1px solid var(--border-glass)', borderRadius: '12px', padding: '16px', boxShadow: 'var(--shadow-premium)' }}>
-          <h3 style={{ fontSize: '0.9rem', fontWeight: '800', color: 'var(--accent-indigo)', margin: 0 }}>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '12px',
+            background: 'var(--bg-glass)',
+            border: '1px solid var(--border-glass)',
+            borderRadius: '12px',
+            padding: '16px',
+            boxShadow: 'var(--shadow-premium)'
+          }}
+        >
+          <h3
+            style={{
+              fontSize: '0.9rem',
+              fontWeight: '800',
+              color: 'var(--accent-indigo)',
+              margin: 0
+            }}
+          >
             🔍 Panel de Búsqueda y Filtro de Tareas
           </h3>
-          
+
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center' }}>
-            <button 
+            <button
               onClick={() => setTechFilter('Andrés Silva')}
               className={`btn-secondary ${techFilter === 'Andrés Silva' ? 'active' : ''}`}
-              style={{ fontSize: '0.75rem', padding: '6px 12px', borderRadius: '12px', borderColor: techFilter === 'Andrés Silva' ? 'var(--accent-indigo)' : '', color: techFilter === 'Andrés Silva' ? 'var(--accent-indigo)' : '' }}
+              style={{
+                fontSize: '0.75rem',
+                padding: '6px 12px',
+                borderRadius: '12px',
+                borderColor: techFilter === 'Andrés Silva' ? 'var(--accent-indigo)' : '',
+                color: techFilter === 'Andrés Silva' ? 'var(--accent-indigo)' : ''
+              }}
             >
               Ver mis órdenes (Andrés Silva)
             </button>
-            <button 
+            <button
               onClick={() => setTechFilter('Jorge Oyarzún')}
               className={`btn-secondary ${techFilter === 'Jorge Oyarzún' ? 'active' : ''}`}
-              style={{ fontSize: '0.75rem', padding: '6px 12px', borderRadius: '12px', borderColor: techFilter === 'Jorge Oyarzún' ? 'var(--accent-indigo)' : '', color: techFilter === 'Jorge Oyarzún' ? 'var(--accent-indigo)' : '' }}
+              style={{
+                fontSize: '0.75rem',
+                padding: '6px 12px',
+                borderRadius: '12px',
+                borderColor: techFilter === 'Jorge Oyarzún' ? 'var(--accent-indigo)' : '',
+                color: techFilter === 'Jorge Oyarzún' ? 'var(--accent-indigo)' : ''
+              }}
             >
               Ver mis órdenes (Jorge Oyarzún)
             </button>
-            <button 
+            <button
               onClick={() => setTechFilter('Simulador de Escenarios')}
               className={`btn-secondary ${techFilter === 'Simulador de Escenarios' ? 'active' : ''}`}
-              style={{ fontSize: '0.75rem', padding: '6px 12px', borderRadius: '12px', borderColor: techFilter === 'Simulador de Escenarios' ? 'var(--accent-indigo)' : '', color: techFilter === 'Simulador de Escenarios' ? 'var(--accent-indigo)' : '' }}
+              style={{
+                fontSize: '0.75rem',
+                padding: '6px 12px',
+                borderRadius: '12px',
+                borderColor: techFilter === 'Simulador de Escenarios' ? 'var(--accent-indigo)' : '',
+                color: techFilter === 'Simulador de Escenarios' ? 'var(--accent-indigo)' : ''
+              }}
             >
               Ver mis simulaciones
             </button>
             {techFilter && (
-              <button 
+              <button
                 onClick={() => setTechFilter('')}
                 className="btn-secondary"
-                style={{ fontSize: '0.75rem', padding: '6px 12px', borderRadius: '12px', border: '1px dashed var(--status-replace)', color: 'var(--status-replace)' }}
+                style={{
+                  fontSize: '0.75rem',
+                  padding: '6px 12px',
+                  borderRadius: '12px',
+                  border: '1px dashed var(--status-replace)',
+                  color: 'var(--status-replace)'
+                }}
               >
                 Limpiar Filtro
               </button>
             )}
           </div>
-          
+
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <label style={{ fontSize: '0.72rem', fontWeight: '700', color: 'var(--text-secondary)' }}>Filtro manual por texto (Técnico / Componente / Acción)</label>
-            <input 
+            <label
+              style={{ fontSize: '0.72rem', fontWeight: '700', color: 'var(--text-secondary)' }}
+            >
+              Filtro manual por texto (Técnico / Componente / Acción)
+            </label>
+            <input
               type="text"
               placeholder="Buscar por texto libre..."
               value={techFilter}
@@ -775,12 +1209,21 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
 
       {/* Chart 3: Flow-Pressure Correlation (For both roles) */}
       <div className="history-chart-card">
-        <div className="history-chart-header" style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div
+          className="history-chart-header"
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '12px',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}
+        >
           <h3 className="history-chart-title" style={{ margin: 0 }}>
             <Gauge size={16} style={{ color: 'var(--accent-indigo)' }} />
             Curva de Ensayo: Presión de Descarga vs. Caudal
           </h3>
-          
+
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
             <button
               onClick={() => {
@@ -834,7 +1277,7 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
               </button>
             )}
 
-            {(JSON.stringify(customPressureTrial) !== JSON.stringify(pressureTrial)) && (
+            {JSON.stringify(customPressureTrial) !== JSON.stringify(pressureTrial) && (
               <button
                 onClick={() => {
                   setCustomPressureTrial([...pressureTrial]);
@@ -863,26 +1306,49 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
 
           <div className="history-chart-legend">
             <span className="legend-item">
-              <span className="legend-color" style={{ backgroundColor: 'var(--accent-indigo)' }}></span>
+              <span
+                className="legend-color"
+                style={{ backgroundColor: 'var(--accent-indigo)' }}
+              ></span>
               <span>Presión (bar) / Altura (m)</span>
             </span>
           </div>
         </div>
-        <div className="zoomable-graph-container" onClick={(e) => { if (e.target.tagName !== 'circle') setFullscreenGraph('flow-pressure'); }}>
+        <div
+          className="zoomable-graph-container"
+          onClick={(e) => {
+            if (e.target.tagName !== 'circle') setFullscreenGraph('flow-pressure');
+          }}
+        >
           {renderFlowPressureChart()}
         </div>
         <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: '1.4' }}>
-          * Curva característica H-Q de la bomba centrífuga ensayada en el laboratorio. Muestra la caída de presión de descarga a medida que aumenta el caudal volumétrico de salida. En modo simulación, arrastre los puntos verticalmente para modelar fallas en terreno.
+          * Curva característica H-Q de la bomba centrífuga ensayada en el laboratorio. Muestra la
+          caída de presión de descarga a medida que aumenta el caudal volumétrico de salida. En modo
+          simulación, arrastre los puntos verticalmente para modelar fallas en terreno.
         </p>
       </div>
 
       {/* Hydrated Audit Logs Card */}
       <div className="audit-logs-card">
-        <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--accent-cyan)', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: '1px solid var(--border-glass)', paddingBottom: '12px' }}>
+        <h2
+          style={{
+            fontSize: '1.25rem',
+            fontWeight: 800,
+            color: 'var(--accent-cyan)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            borderBottom: '1px solid var(--border-glass)',
+            paddingBottom: '12px'
+          }}
+        >
           <FileText size={18} />
-          {userRole === 'Leader' ? 'Bitácora Completa de Auditorías del Piloto' : 'Mis Órdenes de Trabajo y Tareas'}
+          {userRole === 'Leader'
+            ? 'Bitácora Completa de Auditorías del Piloto'
+            : 'Mis Órdenes de Trabajo y Tareas'}
         </h2>
-        
+
         <div className="audit-table-wrapper">
           <table className="audit-table">
             <thead>
@@ -897,8 +1363,8 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
             </thead>
             <tbody>
               {filteredLogs.map((log) => (
-                <tr 
-                  key={log.id} 
+                <tr
+                  key={log.id}
                   onClick={() => setSelectedLog(selectedLog === log.id ? null : log.id)}
                   style={{ cursor: 'pointer' }}
                 >
@@ -909,12 +1375,25 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
                       {log.tech}
                     </div>
                   </td>
-                  <td style={{ color: 'var(--accent-cyan)', fontWeight: '700' }}>{log.component}</td>
+                  <td style={{ color: 'var(--accent-cyan)', fontWeight: '700' }}>
+                    {log.component}
+                  </td>
                   <td>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                       <strong style={{ color: 'var(--text-primary)' }}>{log.action}</strong>
                       {selectedLog === log.id && (
-                        <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', background: 'rgba(15, 23, 42, 0.02)', padding: '10px', borderRadius: '6px', border: '1px dotted var(--border-glass)', marginTop: '6px', animation: 'fade-in 0.3s ease' }}>
+                        <p
+                          style={{
+                            fontSize: '0.8rem',
+                            color: 'var(--text-muted)',
+                            background: 'rgba(15, 23, 42, 0.02)',
+                            padding: '10px',
+                            borderRadius: '6px',
+                            border: '1px dotted var(--border-glass)',
+                            marginTop: '6px',
+                            animation: 'fade-in 0.3s ease'
+                          }}
+                        >
                           {log.details}
                         </p>
                       )}
@@ -923,7 +1402,18 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
                   <td style={{ fontFamily: 'monospace' }}>{log.duration}</td>
                   <td>
                     <span className={`audit-status-badge ${log.status.toLowerCase()}`}>
-                      <span className={log.status.toLowerCase() === 'simulated' ? "pulse-dot blue" : (log.status.toLowerCase() === 'inspect' ? "pulse-dot orange" : (log.status.toLowerCase() === 'replace' ? "pulse-dot red" : "pulse-dot green"))} style={{ width: '4px', height: '4px' }}></span>
+                      <span
+                        className={
+                          log.status.toLowerCase() === 'simulated'
+                            ? 'pulse-dot blue'
+                            : log.status.toLowerCase() === 'inspect'
+                              ? 'pulse-dot orange'
+                              : log.status.toLowerCase() === 'replace'
+                                ? 'pulse-dot red'
+                                : 'pulse-dot green'
+                        }
+                        style={{ width: '4px', height: '4px' }}
+                      ></span>
                       {log.statusLabel}
                     </span>
                   </td>
@@ -931,7 +1421,10 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
               ))}
               {filteredLogs.length === 0 && (
                 <tr>
-                  <td colSpan="6" style={{ textAlign: 'center', padding: '24px', color: 'var(--text-muted)' }}>
+                  <td
+                    colSpan="6"
+                    style={{ textAlign: 'center', padding: '24px', color: 'var(--text-muted)' }}
+                  >
                     No se encontraron órdenes de trabajo para los criterios de filtro establecidos.
                   </td>
                 </tr>
@@ -939,59 +1432,86 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
             </tbody>
           </table>
         </div>
-        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '12px', textAlign: 'center' }}>
-          💡 Haz clic sobre cualquier registro de la tabla para desplegar los detalles técnicos completos y el diagnóstico extendido de la intervención.
+        <p
+          style={{
+            fontSize: '0.75rem',
+            color: 'var(--text-muted)',
+            marginTop: '12px',
+            textAlign: 'center'
+          }}
+        >
+          💡 Haz clic sobre cualquier registro de la tabla para desplegar los detalles técnicos
+          completos y el diagnóstico extendido de la intervención.
         </p>
       </div>
 
-
-
-
-
       {/* Glassmorphic Report Form Modal */}
       {showForm && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'rgba(15, 23, 42, 0.65)',
-          backdropFilter: 'blur(8px)',
-          WebkitBackdropFilter: 'blur(8px)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000,
-          animation: 'fade-in 0.3s ease',
-          padding: '16px'
-        }}>
-          <div className="premium-card" style={{
-            width: '100%',
-            maxWidth: '550px',
-            background: 'rgba(255, 255, 255, 0.85)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
-            border: '1px solid var(--border-glass)',
-            borderRadius: '16px',
-            padding: '24px',
-            boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(15, 23, 42, 0.65)',
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)',
             display: 'flex',
-            flexDirection: 'column',
-            gap: '16px',
-            color: 'var(--text-primary)'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-glass)', paddingBottom: '12px' }}>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: '800', color: 'var(--accent-indigo)', display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            animation: 'fade-in 0.3s ease',
+            padding: '16px'
+          }}
+        >
+          <div
+            className="premium-card"
+            style={{
+              width: '100%',
+              maxWidth: '550px',
+              background: 'rgba(255, 255, 255, 0.85)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              border: '1px solid var(--border-glass)',
+              borderRadius: '16px',
+              padding: '24px',
+              boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '16px',
+              color: 'var(--text-primary)'
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                borderBottom: '1px solid var(--border-glass)',
+                paddingBottom: '12px'
+              }}
+            >
+              <h3
+                style={{
+                  fontSize: '1.25rem',
+                  fontWeight: '800',
+                  color: 'var(--accent-indigo)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  margin: 0
+                }}
+              >
                 <FileText size={20} /> Generar Reporte Técnico de Terreno
               </h3>
-              <button 
+              <button
                 onClick={() => setShowForm(false)}
-                style={{ 
-                  background: 'transparent', 
-                  border: 'none', 
-                  cursor: 'pointer', 
-                  fontSize: '1.25rem', 
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: '1.25rem',
                   color: 'var(--text-secondary)',
                   fontWeight: 'bold',
                   padding: '4px'
@@ -1001,96 +1521,180 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
               </button>
             </div>
 
-            <form onSubmit={handleFormSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            <form
+              onSubmit={handleFormSubmit}
+              style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}
+            >
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <label style={{ fontSize: '0.75rem', fontWeight: '700', color: 'var(--text-secondary)' }}>Fecha y Hora</label>
-                  <input 
-                    type="datetime-local" 
-                    name="date" 
+                  <label
+                    style={{
+                      fontSize: '0.75rem',
+                      fontWeight: '700',
+                      color: 'var(--text-secondary)'
+                    }}
+                  >
+                    Fecha y Hora
+                  </label>
+                  <input
+                    type="datetime-local"
+                    name="date"
                     value={formData.date}
                     onChange={handleFormChange}
                     required
                     className="premium-input"
-                    style={{ padding: '8px', fontSize: '0.85rem', background: 'rgba(255,255,255,0.8)' }}
+                    style={{
+                      padding: '8px',
+                      fontSize: '0.85rem',
+                      background: 'rgba(255,255,255,0.8)'
+                    }}
                   />
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <label style={{ fontSize: '0.75rem', fontWeight: '700', color: 'var(--text-secondary)' }}>Operador / Mecánico</label>
-                  <input 
-                    type="text" 
-                    name="tech" 
+                  <label
+                    style={{
+                      fontSize: '0.75rem',
+                      fontWeight: '700',
+                      color: 'var(--text-secondary)'
+                    }}
+                  >
+                    Operador / Mecánico
+                  </label>
+                  <input
+                    type="text"
+                    name="tech"
                     value={formData.tech}
                     onChange={handleFormChange}
                     placeholder="Nombre completo"
                     required
                     className="premium-input"
-                    style={{ padding: '8px', fontSize: '0.85rem', background: 'rgba(255,255,255,0.8)' }}
+                    style={{
+                      padding: '8px',
+                      fontSize: '0.85rem',
+                      background: 'rgba(255,255,255,0.8)'
+                    }}
                   />
                 </div>
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <label style={{ fontSize: '0.75rem', fontWeight: '700', color: 'var(--text-secondary)' }}>Orden de Trabajo (OT)</label>
-                  <input 
-                    type="text" 
-                    name="ot" 
+                  <label
+                    style={{
+                      fontSize: '0.75rem',
+                      fontWeight: '700',
+                      color: 'var(--text-secondary)'
+                    }}
+                  >
+                    Orden de Trabajo (OT)
+                  </label>
+                  <input
+                    type="text"
+                    name="ot"
                     value={formData.ot}
                     onChange={handleFormChange}
                     placeholder="OT-XXXX"
                     required
                     className="premium-input"
-                    style={{ padding: '8px', fontSize: '0.85rem', background: 'rgba(255,255,255,0.8)' }}
+                    style={{
+                      padding: '8px',
+                      fontSize: '0.85rem',
+                      background: 'rgba(255,255,255,0.8)'
+                    }}
                   />
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <label style={{ fontSize: '0.75rem', fontWeight: '700', color: 'var(--text-secondary)' }}>TAG del Equipo</label>
-                  <input 
-                    type="text" 
-                    name="tag" 
+                  <label
+                    style={{
+                      fontSize: '0.75rem',
+                      fontWeight: '700',
+                      color: 'var(--text-secondary)'
+                    }}
+                  >
+                    TAG del Equipo
+                  </label>
+                  <input
+                    type="text"
+                    name="tag"
                     value={formData.tag}
                     onChange={handleFormChange}
                     placeholder="B-101A"
                     required
                     className="premium-input"
-                    style={{ padding: '8px', fontSize: '0.85rem', background: 'rgba(255,255,255,0.8)' }}
+                    style={{
+                      padding: '8px',
+                      fontSize: '0.85rem',
+                      background: 'rgba(255,255,255,0.8)'
+                    }}
                   />
                 </div>
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <label style={{ fontSize: '0.75rem', fontWeight: '700', color: 'var(--text-secondary)' }}>Área de Planta / Ubicación</label>
-                  <input 
-                    type="text" 
-                    name="area" 
+                  <label
+                    style={{
+                      fontSize: '0.75rem',
+                      fontWeight: '700',
+                      color: 'var(--text-secondary)'
+                    }}
+                  >
+                    Área de Planta / Ubicación
+                  </label>
+                  <input
+                    type="text"
+                    name="area"
                     value={formData.area}
                     onChange={handleFormChange}
                     placeholder="Ej: Sala de Bombas principal"
                     required
                     className="premium-input"
-                    style={{ padding: '8px', fontSize: '0.85rem', background: 'rgba(255,255,255,0.8)' }}
+                    style={{
+                      padding: '8px',
+                      fontSize: '0.85rem',
+                      background: 'rgba(255,255,255,0.8)'
+                    }}
                   />
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <label style={{ fontSize: '0.75rem', fontWeight: '700', color: 'var(--text-secondary)' }}>Sistema y Subsistema</label>
-                  <input 
-                    type="text" 
-                    name="system" 
+                  <label
+                    style={{
+                      fontSize: '0.75rem',
+                      fontWeight: '700',
+                      color: 'var(--text-secondary)'
+                    }}
+                  >
+                    Sistema y Subsistema
+                  </label>
+                  <input
+                    type="text"
+                    name="system"
                     value={formData.system}
                     onChange={handleFormChange}
                     placeholder="Ej: Circuito Refrigeración"
                     required
                     className="premium-input"
-                    style={{ padding: '8px', fontSize: '0.85rem', background: 'rgba(255,255,255,0.8)' }}
+                    style={{
+                      padding: '8px',
+                      fontSize: '0.85rem',
+                      background: 'rgba(255,255,255,0.8)'
+                    }}
                   />
                 </div>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '16px', borderTop: '1px solid var(--border-glass)', paddingTop: '16px' }}>
-                <button 
-                  type="button" 
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  gap: '10px',
+                  marginTop: '16px',
+                  borderTop: '1px solid var(--border-glass)',
+                  paddingTop: '16px'
+                }}
+              >
+                <button
+                  type="button"
                   onClick={() => setShowForm(false)}
                   className="premium-btn"
                   style={{
@@ -1106,8 +1710,8 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
                 >
                   Cancelar
                 </button>
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   className="premium-btn active"
                   style={{
                     padding: '8px 16px',
@@ -1137,41 +1741,61 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
               <h3 className="fullscreen-overlay-title">
                 {fullscreenGraph === 'vibration' && 'Historial de Vibraciones (14 Días)'}
                 {fullscreenGraph === 'temperature' && 'Temperaturas de Control (24 Horas)'}
-                {fullscreenGraph === 'flow-pressure' && 'Curva de Ensayo: Presión de Descarga vs Caudal'}
+                {fullscreenGraph === 'flow-pressure' &&
+                  'Curva de Ensayo: Presión de Descarga vs Caudal'}
               </h3>
-              <button className="fullscreen-overlay-close-btn" onClick={() => setFullscreenGraph(null)}>
+              <button
+                className="fullscreen-overlay-close-btn"
+                onClick={() => setFullscreenGraph(null)}
+              >
                 ✕ Cerrar
               </button>
             </div>
-            <div className="fullscreen-graph-body" style={{ background: 'var(--bg-sidebar-header)' }}>
+            <div
+              className="fullscreen-graph-body"
+              style={{ background: 'var(--bg-sidebar-header)' }}
+            >
               {fullscreenGraph === 'vibration' && renderVibrationHistoryChart(380)}
               {fullscreenGraph === 'temperature' && renderTempHistoryChart(380)}
               {fullscreenGraph === 'flow-pressure' && renderFlowPressureChart(380)}
             </div>
-            <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', background: 'rgba(255,255,255,0.05)', padding: '12px', borderRadius: '8px', lineHeight: '1.5' }}>
+            <div
+              style={{
+                fontSize: '0.82rem',
+                color: 'var(--text-secondary)',
+                background: 'rgba(255,255,255,0.05)',
+                padding: '12px',
+                borderRadius: '8px',
+                lineHeight: '1.5'
+              }}
+            >
               {fullscreenGraph === 'vibration' && (
                 <span>
-                  <strong>Información de Vibración:</strong> Monitoreo de vibraciones RMS en mm/s. 
-                  El límite preventivo se establece en <strong>2.8 mm/s</strong> y el límite crítico en <strong>4.5 mm/s</strong> según la norma ISO 10816-1.
+                  <strong>Información de Vibración:</strong> Monitoreo de vibraciones RMS en mm/s.
+                  El límite preventivo se establece en <strong>2.8 mm/s</strong> y el límite crítico
+                  en <strong>4.5 mm/s</strong> según la norma ISO 10816-1.
                 </span>
               )}
               {fullscreenGraph === 'temperature' && (
                 <span>
-                  <strong>Información Térmica:</strong> Comparación de las lecturas térmicas en las bobinas del estator y el rodamiento principal. 
-                  Límites admisibles: estator nominal &lt; 80°C, cojinetes &lt; 65°C.
+                  <strong>Información Térmica:</strong> Comparación de las lecturas térmicas en las
+                  bobinas del estator y el rodamiento principal. Límites admisibles: estator nominal
+                  &lt; 80°C, cojinetes &lt; 65°C.
                 </span>
               )}
               {fullscreenGraph === 'flow-pressure' && (
                 <span>
-                  <strong>Curva Característica H-Q:</strong> Ensayo experimental que correlaciona el caudal de descarga con la altura piezométrica equivalente en metros. 
-                  {isInteractive ? ' Modo Simulación ACTIVO: Arrastre los círculos verticalmente para modificar la curva.' : ' Clic en "Simular Curva / Fallas" para habilitar la manipulación interactiva de puntos.'}
+                  <strong>Curva Característica H-Q:</strong> Ensayo experimental que correlaciona el
+                  caudal de descarga con la altura piezométrica equivalente en metros.
+                  {isInteractive
+                    ? ' Modo Simulación ACTIVO: Arrastre los círculos verticalmente para modificar la curva.'
+                    : ' Clic en "Simular Curva / Fallas" para habilitar la manipulación interactiva de puntos.'}
                 </span>
               )}
             </div>
           </div>
         </div>
       )}
-
     </div>
   );
 };

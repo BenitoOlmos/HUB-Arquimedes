@@ -3,23 +3,23 @@ import * as THREE from 'three';
 import { Navigation, Anchor, Compass, Info } from 'lucide-react';
 
 const PORT_LOCATIONS = [
-  { name: "Shanghai", lat: 31.2, lng: 121.5, color: "#10b981" },
-  { name: "Singapore", lat: 1.3, lng: 103.8, color: "#10b981" },
-  { name: "Rotterdam", lat: 51.9, lng: 4.4, color: "#10b981" },
-  { name: "Los Angeles", lat: 33.7, lng: -118.2, color: "#10b981" },
-  { name: "New York", lat: 40.7, lng: -74.0, color: "#10b981" },
-  { name: "Valparaíso", lat: -33.0, lng: -71.6, color: "#10b981" },
-  { name: "Cabo", lat: -33.9, lng: 18.4, color: "#a855f7" }
+  { name: 'Shanghai', lat: 31.2, lng: 121.5, color: '#10b981' },
+  { name: 'Singapore', lat: 1.3, lng: 103.8, color: '#10b981' },
+  { name: 'Rotterdam', lat: 51.9, lng: 4.4, color: '#10b981' },
+  { name: 'Los Angeles', lat: 33.7, lng: -118.2, color: '#10b981' },
+  { name: 'New York', lat: 40.7, lng: -74.0, color: '#10b981' },
+  { name: 'Valparaíso', lat: -33.0, lng: -71.6, color: '#10b981' },
+  { name: 'Cabo', lat: -33.9, lng: 18.4, color: '#a855f7' }
 ];
 
 const PORT_COORDINATES = {
-  "Shanghai": { lat: 31.2, lng: 121.5 },
-  "Singapore": { lat: 1.3, lng: 103.8 },
-  "Rotterdam": { lat: 51.9, lng: 4.4 },
-  "Los Angeles": { lat: 33.7, lng: -118.2 },
-  "New York": { lat: 40.7, lng: -74.0 },
-  "Valparaíso": { lat: -33.0, lng: -71.6 },
-  "Cabo": { lat: -33.9, lng: 18.4 }
+  Shanghai: { lat: 31.2, lng: 121.5 },
+  Singapore: { lat: 1.3, lng: 103.8 },
+  Rotterdam: { lat: 51.9, lng: 4.4 },
+  'Los Angeles': { lat: 33.7, lng: -118.2 },
+  'New York': { lat: 40.7, lng: -74.0 },
+  Valparaíso: { lat: -33.0, lng: -71.6 },
+  Cabo: { lat: -33.9, lng: 18.4 }
 };
 
 const GlobeViewer = ({ ships, activeCrises, onRerouteShip, onTriggerAlert }) => {
@@ -60,7 +60,7 @@ const GlobeViewer = ({ ships, activeCrises, onRerouteShip, onTriggerAlert }) => 
     // 2. Earth Globe
     const globeRadius = 50;
     const globeGeometry = new THREE.SphereGeometry(globeRadius, 40, 40);
-    
+
     // Grid wireframe material for futuristic sci-fi feel
     const globeMaterial = new THREE.MeshBasicMaterial({
       color: 0x0f2040,
@@ -83,7 +83,7 @@ const GlobeViewer = ({ ships, activeCrises, onRerouteShip, onTriggerAlert }) => 
 
     // 3. Port Markers
     const portGroup = new THREE.Group();
-    PORT_LOCATIONS.forEach(port => {
+    PORT_LOCATIONS.forEach((port) => {
       const pos = latLngToVector3(port.lat, port.lng, globeRadius + 0.5);
       const markerGeom = new THREE.SphereGeometry(1.2, 8, 8);
       const markerMat = new THREE.MeshBasicMaterial({
@@ -99,7 +99,7 @@ const GlobeViewer = ({ ships, activeCrises, onRerouteShip, onTriggerAlert }) => 
 
     // 4. Shipping route lines (Arc splines)
     const routesGroup = new THREE.Group();
-    
+
     const drawRouteArc = (start, end, colorHex) => {
       const startVec = latLngToVector3(start.lat, start.lng, globeRadius);
       const endVec = latLngToVector3(end.lat, end.lng, globeRadius);
@@ -123,11 +123,11 @@ const GlobeViewer = ({ ships, activeCrises, onRerouteShip, onTriggerAlert }) => 
     };
 
     // Plot major routes
-    drawRouteArc(PORT_COORDINATES["Shanghai"], PORT_COORDINATES["Los Angeles"], 0x06b6d4);
-    drawRouteArc(PORT_COORDINATES["Rotterdam"], PORT_COORDINATES["New York"], 0x06b6d4);
-    drawRouteArc(PORT_COORDINATES["Valparaíso"], PORT_COORDINATES["Shanghai"], 0x06b6d4);
-    drawRouteArc(PORT_COORDINATES["Singapore"], PORT_COORDINATES["Rotterdam"], 0x06b6d4);
-    drawRouteArc(PORT_COORDINATES["Singapore"], PORT_COORDINATES["Valparaíso"], 0x06b6d4);
+    drawRouteArc(PORT_COORDINATES['Shanghai'], PORT_COORDINATES['Los Angeles'], 0x06b6d4);
+    drawRouteArc(PORT_COORDINATES['Rotterdam'], PORT_COORDINATES['New York'], 0x06b6d4);
+    drawRouteArc(PORT_COORDINATES['Valparaíso'], PORT_COORDINATES['Shanghai'], 0x06b6d4);
+    drawRouteArc(PORT_COORDINATES['Singapore'], PORT_COORDINATES['Rotterdam'], 0x06b6d4);
+    drawRouteArc(PORT_COORDINATES['Singapore'], PORT_COORDINATES['Valparaíso'], 0x06b6d4);
 
     scene.add(routesGroup);
 
@@ -142,20 +142,18 @@ const GlobeViewer = ({ ships, activeCrises, onRerouteShip, onTriggerAlert }) => 
       }
 
       // Draw active coordinates
-      ships.forEach(ship => {
+      ships.forEach((ship) => {
         const lat = ship.currentLat !== undefined ? ship.currentLat : ship.lat;
         const lng = ship.currentLng !== undefined ? ship.currentLng : ship.lng;
         const pos = latLngToVector3(lat, lng, globeRadius + 1.0);
-        
+
         const isDetoured = ship.dailyFuelCost > 20000; // Tracked by daily fuel cost increase
-        const color = ship.status === 'FONDEADO' 
-          ? 0xeab308 
-          : (isDetoured ? 0xa855f7 : 0x00e5ff);
+        const color = ship.status === 'FONDEADO' ? 0xeab308 : isDetoured ? 0xa855f7 : 0x00e5ff;
 
         const shipGeom = new THREE.BoxGeometry(0.9, 0.9, 1.8);
         const shipMat = new THREE.MeshBasicMaterial({ color });
         const mesh = new THREE.Mesh(shipGeom, shipMat);
-        
+
         mesh.position.copy(pos);
         mesh.lookAt(new THREE.Vector3(0, 0, 0)); // Look inwards to sphere
         shipsGroup.add(mesh);
@@ -172,8 +170,10 @@ const GlobeViewer = ({ ships, activeCrises, onRerouteShip, onTriggerAlert }) => 
     let isDragging = false;
     let previousMousePosition = { x: 0, y: 0 };
 
-    const handleMouseDown = () => { isDragging = true; };
-    
+    const handleMouseDown = () => {
+      isDragging = true;
+    };
+
     const handleMouseMove = (e) => {
       const deltaMove = {
         x: e.clientX - previousMousePosition.x,
@@ -199,7 +199,9 @@ const GlobeViewer = ({ ships, activeCrises, onRerouteShip, onTriggerAlert }) => 
       };
     };
 
-    const handleMouseUp = () => { isDragging = false; };
+    const handleMouseUp = () => {
+      isDragging = false;
+    };
 
     const domElement = renderer.domElement;
     domElement.addEventListener('mousedown', handleMouseDown);
@@ -210,7 +212,7 @@ const GlobeViewer = ({ ships, activeCrises, onRerouteShip, onTriggerAlert }) => 
     let animationFrameId;
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
-      
+
       // Auto rotate very slowly if not dragging
       if (!isDragging) {
         globe.rotation.y += 0.0008;
@@ -257,71 +259,129 @@ const GlobeViewer = ({ ships, activeCrises, onRerouteShip, onTriggerAlert }) => 
     const isDetoured = ship.dailyFuelCost > 20000;
     const targetOption = isDetoured ? 'DEFAULT' : 'DETOUR';
     onRerouteShip(ship.id, targetOption);
-    
-    const alertMsg = targetOption === 'DETOUR'
-      ? `Buque ${ship.name} desviado vía Cabo de Buena Esperanza para evitar bloqueo. Combustible diario +35%`
-      : `Buque ${ship.name} retornado a ruta predeterminada (Canal).`;
+
+    const alertMsg =
+      targetOption === 'DETOUR'
+        ? `Buque ${ship.name} desviado vía Cabo de Buena Esperanza para evitar bloqueo. Combustible diario +35%`
+        : `Buque ${ship.name} retornado a ruta predeterminada (Canal).`;
 
     onTriggerAlert(alertMsg);
-    
+
     // Update local select state
-    setSelectedShip(prev => prev ? { ...prev, dailyFuelCost: targetOption === 'DETOUR' ? prev.dailyFuelCost * 1.35 : prev.dailyFuelCost / 1.35 } : null);
+    setSelectedShip((prev) =>
+      prev
+        ? {
+            ...prev,
+            dailyFuelCost:
+              targetOption === 'DETOUR' ? prev.dailyFuelCost * 1.35 : prev.dailyFuelCost / 1.35
+          }
+        : null
+    );
   };
 
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1.5rem' }}>
-      
       {/* 3D Viewport container */}
       <div className="glass-panel" style={{ padding: 0, position: 'relative' }}>
         <div className="globe-visualizer-container" ref={containerRef}>
-          
           {/* Overlay HUD indicators */}
           <div className="globe-overlay-hud">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 'bold', color: 'var(--accent-cyan)' }}>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                fontWeight: 'bold',
+                color: 'var(--accent-cyan)'
+              }}
+            >
               <Compass size={14} className="header-logo" /> Telemetría GPS Global (3D)
             </div>
             <div>
-              <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--color-route)', display: 'inline-block', marginRight: '4px' }}></span>
+              <span
+                style={{
+                  width: '8px',
+                  height: '8px',
+                  borderRadius: '50%',
+                  backgroundColor: 'var(--color-route)',
+                  display: 'inline-block',
+                  marginRight: '4px'
+                }}
+              ></span>
               Ruta Convencional (Canal)
             </div>
             <div>
-              <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--color-detour)', display: 'inline-block', marginRight: '4px' }}></span>
+              <span
+                style={{
+                  width: '8px',
+                  height: '8px',
+                  borderRadius: '50%',
+                  backgroundColor: 'var(--color-detour)',
+                  display: 'inline-block',
+                  marginRight: '4px'
+                }}
+              ></span>
               Ruta Alterna (Desvío Cabo)
             </div>
             <div>
-              <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--color-anchor)', display: 'inline-block', marginRight: '4px' }}></span>
+              <span
+                style={{
+                  width: '8px',
+                  height: '8px',
+                  borderRadius: '50%',
+                  backgroundColor: 'var(--color-anchor)',
+                  display: 'inline-block',
+                  marginRight: '4px'
+                }}
+              ></span>
               Fondeado / Puerto
             </div>
             <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: '4px' }}>
               * Arrastra el globo para rotar y haz clic en barcos de la lista para desviar.
             </div>
           </div>
-
         </div>
       </div>
 
       {/* Fleets Rerouting Panel */}
-      <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', height: '480px' }}>
+      <div
+        className="glass-panel"
+        style={{ display: 'flex', flexDirection: 'column', height: '480px' }}
+      >
         <div className="panel-header" style={{ marginBottom: '0.85rem' }}>
           <div className="panel-title">
             <Navigation size={18} color="var(--accent-cyan)" /> Flota Activa ({ships.length} Buques)
           </div>
         </div>
 
-        <div style={{ flexGrow: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.6rem', paddingRight: '4px' }}>
-          {ships.slice(0, 45).map(ship => {
+        <div
+          style={{
+            flexGrow: 1,
+            overflowY: 'auto',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.6rem',
+            paddingRight: '4px'
+          }}
+        >
+          {ships.slice(0, 45).map((ship) => {
             const isDetoured = ship.dailyFuelCost > 20000;
             const isSuezApproaching = ship.imoNumber.includes('1') || ship.imoNumber.includes('6'); // Simple heuristic matching service
-            const isPanamaApproaching = ship.imoNumber.includes('3') || ship.imoNumber.includes('8');
+            const isPanamaApproaching =
+              ship.imoNumber.includes('3') || ship.imoNumber.includes('8');
 
             return (
-              <div 
+              <div
                 key={ship.id}
                 onClick={() => setSelectedShip(ship)}
                 style={{
-                  background: selectedShip?.id === ship.id ? 'rgba(6, 182, 212, 0.06)' : 'rgba(255, 255, 255, 0.01)',
+                  background:
+                    selectedShip?.id === ship.id
+                      ? 'rgba(6, 182, 212, 0.06)'
+                      : 'rgba(255, 255, 255, 0.01)',
                   border: '1px solid',
-                  borderColor: selectedShip?.id === ship.id ? 'var(--accent-cyan)' : 'var(--border-glass)',
+                  borderColor:
+                    selectedShip?.id === ship.id ? 'var(--accent-cyan)' : 'var(--border-glass)',
                   borderRadius: '8px',
                   padding: '0.75rem',
                   cursor: 'pointer',
@@ -329,32 +389,68 @@ const GlobeViewer = ({ ships, activeCrises, onRerouteShip, onTriggerAlert }) => 
                   transition: 'var(--transition-smooth)'
                 }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                >
                   <strong>{ship.name}</strong>
-                  <span style={{
-                    fontSize: '0.65rem',
-                    color: ship.status === 'FONDEADO' ? 'var(--color-anchor)' : (isDetoured ? 'var(--color-detour)' : 'var(--color-route)'),
-                    fontWeight: 'bold'
-                  }}>
-                    {ship.status} {isDetoured && "(DESVÍO)"}
+                  <span
+                    style={{
+                      fontSize: '0.65rem',
+                      color:
+                        ship.status === 'FONDEADO'
+                          ? 'var(--color-anchor)'
+                          : isDetoured
+                            ? 'var(--color-detour)'
+                            : 'var(--color-route)',
+                      fontWeight: 'bold'
+                    }}
+                  >
+                    {ship.status} {isDetoured && '(DESVÍO)'}
                   </span>
                 </div>
-                
-                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '4px', fontSize: '0.7rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
-                  <div>IMO: {ship.imoNumber || ship.imo} ({ship.capacityTEU} TEU)</div>
+
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1.2fr 1fr',
+                    gap: '4px',
+                    fontSize: '0.7rem',
+                    color: 'var(--text-secondary)',
+                    marginTop: '4px'
+                  }}
+                >
+                  <div>
+                    IMO: {ship.imoNumber || ship.imo} ({ship.capacityTEU} TEU)
+                  </div>
                   <div>Combustible: {ship.fuelLevel}%</div>
-                  <div>GPS: {ship.currentLat !== undefined ? ship.currentLat : ship.lat}, {ship.currentLng !== undefined ? ship.currentLng : ship.lng}</div>
+                  <div>
+                    GPS: {ship.currentLat !== undefined ? ship.currentLat : ship.lat},{' '}
+                    {ship.currentLng !== undefined ? ship.currentLng : ship.lng}
+                  </div>
                   <div>Cost/Día: ${ship.dailyFuelCost.toLocaleString()}</div>
                 </div>
 
                 {selectedShip?.id === ship.id && (
-                  <div style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', gap: '6px' }}>
-                    <button 
-                      className="btn-primary" 
-                      style={{ padding: '0.3rem 0.6rem', fontSize: '0.7rem', flex: 1, justifyContent: 'center' }}
+                  <div
+                    style={{
+                      marginTop: '8px',
+                      paddingTop: '8px',
+                      borderTop: '1px solid rgba(255,255,255,0.05)',
+                      display: 'flex',
+                      gap: '6px'
+                    }}
+                  >
+                    <button
+                      className="btn-primary"
+                      style={{
+                        padding: '0.3rem 0.6rem',
+                        fontSize: '0.7rem',
+                        flex: 1,
+                        justifyContent: 'center'
+                      }}
                       onClick={() => handleRerouteClick(ship)}
                     >
-                      <Anchor size={12} /> {isDetoured ? "Restablecer Ruta" : "Desviar Buque"}
+                      <Anchor size={12} /> {isDetoured ? 'Restablecer Ruta' : 'Desviar Buque'}
                     </button>
                   </div>
                 )}
@@ -363,7 +459,6 @@ const GlobeViewer = ({ ships, activeCrises, onRerouteShip, onTriggerAlert }) => 
           })}
         </div>
       </div>
-
     </div>
   );
 };

@@ -15,14 +15,14 @@ export const getAvailableModels = () => {
     'public',
     'models'
   );
-  
+
   if (!fs.existsSync(modelsDir)) {
     return ['pump.glb'];
   }
-  
+
   try {
     const files = fs.readdirSync(modelsDir);
-    const glbFiles = files.filter(file => file.endsWith('.glb'));
+    const glbFiles = files.filter((file) => file.endsWith('.glb'));
     return glbFiles.length > 0 ? glbFiles : ['pump.glb'];
   } catch (error) {
     return ['pump.glb'];
@@ -47,9 +47,14 @@ export const updatePartStatus = async (id: string, status: string) => {
   return partRepository.updateStatus(id, status);
 };
 
-export const addMaintenanceLog = async (id: string, tech: string, desc: string, status?: string) => {
+export const addMaintenanceLog = async (
+  id: string,
+  tech: string,
+  desc: string,
+  status?: string
+) => {
   const part = await getPartById(id);
-  
+
   let logs = [];
   if (part.maintenanceLogs) {
     try {

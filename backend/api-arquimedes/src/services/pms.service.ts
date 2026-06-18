@@ -14,7 +14,6 @@ const housekeepers = [
 ];
 
 export class PmsService {
-
   async getRooms() {
     return await prisma.hotelRoom.findMany({
       orderBy: { roomNumber: 'asc' }
@@ -76,9 +75,9 @@ export class PmsService {
       where: { status: 'IN_PROGRESS' }
     });
 
-    housekeepers.forEach(hk => {
+    housekeepers.forEach((hk) => {
       hk.assignedCredits = activeTasks
-        .filter(t => t.assignedTo === hk.name)
+        .filter((t) => t.assignedTo === hk.name)
         .reduce((sum, t) => sum + t.credits, 0);
     });
   }
@@ -181,13 +180,16 @@ export class PmsService {
 
     // Apply outcomes
     budgetCredits = Math.max(0, budgetCredits + (option.budgetImpact || 0));
-    reputationScore = Math.min(10.0, Math.max(1.0, reputationScore + (option.reputationImpact || 0)));
+    reputationScore = Math.min(
+      10.0,
+      Math.max(1.0, reputationScore + (option.reputationImpact || 0))
+    );
 
     // Save review
     if (option.reviewText) {
       await prisma.guestReview.create({
         data: {
-          score: Math.round(5 + Math.random() * 5 + (option.reputationImpact * 5)),
+          score: Math.round(5 + Math.random() * 5 + option.reputationImpact * 5),
           category: 'SERVICE',
           comment: option.reviewText
         }
@@ -254,13 +256,15 @@ export class PmsService {
       {
         id: 'c1',
         title: 'Sobreventa Crítica (Walk-out)',
-        description: 'Llega un huésped VIP (Sra. Larraín) con reserva confirmada, pero no quedan Suites libres. ¿Cómo procedes?',
+        description:
+          'Llega un huésped VIP (Sra. Larraín) con reserva confirmada, pero no quedan Suites libres. ¿Cómo procedes?',
         options: [
           {
             text: 'Reubicarla en un hotel competidor de 5 estrellas con traslado premium gratis.',
             reputationImpact: 0.2,
             budgetImpact: -300,
-            reviewText: 'Tuvieron que reubicarme, pero la atención y la compensación fueron estelares.'
+            reviewText:
+              'Tuvieron que reubicarme, pero la atención y la compensación fueron estelares.'
           },
           {
             text: 'Hacerle upgrade a la suite presidencial de servicio interno del hotel (fuera de venta).',
@@ -279,7 +283,8 @@ export class PmsService {
       {
         id: 'c2',
         title: 'Queja por Ruido en Piso 2',
-        description: 'La habitación 204 reporta música a alto volumen proveniente de la habitación vecina 205 a las 23:30 hrs.',
+        description:
+          'La habitación 204 reporta música a alto volumen proveniente de la habitación vecina 205 a las 23:30 hrs.',
         options: [
           {
             text: 'Enviar personal de seguridad para advertir formalmente al huésped de la 205.',
@@ -297,7 +302,8 @@ export class PmsService {
             text: 'Mudar al huésped quejoso a una suite ejecutiva desocupada en el piso 3 (Upgrade).',
             reputationImpact: 0.6,
             budgetImpact: -50,
-            reviewText: 'Hubo ruido en el piso original, pero me dieron una suite fantástica por la molestia.'
+            reviewText:
+              'Hubo ruido en el piso original, pero me dieron una suite fantástica por la molestia.'
           }
         ]
       }
@@ -313,8 +319,8 @@ export class PmsService {
 
     // 1. Randomly dirty some cleaned/inspected rooms (5% chance)
     const rooms = await this.getRooms();
-    const cleanRooms = rooms.filter(r => r.status === 'CLEAN' || r.status === 'INSPECTED');
-    
+    const cleanRooms = rooms.filter((r) => r.status === 'CLEAN' || r.status === 'INSPECTED');
+
     for (const room of cleanRooms) {
       if (Math.random() < 0.05) {
         await prisma.hotelRoom.update({
@@ -341,7 +347,7 @@ export class PmsService {
     }
 
     // 2. Randomly trigger a guest review if housekeeping tasks are delayed or rooms are dirty
-    const dirtyRooms = rooms.filter(r => r.status === 'DIRTY');
+    const dirtyRooms = rooms.filter((r) => r.status === 'DIRTY');
     if (dirtyRooms.length > 4 && Math.random() < 0.15) {
       const score = Math.floor(2 + Math.random() * 4); // low review score 2-5
       await prisma.guestReview.create({

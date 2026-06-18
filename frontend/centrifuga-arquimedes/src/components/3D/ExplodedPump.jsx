@@ -15,7 +15,9 @@ class ModelErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.warn("Modelo GLB no encontrado o error al cargar. Usando modelo 3D procedimental como alternativa.");
+    console.warn(
+      'Modelo GLB no encontrado o error al cargar. Usando modelo 3D procedimental como alternativa.'
+    );
   }
 
   render() {
@@ -27,22 +29,29 @@ class ModelErrorBoundary extends React.Component {
 }
 
 // Procedural 3D Centrifugal Pump Component
-const ProceduralPump = ({ explodeFactor, selectedPartId, onSelectPart, motorPower = 2, activeDiameter = 2, isCavitating = false }) => {
+const ProceduralPump = ({
+  explodeFactor,
+  selectedPartId,
+  onSelectPart,
+  motorPower = 2,
+  activeDiameter = 2,
+  isCavitating = false
+}) => {
   const [hoveredId, setHoveredId] = useState(null);
 
   // Helper to construct mesh standard materials with dynamic glowing highlights
   const getMat = (partId, color, metalness = 0.5, roughness = 0.5) => {
     const isSelected = selectedPartId === partId;
     const isHovered = hoveredId === partId;
-    
+
     let activeColor = color;
-    let emissiveColor = isSelected ? "#38bdf8" : (isHovered ? "#22d3ee" : "#000000");
-    let emissiveIntensity = isSelected ? 0.8 : (isHovered ? 0.45 : 0);
-    
+    let emissiveColor = isSelected ? '#38bdf8' : isHovered ? '#22d3ee' : '#000000';
+    let emissiveIntensity = isSelected ? 0.8 : isHovered ? 0.45 : 0;
+
     // Cavitation causes suction and volute to turn red
     if (isCavitating && (partId === 'suction_flange' || partId === 'volute_casing')) {
-      activeColor = "#ef4444";
-      emissiveColor = "#ef4444";
+      activeColor = '#ef4444';
+      emissiveColor = '#ef4444';
       emissiveIntensity = 0.65;
     }
 
@@ -56,7 +65,7 @@ const ProceduralPump = ({ explodeFactor, selectedPartId, onSelectPart, motorPowe
       />
     );
   };
-  
+
   // Define parts of the pump with their relative explosion directions and base positions
   const parts = [
     {
@@ -141,7 +150,11 @@ const ProceduralPump = ({ explodeFactor, selectedPartId, onSelectPart, motorPowe
           {[0, 60, 120, 180, 240, 300].map((angle, idx) => (
             <mesh
               key={idx}
-              position={[Math.cos(THREE.MathUtils.degToRad(angle)) * 0.7, Math.sin(THREE.MathUtils.degToRad(angle)) * 0.7, 0]}
+              position={[
+                Math.cos(THREE.MathUtils.degToRad(angle)) * 0.7,
+                Math.sin(THREE.MathUtils.degToRad(angle)) * 0.7,
+                0
+              ]}
               rotation={[0, 0, THREE.MathUtils.degToRad(angle + 30)]}
               castShadow
             >
@@ -207,7 +220,11 @@ const ProceduralPump = ({ explodeFactor, selectedPartId, onSelectPart, motorPowe
           {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, idx) => (
             <mesh
               key={idx}
-              position={[Math.cos(THREE.MathUtils.degToRad(angle)) * 0.38, Math.sin(THREE.MathUtils.degToRad(angle)) * 0.38, 0]}
+              position={[
+                Math.cos(THREE.MathUtils.degToRad(angle)) * 0.38,
+                Math.sin(THREE.MathUtils.degToRad(angle)) * 0.38,
+                0
+              ]}
               castShadow
             >
               <sphereGeometry args={[0.06, 16, 16]} />
@@ -242,7 +259,7 @@ const ProceduralPump = ({ explodeFactor, selectedPartId, onSelectPart, motorPowe
               <cylinderGeometry args={[motorRadius, motorRadius, motorLength, 32]} />
               {getMat('motor', '#1e293b', 0.7, 0.3)}
             </mesh>
-            
+
             {/* Cooling Fins (ribs around the motor) */}
             {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, idx) => (
               <mesh
@@ -255,7 +272,7 @@ const ProceduralPump = ({ explodeFactor, selectedPartId, onSelectPart, motorPowe
                 {getMat('motor', '#334155', 0.6, 0.4)}
               </mesh>
             ))}
-            
+
             {/* Terminal Connection Box on top */}
             <mesh position={[0, motorRadius + 0.1, 0]} castShadow>
               <boxGeometry args={[0.4, 0.3, 0.4]} />
@@ -272,7 +289,7 @@ const ProceduralPump = ({ explodeFactor, selectedPartId, onSelectPart, motorPowe
       {parts.map((part) => {
         const isSelected = selectedPartId === part.id;
         const isHovered = hoveredId === part.id;
-        
+
         // Calculate dynamic position based on explosion factor
         const position = part.explodeDir.map((coord) => coord * explodeFactor);
 
@@ -302,20 +319,13 @@ const ProceduralPump = ({ explodeFactor, selectedPartId, onSelectPart, motorPowe
             }}
           >
             {/* The actual shapes of the component */}
-            <group rotation={[Math.PI / 2, 0, 0]}>
-              {part.render()}
-            </group>
+            <group rotation={[Math.PI / 2, 0, 0]}>{part.render()}</group>
 
             {/* Glowing selection ring / helper box (visible only when selected) */}
             {isSelected && (
               <mesh position={[0, 0, 0]}>
                 <boxGeometry args={[2.5, 2.5, 0.8]} />
-                <meshBasicMaterial
-                  color="#3b82f6"
-                  wireframe
-                  transparent
-                  opacity={0.15}
-                />
+                <meshBasicMaterial color="#3b82f6" wireframe transparent opacity={0.15} />
               </mesh>
             )}
           </group>
@@ -326,7 +336,16 @@ const ProceduralPump = ({ explodeFactor, selectedPartId, onSelectPart, motorPowe
 };
 
 // GLB Loader Component (attempts to load user GLB)
-const GLBPumpModel = ({ modelName, explodeFactor, selectedPartId, onSelectPart, onModelLoaded, motorPower = 2, activeDiameter = 2, isCavitating = false }) => {
+const GLBPumpModel = ({
+  modelName,
+  explodeFactor,
+  selectedPartId,
+  onSelectPart,
+  onModelLoaded,
+  motorPower = 2,
+  activeDiameter = 2,
+  isCavitating = false
+}) => {
   // Try loading the GLB from public directory
   const { scene } = useGLTF(`/models/${modelName}`);
   const [hoveredMeshName, setHoveredMeshName] = useState(null);
@@ -337,13 +356,13 @@ const GLBPumpModel = ({ modelName, explodeFactor, selectedPartId, onSelectPart, 
       const box = new THREE.Box3().setFromObject(scene);
       const size = box.getSize(new THREE.Vector3());
       const maxDim = Math.max(size.x, size.y, size.z);
-      
-      const targetSize = 2.8; 
+
+      const targetSize = 2.8;
       if (maxDim > 0) {
         const scale = targetSize / maxDim;
         scene.scale.set(scale, scale, scale);
       }
-      
+
       onModelLoaded(true);
     }
   }, [scene, onModelLoaded]);
@@ -355,22 +374,41 @@ const GLBPumpModel = ({ modelName, explodeFactor, selectedPartId, onSelectPart, 
         // Apply custom explosion math based on child names
         // Example: if name contains 'impeller', move it on the Z-axis
         const name = child.name.toLowerCase();
-        
+
         // Define base directions
         let dir = new THREE.Vector3(0, 0, 0);
         if (name.includes('suction') || name.includes('inlet') || name.includes('aspiracion')) {
           dir.set(0, 0, -2.5);
-        } else if (name.includes('impeller') || name.includes('rodete') || name.includes('impulseur')) {
+        } else if (
+          name.includes('impeller') ||
+          name.includes('rodete') ||
+          name.includes('impulseur')
+        ) {
           dir.set(0, 0, -1.2);
-        } else if (name.includes('seal') || name.includes('sello') || name.includes('etancheite') || name.includes('joint')) {
+        } else if (
+          name.includes('seal') ||
+          name.includes('sello') ||
+          name.includes('etancheite') ||
+          name.includes('joint')
+        ) {
           dir.set(0, 0, 1.2);
-        } else if (name.includes('bearing') || name.includes('cojinete') || name.includes('rodamiento') || name.includes('palier')) {
+        } else if (
+          name.includes('bearing') ||
+          name.includes('cojinete') ||
+          name.includes('rodamiento') ||
+          name.includes('palier')
+        ) {
           dir.set(0, 0, 2.5);
         } else if (name.includes('shaft') || name.includes('eje') || name.includes('arbre')) {
           dir.set(0, 0, 3.8);
         } else if (name.includes('motor') || name.includes('stator') || name.includes('moteur')) {
           dir.set(0, 0, 5.2);
-        } else if (name.includes('casing') || name.includes('carcasa') || name.includes('volute') || name.includes('corps')) {
+        } else if (
+          name.includes('casing') ||
+          name.includes('carcasa') ||
+          name.includes('volute') ||
+          name.includes('corps')
+        ) {
           dir.set(0, 0, 0.0); // central reference
         } else {
           // General radial/axial explosion for accessories like rings, shims, grease nipples
@@ -379,31 +417,41 @@ const GLBPumpModel = ({ modelName, explodeFactor, selectedPartId, onSelectPart, 
           const zOffset = child.position.z > 0 ? 1.5 : -1.5;
           dir.set(pos.x * 1.0, pos.y * 1.0, zOffset);
         }
-        
+
         // Store base position if not already stored
         if (!child.userData.basePosition) {
           child.userData.basePosition = child.position.clone();
         }
-        
+
         // Store base scale if not already stored
         if (!child.userData.baseScale) {
           child.userData.baseScale = child.scale.clone();
         }
-        
+
         // Interpolate position
-        const targetPos = child.userData.basePosition.clone().add(dir.multiplyScalar(explodeFactor));
+        const targetPos = child.userData.basePosition
+          .clone()
+          .add(dir.multiplyScalar(explodeFactor));
         child.position.lerp(targetPos, 0.1);
 
         // Dynamic scaling based on simulation parameters
         if (name.includes('motor') || name.includes('stator') || name.includes('moteur')) {
           const motorScale = 1.0 + (motorPower - 2) * 0.15;
           child.scale.copy(child.userData.baseScale).multiplyScalar(motorScale);
-        } else if (name.includes('suction') || name.includes('inlet') || name.includes('aspiracion')) {
+        } else if (
+          name.includes('suction') ||
+          name.includes('inlet') ||
+          name.includes('aspiracion')
+        ) {
           const pipeScale = 0.5 + activeDiameter * 0.25;
           child.scale.copy(child.userData.baseScale);
           child.scale.x *= pipeScale;
           child.scale.y *= pipeScale;
-        } else if (name.includes('discharge') || name.includes('outlet') || name.includes('descarga')) {
+        } else if (
+          name.includes('discharge') ||
+          name.includes('outlet') ||
+          name.includes('descarga')
+        ) {
           const pipeScale = 0.5 + activeDiameter * 0.25;
           child.scale.copy(child.userData.baseScale);
           child.scale.x *= pipeScale;
@@ -416,14 +464,22 @@ const GLBPumpModel = ({ modelName, explodeFactor, selectedPartId, onSelectPart, 
         // Manage selection highlight & cavitation
         const isSelected = selectedPartId === child.name;
         const isHovered = hoveredMeshName === child.name;
-        
+
         if (child.material) {
           // Ensure material supports emissive colors
           if (!child.userData.originalEmissive) {
-            child.userData.originalEmissive = child.material.emissive?.clone() || new THREE.Color(0,0,0);
+            child.userData.originalEmissive =
+              child.material.emissive?.clone() || new THREE.Color(0, 0, 0);
           }
-          
-          if (isCavitating && (name.includes('suction') || name.includes('inlet') || name.includes('casing') || name.includes('volute') || name.includes('corps'))) {
+
+          if (
+            isCavitating &&
+            (name.includes('suction') ||
+              name.includes('inlet') ||
+              name.includes('casing') ||
+              name.includes('volute') ||
+              name.includes('corps'))
+          ) {
             child.material.emissive?.setHex(0xef4444); // red glow
             child.material.emissiveIntensity = 0.65;
           } else if (isSelected) {
@@ -465,7 +521,16 @@ const GLBPumpModel = ({ modelName, explodeFactor, selectedPartId, onSelectPart, 
 };
 
 // Wrapper Component that exports the Error Boundary and switches between GLB & Procedural
-const ExplodedPump = ({ modelName = 'pump.glb', explodeFactor, selectedPartId, onSelectPart, onModelLoaded, motorPower = 2, activeDiameter = 2, isCavitating = false }) => {
+const ExplodedPump = ({
+  modelName = 'pump.glb',
+  explodeFactor,
+  selectedPartId,
+  onSelectPart,
+  onModelLoaded,
+  motorPower = 2,
+  activeDiameter = 2,
+  isCavitating = false
+}) => {
   useEffect(() => {
     // Fallback loading check
     onModelLoaded(true);

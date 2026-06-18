@@ -12,7 +12,7 @@ const FarmGlobe = ({ zones, onToggleValve, onTriggerAlert }) => {
       setSelectedZone(zones[0]);
     } else if (zones.length > 0 && selectedZone) {
       // Keep selected zone updated with live data
-      const updated = zones.find(z => z.id === selectedZone.id);
+      const updated = zones.find((z) => z.id === selectedZone.id);
       if (updated) setSelectedZone(updated);
     }
   }, [zones]);
@@ -66,7 +66,7 @@ const FarmGlobe = ({ zones, onToggleValve, onTriggerAlert }) => {
 
       // Base quadrant ground mesh
       const qGeom = new THREE.BoxGeometry(38, 3, 38);
-      const moistureSensor = zone.sensors.find(s => s.type === 'SOIL_MOISTURE');
+      const moistureSensor = zone.sensors.find((s) => s.type === 'SOIL_MOISTURE');
       const moistureVal = moistureSensor ? moistureSensor.currentValue : 40;
       const qMat = new THREE.MeshStandardMaterial({
         color: getMoistureColor(moistureVal),
@@ -90,9 +90,9 @@ const FarmGlobe = ({ zones, onToggleValve, onTriggerAlert }) => {
       // Foliage (Leaves)
       // Size scales with crop health (simulated via soil moisture health)
       const leavesGeom = new THREE.SphereGeometry(6, 12, 12);
-      const leavesMat = new THREE.MeshStandardMaterial({ 
+      const leavesMat = new THREE.MeshStandardMaterial({
         color: moistureVal < 20 ? 0x854d0e : 0x22c55e, // Wilted brown or green
-        roughness: 0.6 
+        roughness: 0.6
       });
       const leaves = new THREE.Mesh(leavesGeom, leavesMat);
       leaves.position.set(xOffset, 12, zOffset);
@@ -109,14 +109,20 @@ const FarmGlobe = ({ zones, onToggleValve, onTriggerAlert }) => {
       const valve = zone.valves[0];
       if (valve && valve.status === 'ABIERTA') {
         const sprayGroup = new THREE.Group();
-        const sprayMat = new THREE.LineBasicMaterial({ color: 0x0ea5e9, transparent: true, opacity: 0.6 });
-        
+        const sprayMat = new THREE.LineBasicMaterial({
+          color: 0x0ea5e9,
+          transparent: true,
+          opacity: 0.6
+        });
+
         for (let i = 0; i < 8; i++) {
           const angle = (i / 8) * Math.PI * 2;
           const points = [];
           points.push(new THREE.Vector3(xOffset + 12, 4, zOffset + 12));
-          points.push(new THREE.Vector3(xOffset + Math.cos(angle) * 12, 1, zOffset + Math.sin(angle) * 12));
-          
+          points.push(
+            new THREE.Vector3(xOffset + Math.cos(angle) * 12, 1, zOffset + Math.sin(angle) * 12)
+          );
+
           const curve = new THREE.CatmullRomCurve3(points);
           const sprayGeom = new THREE.BufferGeometry().setFromPoints(curve.getPoints(10));
           const sprayLine = new THREE.Line(sprayGeom, sprayMat);
@@ -148,7 +154,7 @@ const FarmGlobe = ({ zones, onToggleValve, onTriggerAlert }) => {
       if (intersects.length > 0) {
         const clickedMesh = intersects[0].object;
         const clickedZoneId = clickedMesh.userData.zoneId;
-        const matchedZone = zones.find(z => z.id === clickedZoneId);
+        const matchedZone = zones.find((z) => z.id === clickedZoneId);
         if (matchedZone) {
           setSelectedZone(matchedZone);
           onTriggerAlert(`Predio Seleccionado: ${matchedZone.name}`);
@@ -211,54 +217,101 @@ const FarmGlobe = ({ zones, onToggleValve, onTriggerAlert }) => {
 
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '2.2fr 1fr', gap: '1.5rem' }}>
-      
       {/* 3D Topographical Heatmap viewport */}
       <div className="glass-panel" style={{ padding: 0, position: 'relative' }}>
         <div className="topography-container" ref={containerRef}>
-          
           <div className="map-overlay-hud">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 'bold', color: 'var(--accent-emerald)' }}>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                fontWeight: 'bold',
+                color: 'var(--accent-emerald)'
+              }}
+            >
               <Eye size={14} /> Gemelo Digital de Suelo (3D)
             </div>
             <div>
-              <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#ef4444', display: 'inline-block', marginRight: '4px' }}></span>
+              <span
+                style={{
+                  width: '8px',
+                  height: '8px',
+                  borderRadius: '50%',
+                  backgroundColor: '#ef4444',
+                  display: 'inline-block',
+                  marginRight: '4px'
+                }}
+              ></span>
               Estrés Hídrico (&lt;20%)
             </div>
             <div>
-              <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#eab308', display: 'inline-block', marginRight: '4px' }}></span>
+              <span
+                style={{
+                  width: '8px',
+                  height: '8px',
+                  borderRadius: '50%',
+                  backgroundColor: '#eab308',
+                  display: 'inline-block',
+                  marginRight: '4px'
+                }}
+              ></span>
               Humedad Normal (20% - 40%)
             </div>
             <div>
-              <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#10b981', display: 'inline-block', marginRight: '4px' }}></span>
+              <span
+                style={{
+                  width: '8px',
+                  height: '8px',
+                  borderRadius: '50%',
+                  backgroundColor: '#10b981',
+                  display: 'inline-block',
+                  marginRight: '4px'
+                }}
+              ></span>
               Humedad Óptima (&gt;40%)
             </div>
             <div style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
               * Haz clic en los cuadrantes 3D para inspeccionar telemetrías y aspersores.
             </div>
           </div>
-
         </div>
       </div>
 
       {/* Selected quadrant sensors detail */}
-      <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', height: '480px' }}>
+      <div
+        className="glass-panel"
+        style={{ display: 'flex', flexDirection: 'column', height: '480px' }}
+      >
         {selectedZone ? (
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-            
             <div className="panel-header" style={{ marginBottom: '0.8rem' }}>
               <div className="panel-title" style={{ fontSize: '1rem' }}>
                 <Settings size={18} color="var(--accent-emerald)" /> {selectedZone.name}
               </div>
             </div>
 
-            <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginBottom: '0.75rem' }}>
+            <div
+              style={{
+                fontSize: '0.72rem',
+                color: 'var(--text-secondary)',
+                marginBottom: '0.75rem'
+              }}
+            >
               Variedad de Cultivo: <strong>{selectedZone.cropType}</strong>
             </div>
 
             {/* Live Sensors Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.6rem', marginBottom: '1rem' }}>
-              {selectedZone.sensors.map(sensor => (
-                <div 
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gap: '0.6rem',
+                marginBottom: '1rem'
+              }}
+            >
+              {selectedZone.sensors.map((sensor) => (
+                <div
                   key={sensor.id}
                   style={{
                     background: 'rgba(255, 255, 255, 0.01)',
@@ -270,12 +323,20 @@ const FarmGlobe = ({ zones, onToggleValve, onTriggerAlert }) => {
                     gap: '2px'
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.68rem', color: 'var(--text-muted)' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      fontSize: '0.68rem',
+                      color: 'var(--text-muted)'
+                    }}
+                  >
                     {getSensorIcon(sensor.type)}
                     {sensor.type.replace('_', ' ')}
                   </div>
                   <span style={{ fontSize: '1rem', fontWeight: 'bold', fontFamily: 'monospace' }}>
-                    {sensor.currentValue.toFixed(1)} 
+                    {sensor.currentValue.toFixed(1)}
                     {sensor.type === 'SOIL_MOISTURE' && '%'}
                     {sensor.type === 'TEMPERATURE' && '°C'}
                     {sensor.type === 'RADIATION' && ' W/m²'}
@@ -286,8 +347,8 @@ const FarmGlobe = ({ zones, onToggleValve, onTriggerAlert }) => {
             </div>
 
             {/* Domotics Irrigation electrovalve controls */}
-            {selectedZone.valves.map(valve => (
-              <div 
+            {selectedZone.valves.map((valve) => (
+              <div
                 key={valve.id}
                 style={{
                   marginTop: 'auto',
@@ -298,35 +359,52 @@ const FarmGlobe = ({ zones, onToggleValve, onTriggerAlert }) => {
                   gap: '0.6rem'
                 }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    fontSize: '0.8rem'
+                  }}
+                >
                   <span>Aspersores Domóticos:</span>
-                  <span style={{
-                    fontWeight: 'bold',
-                    color: valve.status === 'ABIERTA' ? 'var(--color-valve-open)' : 'var(--color-valve-closed)',
-                    fontSize: '0.75rem'
-                  }}>
+                  <span
+                    style={{
+                      fontWeight: 'bold',
+                      color:
+                        valve.status === 'ABIERTA'
+                          ? 'var(--color-valve-open)'
+                          : 'var(--color-valve-closed)',
+                      fontSize: '0.75rem'
+                    }}
+                  >
                     {valve.status}
                   </span>
                 </div>
-                
-                <button 
+
+                <button
                   className={valve.status === 'ABIERTA' ? 'btn-danger' : 'btn-primary'}
                   style={{ justifyContent: 'center' }}
                   onClick={() => handleToggleValveState(valve.id, valve.status)}
                 >
-                  {valve.status === 'ABIERTA' ? "Cerrar Electroválvula" : "Abrir Electroválvula"}
+                  {valve.status === 'ABIERTA' ? 'Cerrar Electroválvula' : 'Abrir Electroválvula'}
                 </button>
               </div>
             ))}
-
           </div>
         ) : (
-          <div style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '6rem 0', fontSize: '0.8rem' }}>
+          <div
+            style={{
+              textAlign: 'center',
+              color: 'var(--text-muted)',
+              padding: '6rem 0',
+              fontSize: '0.8rem'
+            }}
+          >
             Cargando cuadrantes del terreno...
           </div>
         )}
       </div>
-
     </div>
   );
 };

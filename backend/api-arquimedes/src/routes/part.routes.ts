@@ -1,5 +1,11 @@
 import { Router } from 'express';
-import { getAllParts, getPartById, updatePartStatus, getAvailableModels, addMaintenanceLog } from '../controllers/part.controller';
+import {
+  getAllParts,
+  getPartById,
+  updatePartStatus,
+  getAvailableModels,
+  addMaintenanceLog
+} from '../controllers/part.controller';
 
 const router = Router();
 

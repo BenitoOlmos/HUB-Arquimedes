@@ -13,9 +13,9 @@ const AuditDataGrid = ({ activities, onAuditSubmit }) => {
   const isNoisyUnit = (unit) => ['MJ', 'Miles', 'ton-miles'].includes(unit);
 
   // Filter activities
-  const filteredActivities = activities.filter(act => {
+  const filteredActivities = activities.filter((act) => {
     // Search query
-    const matchesSearch = 
+    const matchesSearch =
       act.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
       act.facility?.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       act.proofDocument?.toLowerCase().includes(searchQuery.toLowerCase());
@@ -24,8 +24,8 @@ const AuditDataGrid = ({ activities, onAuditSubmit }) => {
     const matchesScope = scopeFilter === 'ALL' || act.scope === Number(scopeFilter);
 
     // Status filter
-    const matchesStatus = 
-      statusFilter === 'ALL' || 
+    const matchesStatus =
+      statusFilter === 'ALL' ||
       (statusFilter === 'ALERT' && isNoisyUnit(act.unit)) ||
       (statusFilter === 'CLEAN' && !isNoisyUnit(act.unit));
 
@@ -77,11 +77,12 @@ const AuditDataGrid = ({ activities, onAuditSubmit }) => {
             REGISTRO AUDITABLE DE DATOS DE ACTIVIDAD (GEI)
           </h3>
           <p className="text-xxs text-slate-400 font-mono mt-1">
-            Revisa las facturas de proveedores. Las facturas marcadas con advertencia poseen errores de unidades.
+            Revisa las facturas de proveedores. Las facturas marcadas con advertencia poseen errores
+            de unidades.
           </p>
         </div>
-        
-        <button 
+
+        <button
           onClick={() => setShowHelper(!showHelper)}
           className="flex items-center gap-1.5 text-xxs font-mono text-cyan-400 border border-cyan-500/20 px-2.5 py-1 rounded hover:bg-cyan-500/5 transition-all"
         >
@@ -96,17 +97,23 @@ const AuditDataGrid = ({ activities, onAuditSubmit }) => {
           <div>
             <h5 className="text-cyan-400 font-bold mb-1">Alcance 2 (Electricidad)</h5>
             <p>1 kWh = 3.6 MJ</p>
-            <p>Fórmula: <span className="text-white">kWh = MJ / 3.6</span></p>
+            <p>
+              Fórmula: <span className="text-white">kWh = MJ / 3.6</span>
+            </p>
           </div>
           <div>
             <h5 className="text-cyan-400 font-bold mb-1">Alcance 3 (Viajes Aéreos)</h5>
             <p>1 Milla = 1.60934 km</p>
-            <p>Fórmula: <span className="text-white">km = Millas * 1.60934</span></p>
+            <p>
+              Fórmula: <span className="text-white">km = Millas * 1.60934</span>
+            </p>
           </div>
           <div>
             <h5 className="text-cyan-400 font-bold mb-1">Alcance 3 (Logística)</h5>
             <p>1 ton-milla = 1.45997 ton-km</p>
-            <p>Fórmula: <span className="text-white">ton-km = ton-miles * 1.45997</span></p>
+            <p>
+              Fórmula: <span className="text-white">ton-km = ton-miles * 1.45997</span>
+            </p>
           </div>
         </div>
       )}
@@ -172,27 +179,37 @@ const AuditDataGrid = ({ activities, onAuditSubmit }) => {
                 </td>
               </tr>
             ) : (
-              filteredActivities.map(act => {
+              filteredActivities.map((act) => {
                 const isAlert = isNoisyUnit(act.unit);
                 return (
                   <tr key={act.id}>
-                    <td className="font-semibold text-slate-200">{act.facility?.name || 'Cargando...'}</td>
+                    <td className="font-semibold text-slate-200">
+                      {act.facility?.name || 'Cargando...'}
+                    </td>
                     <td className="font-mono">
-                      <span className={`px-1.5 py-0.5 rounded text-xxs ${
-                        act.scope === 1 ? 'bg-red-950 text-red-400 border border-red-900/30' :
-                        act.scope === 2 ? 'bg-amber-950 text-amber-400 border border-amber-900/30' :
-                        'bg-purple-950 text-purple-400 border border-purple-900/30'
-                      }`}>
+                      <span
+                        className={`px-1.5 py-0.5 rounded text-xxs ${
+                          act.scope === 1
+                            ? 'bg-red-950 text-red-400 border border-red-900/30'
+                            : act.scope === 2
+                              ? 'bg-amber-950 text-amber-400 border border-amber-900/30'
+                              : 'bg-purple-950 text-purple-400 border border-purple-900/30'
+                        }`}
+                      >
                         Alcance {act.scope}
                       </span>
                     </td>
                     <td className="font-mono text-slate-300">{act.category}</td>
-                    <td className="font-mono text-white text-right">{act.rawAmount.toLocaleString()}</td>
+                    <td className="font-mono text-white text-right">
+                      {act.rawAmount.toLocaleString()}
+                    </td>
                     <td className="font-mono text-slate-400">{act.unit}</td>
                     <td className="font-mono text-cyan-400 font-bold text-right">
                       {act.calculatedCo2e.toFixed(3)}
                     </td>
-                    <td className="font-mono text-xxs text-slate-500">{act.proofDocument || 'N/A'}</td>
+                    <td className="font-mono text-xxs text-slate-500">
+                      {act.proofDocument || 'N/A'}
+                    </td>
                     <td>
                       {isAlert ? (
                         <span className="flex items-center gap-1 text-xxs font-mono text-amber-500">
@@ -210,7 +227,7 @@ const AuditDataGrid = ({ activities, onAuditSubmit }) => {
                       <button
                         onClick={() => handleAuditClick(act)}
                         className={`text-xxs font-mono px-2 py-1 rounded transition-all ${
-                          isAlert 
+                          isAlert
                             ? 'bg-amber-500/10 hover:bg-amber-500 text-amber-400 hover:text-slate-950 border border-amber-500/20'
                             : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700'
                         }`}
@@ -232,10 +249,14 @@ const AuditDataGrid = ({ activities, onAuditSubmit }) => {
           <div className="glass-panel w-full max-w-md flex flex-col gap-4">
             <div className="flex justify-between items-start">
               <div>
-                <h4 className="text-sm font-mono text-cyan-400 tracking-wider">AUDITAR FACTURA: {selectedActivity.proofDocument}</h4>
-                <p className="text-xxs text-slate-400 font-mono mt-0.5">{selectedActivity.facility?.name} - {selectedActivity.category}</p>
+                <h4 className="text-sm font-mono text-cyan-400 tracking-wider">
+                  AUDITAR FACTURA: {selectedActivity.proofDocument}
+                </h4>
+                <p className="text-xxs text-slate-400 font-mono mt-0.5">
+                  {selectedActivity.facility?.name} - {selectedActivity.category}
+                </p>
               </div>
-              <button 
+              <button
                 onClick={() => setSelectedActivity(null)}
                 className="text-slate-400 hover:text-white font-mono text-xs"
               >
@@ -244,16 +265,32 @@ const AuditDataGrid = ({ activities, onAuditSubmit }) => {
             </div>
 
             <div className="p-3 bg-slate-900/50 rounded-lg border border-slate-800 text-xxs font-mono text-slate-300 flex flex-col gap-2">
-              <div>Dato de Factura Original: <span className="text-white font-bold">{selectedActivity.rawAmount} {selectedActivity.unit}</span></div>
-              <div>Factor de Emisión Vinculado: <span className="text-white">{selectedActivity.factor?.source} - {selectedActivity.factor?.co2ePerUnit} tCO2e / {selectedActivity.factor?.unit}</span></div>
+              <div>
+                Dato de Factura Original:{' '}
+                <span className="text-white font-bold">
+                  {selectedActivity.rawAmount} {selectedActivity.unit}
+                </span>
+              </div>
+              <div>
+                Factor de Emisión Vinculado:{' '}
+                <span className="text-white">
+                  {selectedActivity.factor?.source} - {selectedActivity.factor?.co2ePerUnit} tCO2e /{' '}
+                  {selectedActivity.factor?.unit}
+                </span>
+              </div>
               <div className="mt-1 border-t border-slate-800 pt-2 text-cyan-400">
-                Sugerencia de Conversión: <span className="text-slate-200 font-bold block mt-0.5">{getSuggestedConversion(selectedActivity)}</span>
+                Sugerencia de Conversión:{' '}
+                <span className="text-slate-200 font-bold block mt-0.5">
+                  {getSuggestedConversion(selectedActivity)}
+                </span>
               </div>
             </div>
 
             <form onSubmit={handleAuditFormSubmit} className="flex flex-col gap-3">
               <div className="flex flex-col gap-1">
-                <label className="text-xxs font-mono text-slate-400">Cantidad Auditada (Convertida)</label>
+                <label className="text-xxs font-mono text-slate-400">
+                  Cantidad Auditada (Convertida)
+                </label>
                 <input
                   type="number"
                   step="any"
@@ -265,7 +302,9 @@ const AuditDataGrid = ({ activities, onAuditSubmit }) => {
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="text-xxs font-mono text-slate-400">Unidad Estándar Correspondiente</label>
+                <label className="text-xxs font-mono text-slate-400">
+                  Unidad Estándar Correspondiente
+                </label>
                 <select
                   value={correctedUnit}
                   onChange={(e) => setCorrectedUnit(e.target.value)}

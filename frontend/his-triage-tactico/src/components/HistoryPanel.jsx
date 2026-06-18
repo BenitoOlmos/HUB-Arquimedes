@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
 import { FileText, Search, BarChart3, Clock, TrendingUp, Filter } from 'lucide-react';
-import { getPaginatedHistory, getAnalyticsData } from '../utils/dataGenerator';
 
 const HistoryPanel = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -9,9 +8,58 @@ const HistoryPanel = () => {
   const [page, setPage] = useState(1);
   const [showCharts, setShowCharts] = useState(true);
 
-  // Load paginated history
-  const historyData = getPaginatedHistory(page, 10, searchTerm, triageFilter);
-  const analytics = getAnalyticsData();
+  const [allHistory, setAllHistory] = useState([]);
+  const [analytics, setAnalytics] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const fetchHistoryAndAnalytics = async () => {
+    try {
+      const res = await fetch('/api/his/history');
+      if (res.ok) {
+        const data = await res.json();
+        setAnalytics(data.analytics);
+        
+        // Map recentHistory to the format the table expects
+        const mapped = data.recentHistory.map(log => {
+          const parts = log.symptoms.split(' | Vitales: ');
+          const cleanSymptoms = parts[0];
+          
+          let waitTime = 12; // default
+          if (log.attentionTime) {
+            const diffMs = new Date(log.attentionTime).getTime() - new Date(log.arrivalTime).getTime();
+            waitTime = Math.max(0, Math.floor(diffMs / 60000));
+          }
+          
+          let outcome = 'Derivado';
+          if (log.status === 'DISCHARGED') outcome = 'Alta';
+          else if (log.status === 'ADMITTED' || log.status === 'IN_TREATMENT') outcome = 'Hospitalización';
+          else if (log.status === 'DECEASED') outcome = 'Fallecido';
+
+          return {
+            id: log.id,
+            date: new Date(log.arrivalTime).toLocaleDateString('es-CL'),
+            patientId: log.patient?.rut || log.patientId,
+            patientName: log.patient?.fullName || 'Paciente',
+            age: log.patient?.age || 35,
+            triageLevel: log.assignedEsi || 3,
+            waitTime,
+            diagnosis: cleanSymptoms,
+            outcome
+          };
+        });
+        
+        setAllHistory(mapped);
+      }
+    } catch (e) {
+      console.error("Error loading historical analytics:", e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchHistoryAndAnalytics();
+  }, []);
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
@@ -22,6 +70,22 @@ const HistoryPanel = () => {
     setTriageFilter(Number(e.target.value));
     setPage(1);
   };
+
+  // Perform client-side pagination, search, and filtering over the fetched recent history
+  const filteredHistory = allHistory.filter(log => {
+    const query = searchTerm.toLowerCase().trim();
+    const matchesSearch = query === "" || 
+      log.patientName.toLowerCase().includes(query) || 
+      log.patientId.toLowerCase().includes(query) || 
+      log.diagnosis.toLowerCase().includes(query);
+    const matchesTriage = triageFilter === 0 || log.triageLevel === Number(triageFilter);
+    return matchesSearch && matchesTriage;
+  });
+
+  const pageSize = 10;
+  const total = filteredHistory.length;
+  const totalPages = Math.ceil(total / pageSize) || 1;
+  const paginatedHistory = filteredHistory.slice((page - 1) * pageSize, page * pageSize);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -143,7 +207,7 @@ const HistoryPanel = () => {
             <FileText size={18} color="var(--accent-cyan)" /> Auditoría de Urgencias (Bitácora de Eventos)
           </div>
           <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 'bold' }}>
-            Encontrados {historyData.total.toLocaleString()} registros
+            Encontrados {total.toLocaleString()} registros
           </span>
         </div>
 
@@ -194,14 +258,14 @@ const HistoryPanel = () => {
               </tr>
             </thead>
             <tbody>
-              {historyData.data.length === 0 ? (
+              {paginatedHistory.length === 0 ? (
                 <tr>
                   <td colSpan="8" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
                     No se encontraron registros que coincidan con la búsqueda.
                   </td>
                 </tr>
               ) : (
-                historyData.data.map(log => {
+                paginatedHistory.map(log => {
                   let outcomeColor = 'var(--text-primary)';
                   if (log.outcome === 'Fallecido') outcomeColor = 'var(--esi-1-resus)';
                   else if (log.outcome === 'Hospitalización') outcomeColor = 'var(--accent-purple)';
@@ -240,12 +304,12 @@ const HistoryPanel = () => {
             Anterior
           </button>
           <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-            Página {page} de {historyData.totalPages}
+            Página {page} de {totalPages}
           </span>
           <button
             className="btn-secondary"
             style={{ padding: '0.35rem 0.8rem', fontSize: '0.75rem' }}
-            disabled={page === historyData.totalPages}
+            disabled={page === totalPages}
             onClick={() => setPage(prev => prev + 1)}
           >
             Siguiente

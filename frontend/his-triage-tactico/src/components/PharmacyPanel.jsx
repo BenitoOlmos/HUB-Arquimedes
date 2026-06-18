@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { ShoppingCart, Search, FileDown, AlertCircle, CheckCircle, Package } from 'lucide-react';
-import { getPaginatedPharmacy, buyPharmacySKU, exportDataAsJSON, exportDataAsCSV } from '../utils/dataGenerator';
 
 const PharmacyPanel = ({ onTriggerAlert }) => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -13,9 +12,16 @@ const PharmacyPanel = ({ onTriggerAlert }) => {
   const [purchaseSuccess, setPurchaseSuccess] = useState(null);
 
   // Load paginated data
-  const loadInventory = () => {
-    const res = getPaginatedPharmacy(page, 10, searchTerm, categoryFilter);
-    setInventoryData(res);
+  const loadInventory = async () => {
+    try {
+      const res = await fetch(`/api/his/pharmacy?page=${page}&pageSize=10&search=${encodeURIComponent(searchTerm)}&category=${encodeURIComponent(categoryFilter)}`);
+      if (res.ok) {
+        const data = await res.json();
+        setInventoryData(data);
+      }
+    } catch (err) {
+      console.error("Error loading pharmacy inventory:", err);
+    }
   };
 
   useEffect(() => {
@@ -27,18 +33,29 @@ const PharmacyPanel = ({ onTriggerAlert }) => {
     setPage(1);
   }, [searchTerm, categoryFilter]);
 
-  const handleOrder = (skuId) => {
+  const handleOrder = async (skuId) => {
     const qty = buyQuantities[skuId] || 100;
-    const item = buyPharmacySKU(skuId, Number(qty));
-    
-    if (item) {
-      onTriggerAlert(`Compra: Orden de ${qty} unidades enviada para ${item.name} (Prov: ${item.provider})`);
-      setPurchaseSuccess(`Compra exitosa: ${qty} unidades en tránsito para ${item.name}`);
-      setTimeout(() => setPurchaseSuccess(null), 4000);
-      
-      // Reset input qty
-      setBuyQuantities(prev => ({ ...prev, [skuId]: '' }));
-      loadInventory();
+    try {
+      const response = await fetch('/api/his/pharmacy/buy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ skuId, quantity: Number(qty) })
+      });
+      if (response.ok) {
+        const item = await response.json();
+        onTriggerAlert(`Compra: Orden de ${qty} unidades enviada para ${item.name} (Prov: ${item.provider})`);
+        setPurchaseSuccess(`Compra exitosa: ${qty} unidades en tránsito para ${item.name}`);
+        setTimeout(() => setPurchaseSuccess(null), 4000);
+        
+        // Reset input qty
+        setBuyQuantities(prev => ({ ...prev, [skuId]: '' }));
+        loadInventory();
+      } else {
+        const err = await response.json();
+        throw new Error(err.error || 'Error al procesar compra');
+      }
+    } catch (err) {
+      alert(`Error de compra: ${err.message}`);
     }
   };
 
@@ -46,13 +63,74 @@ const PharmacyPanel = ({ onTriggerAlert }) => {
     setBuyQuantities(prev => ({ ...prev, [skuId]: val }));
   };
 
-  const handleExport = (format, dataset) => {
-    if (format === 'json') {
-      exportDataAsJSON(dataset);
-      onTriggerAlert(`Exportar: Descargada base de datos ${dataset} en formato JSON`);
+  const handleExport = async (format, dataset) => {
+    let url = '';
+    if (dataset === 'pacientes') {
+      url = '/api/his/patients?page=1&pageSize=15000';
+    } else if (dataset === 'historial') {
+      url = '/api/his/history';
     } else {
-      exportDataAsCSV(dataset);
-      onTriggerAlert(`Exportar: Descargada base de datos ${dataset} en formato CSV`);
+      url = '/api/his/pharmacy?page=1&pageSize=1500';
+    }
+
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('Error al descargar datos');
+      const resultData = await res.json();
+      
+      let exportData = [];
+      if (dataset === 'pacientes') {
+        exportData = resultData.data;
+      } else if (dataset === 'historial') {
+        exportData = resultData.recentHistory.map(log => ({
+          id: log.id,
+          date: (log.arrivalTime || '').split('T')[0],
+          patientId: log.patient?.rut || log.patientId,
+          patientName: log.patient?.fullName || 'Paciente',
+          triageLevel: log.assignedEsi,
+          waitTime: log.attentionTime ? Math.max(0, Math.floor((new Date(log.attentionTime).getTime() - new Date(log.arrivalTime).getTime()) / 60000)) : 0,
+          diagnosis: log.symptoms,
+          outcome: log.status
+        }));
+      } else {
+        exportData = resultData.data;
+      }
+
+      if (format === 'json') {
+        const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(exportData, null, 2))}`;
+        const link = document.createElement("a");
+        link.setAttribute("href", jsonString);
+        link.setAttribute("download", `${dataset}_db_seed.json`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        onTriggerAlert(`Exportar: Descargada base de datos ${dataset} en formato JSON`);
+      } else {
+        if (exportData.length === 0) return;
+        const headers = Object.keys(exportData[0]);
+        const csvRows = [];
+        csvRows.push(headers.join(","));
+
+        exportData.forEach(item => {
+          const values = headers.map(header => {
+            const val = item[header];
+            const escaped = ("" + (val !== null && val !== undefined ? val : '')).replace(/"/g, '\\"');
+            return `"${escaped}"`;
+          });
+          csvRows.push(values.join(","));
+        });
+
+        const csvContent = "data:text/csv;charset=utf-8," + encodeURIComponent(csvRows.join("\n"));
+        const link = document.createElement("a");
+        link.setAttribute("href", csvContent);
+        link.setAttribute("download", `${dataset}_db_seed.csv`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        onTriggerAlert(`Exportar: Descargada base de datos ${dataset} en formato CSV`);
+      }
+    } catch (err) {
+      alert(`Error al exportar: ${err.message}`);
     }
   };
 

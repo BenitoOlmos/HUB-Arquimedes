@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Search, UserCheck, AlertTriangle, ShieldAlert, Heart, RefreshCw, Clock } from 'lucide-react';
-import { getPaginatedPatients } from '../utils/dataGenerator';
 
 // Time limit threshold for each ESI in simulated minutes
 const ESI_LIMITS = {
@@ -28,12 +27,27 @@ const TriagePanel = ({ activePatients, onAdmitPatient, onTriggerAlert, simClock 
 
   // Trigger search on typing
   useEffect(() => {
-    if (searchTerm.length >= 3) {
-      const results = getPaginatedPatients(1, 6, searchTerm);
-      setSearchResults(results.data);
-    } else {
-      setSearchResults([]);
-    }
+    const fetchPatients = async () => {
+      if (searchTerm.length >= 3) {
+        try {
+          const res = await fetch(`/api/his/patients?page=1&pageSize=6&search=${encodeURIComponent(searchTerm)}`);
+          if (res.ok) {
+            const data = await res.json();
+            setSearchResults(data.data || []);
+          }
+        } catch (err) {
+          console.error("Error fetching patient search results:", err);
+        }
+      } else {
+        setSearchResults([]);
+      }
+    };
+
+    const delayDebounce = setTimeout(() => {
+      fetchPatients();
+    }, 300);
+
+    return () => clearTimeout(delayDebounce);
   }, [searchTerm]);
 
   const selectPatientFromSearch = (patient) => {
@@ -79,17 +93,24 @@ const TriagePanel = ({ activePatients, onAdmitPatient, onTriggerAlert, simClock 
       "Dolor abdominal agudo en fosa ilíaca derecha",
       "Disnea progresiva y sibilancias",
       "Pérdida súbita de fuerza en hemicuerpo izquierdo",
-      "Herida cortante profusa en antebrazo"
+      "Herida cortante que requiere sutura"
     ];
     setSymptoms(typicalSymptoms[Math.floor(Math.random() * typicalSymptoms.length)]);
   };
 
-  const handleRandomPatient = () => {
-    // Get a random page of patients to select from the 10,000+ db
-    const randomPage = Math.floor(Math.random() * 500) + 1;
-    const res = getPaginatedPatients(randomPage, 1, "");
-    if (res.data.length > 0) {
-      selectPatientFromSearch(res.data[0]);
+  const handleRandomPatient = async () => {
+    try {
+      // Get a random page of patients to select from the 10,000+ db
+      const randomPage = Math.floor(Math.random() * 500) + 1;
+      const res = await fetch(`/api/his/patients?page=${randomPage}&pageSize=1`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.data.length > 0) {
+          selectPatientFromSearch(data.data[0]);
+        }
+      }
+    } catch (err) {
+      console.error("Error loading random patient:", err);
     }
   };
 

@@ -55,6 +55,7 @@ HOST_PORT_REDIS=20003
 HOST_PORT_WEB=20004
 HOST_PORT_CENTRIFUGA=20000
 HOST_PORT_TALLERAUTOMOTRIZ=20005
+HOST_PORT_HIS=20006
 HOST_PORT_SMARTPORT=20007
 HOST_PORT_AGROTECH=20008
 HOST_PORT_FINTECH=20009
@@ -73,6 +74,7 @@ JWT_SECRET="CualquierClaveLargaYSecreta123"
 WEB_URL="https://www.arquimedes.online"
 CENTRIFUGA_URL="https://centrifuga.arquimedes.online"
 TALLERAUTOMOTRIZ_URL="https://tallerautomotriz.arquimedes.online"
+HIS_URL="https://his.arquimedes.online"
 SMARTPORT_URL="https://smartport.arquimedes.online"
 AGROTECH_URL="https://agrotech.arquimedes.online"
 FINTECH_URL="https://fintech.arquimedes.online"
@@ -124,6 +126,7 @@ echo "Acceso a servicios:"
 echo " - Portal Web: http://localhost:20004"
 echo " - Simulador Bomba (React): http://localhost:20000"
 echo " - ERP Taller Automotriz (React): http://localhost:20005"
+echo " - HIS Triage Táctico (React): http://localhost:20006"
 echo " - Smart Port ERP (React): http://localhost:20007"
 echo " - AgroTech Dashboard (React): http://localhost:20008"
 echo " - Fintech Sandbox (React): http://localhost:20009"

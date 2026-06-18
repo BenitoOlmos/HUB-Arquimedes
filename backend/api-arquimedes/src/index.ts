@@ -26,6 +26,8 @@ import { PmsService } from './services/pms.service';
 import { RevenueService } from './services/revenue.service';
 import esgRoutes from './routes/esg.routes';
 import { EsgService } from './services/esg.service';
+import hisRoutes from './routes/his.routes';
+import { HisService } from './services/his.service';
 
 
 // Initialize Pino Logger
@@ -90,6 +92,7 @@ app.use('/api/manufacturing', manufacturingRoutes);
 app.use('/api/pms', pmsRoutes);
 app.use('/api/revenue', revenueRoutes);
 app.use('/api/esg', esgRoutes);
+app.use('/api/his', hisRoutes);
 
 
 // Health check endpoint
@@ -344,4 +347,16 @@ setInterval(async () => {
     logger.error({ error }, 'Error during ESG simulation tick execution');
   }
 }, 4000);
+
+// HIS Triage Simulation Tick Loop
+const hisService = new HisService();
+HisService.setIo(io);
+// 1 tick every 3 seconds representing 1 simulated minute
+setInterval(async () => {
+  try {
+    await hisService.runSimulationStep();
+  } catch (error) {
+    logger.error({ error }, 'Error during HIS simulation tick execution');
+  }
+}, 3000);
 

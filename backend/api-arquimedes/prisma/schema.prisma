@@ -435,4 +435,49 @@ model CarbonMarket {
   availableTons Int
 }
 
+model HisPatient {
+  id            String      @id @default(uuid())
+  rut           String      @unique
+  fullName      String
+  age           Int
+  bloodType     String
+  comorbidities String      // JSON con historial (ej. ["Diabetes", "HTA"])
+  allergies     String      @default("[]") // JSON array of allergies
+  gender        String      @default("M")
+  triageEvents  HisTriage[]
+}
+
+model HisTriage {
+  id            String     @id @default(uuid())
+  patientId     String
+  patient       HisPatient @relation(fields: [patientId], references: [id])
+  symptoms      String     // Descripción clínica de ingreso
+  assignedEsi   Int?       // Nivel 1 al 5 asignado por el estudiante
+  arrivalTime   DateTime   @default(now())
+  attentionTime DateTime?  // Momento en que pasa a box/cama
+  status        String     // WAITING, IN_TREATMENT, ADMITTED, DISCHARGED, DECEASED
+}
+
+model HisBed {
+  id             String  @id @default(uuid())
+  ward           String  // UCI, UTI, GENERAL, PED, AIS
+  bedNumber      String  @unique
+  status         String  // AVAILABLE, OCCUPIED, CLEANING, MAINTENANCE
+  currentPatient String? // ID del HisPatient
+}
+
+model HisPharmacy {
+  id               String  @id @default(uuid())
+  sku              String  @unique
+  name             String  // Ej. "Fentanilo", "Mascarilla N95"
+  category         String  // MEDICATION, PPE, BIOMEDICAL
+  currentStock     Int
+  reorderPoint     Int
+  dailyConsumption Float
+  cost             Float   @default(0)
+  virtualStock     Int     @default(0)
+  provider         String  @default("")
+  isCritical       Boolean @default(false)
+}
+
 

@@ -345,6 +345,56 @@ export interface EsgMetrics {
   legalFines: number; // Penalties from TCFD compliance failures
 }
 
+// HIS Triage Táctico Schemas & Types
+export const hisPatientSchema = z.object({
+  id: z.string().optional(),
+  rut: z.string().min(1, "RUT es requerido"),
+  fullName: z.string().min(1, "Nombre completo es requerido"),
+  age: z.number().int().nonnegative(),
+  bloodType: z.string().min(1, "Tipo de sangre es requerido"),
+  comorbidities: z.string(),
+  allergies: z.string().optional(),
+  gender: z.string().optional()
+});
+
+export const hisTriageSchema = z.object({
+  id: z.string().optional(),
+  patientId: z.string().min(1, "ID de paciente es requerido"),
+  symptoms: z.string().min(1, "Síntomas son requeridos"),
+  assignedEsi: z.number().int().min(1).max(5).nullable(),
+  arrivalTime: z.string().or(z.date()),
+  attentionTime: z.string().or(z.date()).nullable(),
+  status: z.enum(['WAITING', 'IN_TREATMENT', 'ADMITTED', 'DISCHARGED', 'DECEASED'])
+});
+
+export const hisBedSchema = z.object({
+  id: z.string(),
+  ward: z.string().min(1, "Sala es requerida"),
+  bedNumber: z.string().min(1, "Número de cama es requerido"),
+  status: z.enum(['AVAILABLE', 'OCCUPIED', 'CLEANING', 'MAINTENANCE']),
+  currentPatient: z.string().nullable()
+});
+
+export const hisPharmacySchema = z.object({
+  id: z.string().optional(),
+  sku: z.string().min(1, "SKU es requerido"),
+  name: z.string().min(1, "Nombre del insumo es requerido"),
+  category: z.string().min(1, "Categoría es requerida"),
+  currentStock: z.number().int().nonnegative(),
+  reorderPoint: z.number().int().nonnegative(),
+  dailyConsumption: z.number().nonnegative(),
+  cost: z.number().nonnegative().default(0),
+  virtualStock: z.number().int().nonnegative().default(0),
+  provider: z.string().default(""),
+  isCritical: z.boolean().default(false)
+});
+
+export type HisPatientInput = z.infer<typeof hisPatientSchema>;
+export type HisTriageInput = z.infer<typeof hisTriageSchema>;
+export type HisBedInput = z.infer<typeof hisBedSchema>;
+export type HisPharmacyInput = z.infer<typeof hisPharmacySchema>;
+
+
 
 
 

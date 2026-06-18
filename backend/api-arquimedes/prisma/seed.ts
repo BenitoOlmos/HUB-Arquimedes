@@ -522,7 +522,7 @@ async function main() {
 
   console.log('Seeding +1,000 FinTransaction records (Ground Truth & Anomalies)...');
   const transactionsData = [];
-  const seedNow = new Date();
+  const fintechSeedNow = new Date();
   
   for (let i = 0; i < 900; i++) {
     const sender = accountsData[i % accountsData.length];
@@ -531,7 +531,7 @@ async function main() {
     if (sender.id === receiver.id) continue;
 
     const amount = 20 + (i % 10) * 150 + Math.random() * 50;
-    const date = new Date(seedNow.getTime() - (i * 20 * 60 * 1000));
+    const date = new Date(fintechSeedNow.getTime() - (i * 20 * 60 * 1000));
     const ipAddress = `190.160.${10 + (i % 40)}.${100 + (i % 150)}`;
     const fingerprint = `fp-${Math.floor(100000 + (i % 50) * 8500)}`;
 
@@ -551,7 +551,7 @@ async function main() {
   const carder = accountsData[3];
   for (let j = 0; j < 15; j++) {
     const receiver = accountsData[10 + j];
-    const date = new Date(seedNow.getTime() - (2 * 60 * 1000 * j));
+    const date = new Date(fintechSeedNow.getTime() - (2 * 60 * 1000 * j));
     transactionsData.push({
       id: `tx-id-carding-${j}`,
       senderId: carder.id,
@@ -568,7 +568,7 @@ async function main() {
   const moneyLaunderer = accountsData[0];
   for (let j = 0; j < 10; j++) {
     const receiver = accountsData[30 + j];
-    const date = new Date(seedNow.getTime() - (j * 12 * 60 * 60 * 1000));
+    const date = new Date(fintechSeedNow.getTime() - (j * 12 * 60 * 60 * 1000));
     transactionsData.push({
       id: `tx-id-smurfing-${j}`,
       senderId: moneyLaunderer.id,
@@ -585,7 +585,7 @@ async function main() {
   const targetAcc = accountsData[5];
   for (let j = 0; j < 15; j++) {
     const sourceAcc = accountsData[45 + j];
-    const date = new Date(seedNow.getTime() - (j * 10 * 60 * 1000));
+    const date = new Date(fintechSeedNow.getTime() - (j * 10 * 60 * 1000));
     transactionsData.push({
       id: `tx-id-layering-${j}`,
       senderId: sourceAcc.id,
@@ -844,7 +844,7 @@ async function main() {
     customers.push(cust);
   }
 
-  const seedNow = new Date();
+  const retailSeedNow = new Date();
   const eventsBatch = [];
   
   for (let i = 0; i < customers.length; i++) {
@@ -852,7 +852,7 @@ async function main() {
     const numSessions = 2 + (i % 5);
 
     for (let s = 0; s < numSessions; s++) {
-      const sessionDate = new Date(seedNow.getTime() - (s * 3 + i * 0.5) * 24 * 60 * 60 * 1000);
+      const sessionDate = new Date(retailSeedNow.getTime() - (s * 3 + i * 0.5) * 24 * 60 * 60 * 1000);
       const session = await prisma.retailSession.create({
         data: {
           customerId: customer.id,
@@ -1130,10 +1130,10 @@ async function main() {
   console.log('Seeding Production Batches...');
   const batchesCount = 10;
   const createdBatches = [];
-  const seedNow = new Date();
+  const manufacturingSeedNow = new Date();
 
   for (let b = 0; b < batchesCount; b++) {
-    const startTime = new Date(seedNow.getTime() - (batchesCount - b) * 8 * 60 * 60 * 1000); // 8 hours per batch shift
+    const startTime = new Date(manufacturingSeedNow.getTime() - (batchesCount - b) * 8 * 60 * 60 * 1000); // 8 hours per batch shift
     const endTime = new Date(startTime.getTime() + 8 * 60 * 60 * 1000);
     
     // Correlation: Batch 4 and 8 will have higher energy and high defects (tool wear)
@@ -1154,7 +1154,7 @@ async function main() {
   }
 
   console.log('Seeding Machine Telemetries (with Bottleneck & Energy-Quality Correlation)...');
-  const telemetryRecords = [];
+  const machineTelemetryRecords = [];
 
   for (const machine of createdMachines) {
     // Generate telemetry linked to batches timeframe
@@ -1176,7 +1176,7 @@ async function main() {
           energy = 2.4 + (Math.random() - 0.5) * 0.4; // elevated energy consumption due to tool wear
         }
 
-        telemetryRecords.push({
+        machineTelemetryRecords.push({
           machineId: machine.id,
           actualCycleTime: parseFloat(actualCycle.toFixed(2)),
           energyConsumed: parseFloat(energy.toFixed(3)),
@@ -1186,10 +1186,10 @@ async function main() {
     }
   }
 
-  console.log(`Bulk inserting ${telemetryRecords.length} MachineTelemetries...`);
+  console.log(`Bulk inserting ${machineTelemetryRecords.length} MachineTelemetries...`);
   const telChunk = 1000;
-  for (let i = 0; i < telemetryRecords.length; i += telChunk) {
-    const chunk = telemetryRecords.slice(i, i + telChunk);
+  for (let i = 0; i < machineTelemetryRecords.length; i += telChunk) {
+    const chunk = machineTelemetryRecords.slice(i, i + telChunk);
     await prisma.machineTelemetry.createMany({ data: chunk });
   }
 
@@ -1199,7 +1199,7 @@ async function main() {
   for (const machine of createdMachines) {
     // 5 downtime events per machine
     for (let d = 0; d < 5; d++) {
-      const timestamp = new Date(seedNow.getTime() - (d * 24 * 60 * 60 * 1000) - Math.random() * 12 * 60 * 60 * 1000);
+      const timestamp = new Date(manufacturingSeedNow.getTime() - (d * 24 * 60 * 60 * 1000) - Math.random() * 12 * 60 * 60 * 1000);
       const duration = 120 + Math.floor(Math.random() * 1800); // 2 mins to 30 mins
       const reasonCode = reasons[(d + machine.sequenceOrder) % reasons.length];
 
@@ -1542,6 +1542,257 @@ async function main() {
   await prisma.carbonMarket.createMany({ data: marketData });
 
   console.log('GreenTech ESG Tracker seeding finished.');
+
+  console.log('Purging HIS Triage tables...');
+  await prisma.hisBed.deleteMany();
+  await prisma.hisTriage.deleteMany();
+  await prisma.hisPatient.deleteMany();
+  await prisma.hisPharmacy.deleteMany();
+
+  console.log('Seeding HIS Patients (+10,500)...');
+  class HisLcg {
+    private seed: number;
+    constructor(seed = 42) {
+      this.seed = seed;
+    }
+    next() {
+      this.seed = (this.seed * 1664525 + 1013904223) % 4294967296;
+      return this.seed / 4294967296;
+    }
+    nextRange(min: number, max: number) {
+      return Math.floor(this.next() * (max - min + 1)) + min;
+    }
+    choice<T>(arr: T[]): T {
+      return arr[Math.floor(this.next() * arr.length)];
+    }
+  }
+  const hisRng = new HisLcg(2026);
+
+  const hisFirstNamesM = ["Juan", "Andrés", "Carlos", "Pedro", "Diego", "Luis", "Javier", "Manuel", "José", "Alejandro", "Felipe", "Sebastián", "Rodrigo", "Cristian", "Gabriel", "Ignacio"];
+  const hisFirstNamesF = ["María", "Sofía", "Laura", "Ana", "Camila", "Valentina", "Francisca", "Isabella", "Carolina", "Gabriela", "Javiera", "Antonia", "Daniela", "Constanza", "Beatriz", "Elena"];
+  const hisLastNames = ["González", "Muñoz", "Rojas", "Díaz", "Pérez", "Soto", "Contreras", "Silva", "Martínez", "Flores", "Morales", "Rodríguez", "Valenzuela", "Araya", "Tapia", "Vergara", "Carrasco", "Sandoval", "Fuentes", "Gómez"];
+  const hisBloodTypes = ["O+", "A+", "B+", "AB+", "O-", "A-", "B-", "AB-"];
+  const hisComorbiditiesPool = ["Hipertensión Arterial", "Diabetes Mellitus Tipo 2", "Asma Bronquial", "EPOC", "Insuficiencia Renal Crónica", "Hipotiroidismo", "Ninguna"];
+  const hisAllergiesPool = ["Penicilina", "Aspirina", "Sulfas", "Látex", "AINEs", "Cloxacilina", "Ninguna"];
+
+  const hisPatientsData = [];
+  const hisPatientsCount = 10500;
+  for (let i = 0; i < hisPatientsCount; i++) {
+    const isMale = hisRng.next() > 0.5;
+    const gender = isMale ? "M" : "F";
+    const firstName = hisRng.choice(isMale ? hisFirstNamesM : hisFirstNamesF);
+    const lastName1 = hisRng.choice(hisLastNames);
+    const lastName2 = hisRng.choice(hisLastNames);
+    const age = hisRng.nextRange(0, 95);
+    const runNum = hisRng.nextRange(5000000, 24000000);
+    const runDvh = hisRng.next() > 0.15 ? hisRng.nextRange(0, 9).toString() : "K";
+    const rut = `${runNum.toLocaleString("es-CL")}-${runDvh}`;
+
+    const comList: string[] = [];
+    const com1 = hisRng.choice(hisComorbiditiesPool);
+    if (com1 !== "Ninguna") {
+      comList.push(com1);
+      const com2 = hisRng.choice(hisComorbiditiesPool);
+      if (com2 !== "Ninguna" && com2 !== com1) {
+        comList.push(com2);
+      }
+    }
+    const allergyList: string[] = [];
+    const al1 = hisRng.choice(hisAllergiesPool);
+    if (al1 !== "Ninguna") {
+      allergyList.push(al1);
+    }
+
+    hisPatientsData.push({
+      id: `pat-${i}`,
+      rut,
+      fullName: `${firstName} ${lastName1} ${lastName2}`,
+      age,
+      bloodType: hisRng.choice(hisBloodTypes),
+      comorbidities: JSON.stringify(comList.length > 0 ? comList : ["Ninguna"]),
+      allergies: JSON.stringify(allergyList.length > 0 ? allergyList : ["Ninguna"]),
+      gender
+    });
+  }
+
+  // Bulk create HisPatient
+  for (let i = 0; i < hisPatientsData.length; i += 2000) {
+    const chunk = hisPatientsData.slice(i, i + 2000);
+    await prisma.hisPatient.createMany({ data: chunk });
+  }
+
+  console.log('Seeding HIS Urgency History (+52,000)...');
+  const hisDiagnosticsPool = [
+    { text: "Neumonía bacteriana grave", esi: 2, outcome: "Hospitalización", category: "Respiratorio" },
+    { text: "Infarto agudo al miocardio", esi: 1, outcome: "Hospitalización", category: "Cardiovascular" },
+    { text: "Crisis de pánico severa", esi: 3, outcome: "Alta", category: "Salud Mental" },
+    { text: "Politraumatismo por accidente vial", esi: 1, outcome: "Hospitalización", category: "Trauma" },
+    { text: "Apendicitis aguda", esi: 2, outcome: "Hospitalización", category: "Abdomen" },
+    { text: "Gastroenteritis aguda deshidratada", esi: 3, outcome: "Alta", category: "Gastrointestinal" },
+    { text: "Accidente cerebrovascular en curso", esi: 1, outcome: "Hospitalización", category: "Neurológico" },
+    { text: "Fractura de radio cerrada", esi: 4, outcome: "Alta", category: "Trauma" },
+    { text: "Laringitis obstructiva moderada", esi: 3, outcome: "Alta", category: "Respiratorio" },
+    { text: "Cetoacidosis diabética", esi: 2, outcome: "Hospitalización", category: "Metabólico" },
+    { text: "Crisis hipertensiva sintomática", esi: 2, outcome: "Alta", category: "Cardiovascular" },
+    { text: "Fiebre y tos simple (resfrío)", esi: 5, outcome: "Alta", category: "Respiratorio" },
+    { text: "Contusión leve de tobillo", esi: 5, outcome: "Alta", category: "Trauma" },
+    { text: "Herida cortante que requiere sutura", esi: 4, outcome: "Alta", category: "Trauma" },
+    { text: "Quemadura de segundo grado (10% SC)", esi: 2, outcome: "Hospitalización", category: "Trauma" },
+    { text: "Paro cardiorrespiratorio", esi: 1, outcome: "Fallecido", category: "Cardiovascular" }
+  ];
+
+  const hisTriageData = [];
+  const hisTriageCount = 52000;
+  const hisNow = new Date(2026, 5, 18);
+  for (let i = 0; i < hisTriageCount; i++) {
+    const patientIndex = i % hisPatientsData.length;
+    const patientId = hisPatientsData[patientIndex].id;
+    const diag = hisRng.choice(hisDiagnosticsPool);
+    
+    let finalOutcome = diag.outcome;
+    if (diag.esi === 1 && hisRng.next() < 0.1) {
+      finalOutcome = "Fallecido";
+    } else if (diag.esi > 3 && hisRng.next() < 0.05) {
+      finalOutcome = "Derivado";
+    }
+
+    let status = "DISCHARGED";
+    if (finalOutcome === "Hospitalización") {
+      status = "ADMITTED";
+    } else if (finalOutcome === "Fallecido") {
+      status = "DECEASED";
+    }
+
+    const dateOffsetDays = hisRng.nextRange(0, 365);
+    const arrivalTime = new Date(hisNow.getTime() - dateOffsetDays * 24 * 60 * 60 * 1000);
+    
+    let waitTime = 0;
+    if (diag.esi === 2) waitTime = hisRng.nextRange(2, 25);
+    else if (diag.esi === 3) waitTime = hisRng.nextRange(15, 120);
+    else if (diag.esi === 4) waitTime = hisRng.nextRange(45, 240);
+    else if (diag.esi === 5) waitTime = hisRng.nextRange(60, 360);
+
+    const attentionTime = new Date(arrivalTime.getTime() + waitTime * 60 * 1000);
+
+    hisTriageData.push({
+      id: `urg-${i}`,
+      patientId,
+      symptoms: diag.text,
+      assignedEsi: diag.esi,
+      arrivalTime,
+      attentionTime,
+      status
+    });
+  }
+
+  // Bulk create HisTriage in chunks of 3000
+  for (let i = 0; i < hisTriageData.length; i += 3000) {
+    const chunk = hisTriageData.slice(i, i + 3000);
+    await prisma.hisTriage.createMany({ data: chunk });
+  }
+
+  console.log('Seeding HIS Pharmacy Inventory (+1,010 SKUs)...');
+  const hisSkuTemplates = [
+    { name: "Paracetamol 500mg comprimidos", category: "MEDICATION", baseCost: 15, provider: "FarmaSalud Distribuidores" },
+    { name: "Salbutamol Inhalador 100mcg/dosis", category: "MEDICATION", baseCost: 120, provider: "RespiCare S.A." },
+    { name: "Epinefrina Ampolla 1mg/ml", category: "MEDICATION", baseCost: 800, provider: "Laboratorio Bios" },
+    { name: "Atropina Ampolla 1mg/ml", category: "MEDICATION", baseCost: 650, provider: "Laboratorio Bios" },
+    { name: "Ceftriaxona Inyectable 1g", category: "MEDICATION", baseCost: 1500, provider: "FarmaSalud Distribuidores" },
+    { name: "Morfina Ampolla 10mg/ml", category: "MEDICATION", baseCost: 3200, provider: "FarmaControl Central" },
+    { name: "Suero Fisiológico 0.9% 500ml", category: "MEDICATION", baseCost: 250, provider: "Gases y Fluidos Clínicos" },
+    { name: "Ringer Lactato 500ml", category: "MEDICATION", baseCost: 300, provider: "Gases y Fluidos Clínicos" },
+    { name: "Kit de Intubación Endotraqueal", category: "BIOMEDICAL", baseCost: 8500, provider: "MedTech Proveedores" },
+    { name: "Catéter Intravenoso 18G", category: "BIOMEDICAL", baseCost: 450, provider: "MedTech Proveedores" },
+    { name: "Guantes de Nitrilo Estériles (caja 100)", category: "PPE", baseCost: 1200, provider: "Suministros Médicos Chile" },
+    { name: "Mascarilla N95 certificada", category: "PPE", baseCost: 1500, provider: "Suministros Médicos Chile" },
+    { name: "Pechera impermeable desechable", category: "PPE", baseCost: 350, provider: "Suministros Médicos Chile" },
+    { name: "Oxígeno Botella Portátil 10L", category: "BIOMEDICAL", baseCost: 18000, provider: "Indura Hospitalaria" }
+  ];
+
+  const hisPharmacyData = [];
+  let pharmacySkuCounter = 1000;
+
+  hisSkuTemplates.forEach(template => {
+    const variations = [
+      { suffix: "100 mg", multiplier: 0.8 },
+      { suffix: "250 mg", multiplier: 0.9 },
+      { suffix: "500 mg", multiplier: 1.0 },
+      { suffix: "1 g", multiplier: 1.3 },
+      { suffix: "Fórmula Infantil", multiplier: 1.1 },
+      { suffix: "Pediátrico", multiplier: 0.85 },
+      { suffix: "Adulto", multiplier: 1.0 },
+      { suffix: "Hospitalario", multiplier: 1.25 },
+      { suffix: "Envase x50", multiplier: 2.2 },
+      { suffix: "Envase x100", multiplier: 3.8 },
+      { suffix: "Ampolla Inyectable", multiplier: 1.15 },
+      { suffix: "Solución Gotas", multiplier: 0.95 }
+    ];
+
+    const chosenVars = template.category === "MEDICATION" 
+      ? variations.slice(0, 8) 
+      : variations.slice(6, 12);
+
+    chosenVars.forEach(v => {
+      for (let pIdx = 1; pIdx <= 10; pIdx++) {
+        const skuId = `PHA-${pharmacySkuCounter++}`;
+        const name = `${template.name.split(" ")[0]} ${v.suffix} (Lote #${pIdx})`;
+        const cost = Math.round(template.baseCost * v.multiplier * (0.9 + hisRng.next() * 0.2));
+        
+        const isCritical = template.name.includes("Oxígeno") || template.name.includes("Kit") || template.name.includes("Epinefrina") || template.name.includes("Guantes");
+        let stock = hisRng.nextRange(150, 800);
+        const reorderPoint = hisRng.nextRange(50, 150);
+        if (isCritical && hisRng.next() < 0.3) {
+          stock = hisRng.nextRange(0, 45); // critical items at risk of stockout
+        }
+
+        hisPharmacyData.push({
+          id: skuId,
+          sku: skuId,
+          name,
+          category: template.category,
+          currentStock: stock,
+          reorderPoint,
+          dailyConsumption: parseFloat((hisRng.next() * 5).toFixed(1)),
+          cost: parseFloat(cost.toFixed(2)),
+          virtualStock: 0,
+          provider: `${template.provider} - Línea ${pIdx}`,
+          isCritical
+        });
+      }
+    });
+  });
+
+  while (hisPharmacyData.length < 1010) {
+    const skuId = `PHA-${pharmacySkuCounter++}`;
+    hisPharmacyData.push({
+      id: skuId,
+      sku: skuId,
+      name: `Insumo Médico Estándar Genérico Lote-${pharmacySkuCounter}`,
+      category: "BIOMEDICAL",
+      currentStock: hisRng.nextRange(100, 500),
+      reorderPoint: 80,
+      dailyConsumption: 1.5,
+      cost: hisRng.nextRange(100, 2500),
+      virtualStock: 0,
+      provider: "FarmaSalud Distribuidores",
+      isCritical: false
+    });
+  }
+
+  await prisma.hisPharmacy.createMany({ data: hisPharmacyData });
+
+  console.log('Seeding HIS Hospital Beds (UCI, UTI, GEN, PED, AIS)...');
+  const hisBedsData = [
+    ...Array(8).fill(0).map((_, i) => ({ id: `UCI-10${i+1}`, ward: 'UCI', bedNumber: `UCI-10${i+1}`, status: 'AVAILABLE', currentPatient: null })),
+    ...Array(8).fill(0).map((_, i) => ({ id: `UTI-20${i+1}`, ward: 'UTI', bedNumber: `UTI-20${i+1}`, status: 'AVAILABLE', currentPatient: null })),
+    ...Array(12).fill(0).map((_, i) => ({ id: `MED-3${i+1 < 10 ? '0' + (i+1) : i+1}`, ward: 'GENERAL', bedNumber: `MED-3${i+1 < 10 ? '0' + (i+1) : i+1}`, status: 'AVAILABLE', currentPatient: null })),
+    ...Array(8).fill(0).map((_, i) => ({ id: `PED-40${i+1}`, ward: 'PED', bedNumber: `PED-40${i+1}`, status: 'AVAILABLE', currentPatient: null })),
+    ...Array(4).fill(0).map((_, i) => ({ id: `AIS-50${i+1}`, ward: 'AIS', bedNumber: `AIS-50${i+1}`, status: 'AVAILABLE', currentPatient: null }))
+  ];
+
+  await prisma.hisBed.createMany({ data: hisBedsData });
+
+  console.log('HIS Triage Táctico seeding finished.');
 }
 
 main()

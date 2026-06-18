@@ -30,3 +30,315 @@ model PumpPart {
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 }
+
+model PortShip {
+  id             String   @id @default(uuid())
+  imoNumber      String   @unique // Número IMO
+  name           String
+  capacityTEU    Int      // Capacidad en contenedores
+  currentLat     Float
+  currentLng     Float
+  status         String   // EN_RUTA, FONDEADO, DESCARGANDO, RETENIDO
+  fuelLevel      Float
+  dailyFuelCost  Float
+  manifests      CargoManifest[]
+}
+
+model CargoManifest {
+  id             String   @id @default(uuid())
+  shipId         String
+  ship           PortShip @relation(fields: [shipId], references: [id], onDelete: Cascade)
+  originPort     String
+  destPort       String
+  contents       String   // JSON con detalle de la carga
+  incoterm       String   // FOB, CIF, EXW, etc.
+  customsStatus  String   // PENDIENTE, APROBADO, INSPECCION_FISICA
+  arrivalDate    DateTime
+}
+
+model GlobalEvent {
+  id             String   @id @default(uuid())
+  eventType      String   // CLIMA, HUELGA, PIRATERIA
+  severity       Int      // 1 a 5
+  affectedRegion String   // Coordenadas o zona
+  active         Boolean  @default(true)
+}
+
+model AgroZone {
+  id             String        @id @default(uuid())
+  name           String        // Ej. "Cuadrante Norte - Vid"
+  cropType       String
+  sensors        AgroSensor[]
+  valves         AgroValve[]
+}
+
+model AgroSensor {
+  id             String        @id @default(uuid())
+  zoneId         String
+  zone           AgroZone      @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+  type           String        // SOIL_MOISTURE, PH, TEMPERATURE, RADIATION
+  isActive       Boolean       @default(true)
+  readings       AgroTelemetry[]
+}
+
+model AgroTelemetry {
+  id             String   @id @default(uuid())
+  sensorId       String
+  sensor         AgroSensor @relation(fields: [sensorId], references: [id], onDelete: Cascade)
+  value          Float
+  timestamp      DateTime @default(now())
+
+  @@index([sensorId, timestamp]) // Índice crítico para consultas "Big Data"
+}
+
+model AgroValve {
+  id             String        @id @default(uuid())
+  zoneId         String
+  zone           AgroZone      @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+  name           String        // Ej. "Válvula A"
+  status         String        // ABIERTA, CERRADA
+  lastActivated  DateTime?
+}
+
+model IrrigationRule {
+  id              String   @id @default(uuid())
+  zoneId          String
+  name            String
+  sensorType      String   // SOIL_MOISTURE, etc.
+  operator        String   // LT, GT
+  thresholdValue  Float
+  durationMinutes Int
+  isActive        Boolean  @default(true)
+}
+
+model PestHistoricalRecord {
+  id             String   @id @default(uuid())
+  pestName       String
+  avgTemp        Float
+  avgHumidity    Float
+  outbreakDate   DateTime
+  cropLost       Float    // Porcentaje de merma
+}
+
+model FinAccount {
+  id              String           @id @default(uuid())
+  accountNumber   String           @unique
+  ownerName       String
+  balance         Decimal          @db.Decimal(15, 2)
+  riskScore       Int              @default(50) // 1 - 100
+  isFrozen        Boolean          @default(false)
+  transactionsIn  FinTransaction[] @relation("Incoming")
+  transactionsOut FinTransaction[] @relation("Outgoing")
+}
+
+model FinTransaction {
+  id                String       @id @default(uuid())
+  senderId          String
+  sender            FinAccount   @relation("Outgoing", fields: [senderId], references: [id], onDelete: Cascade)
+  receiverId        String
+  receiver          FinAccount   @relation("Incoming", fields: [receiverId], references: [id], onDelete: Cascade)
+  amount            Decimal      @db.Decimal(15, 2)
+  timestamp         DateTime     @default(now())
+  ipAddress         String       // Para trazabilidad de ciberseguridad
+  deviceFingerprint String?
+  isFlagged         Boolean      @default(false) // Marcado por el motor AML
+  isFraud           Boolean      // Verdad fundamental (Ground Truth) para ML
+
+  @@index([timestamp, senderId, receiverId])
+}
+
+model AmlAlert {
+  id             String   @id @default(uuid())
+  transactionId  String
+  ruleTriggered  String   // Ej. "VELOCITY_CHECK", "IP_MISMATCH"
+  severity       String   // LOW, MEDIUM, HIGH, CRITICAL
+  resolved       Boolean  @default(false)
+}
+
+model ScadaAsset {
+  id             String           @id @default(uuid())
+  tagId          String           @unique // Ej. "WTG-01"
+  assetType      String           // SOLAR_PANEL, INVERTER, WIND_TURBINE, TRANSFORMER
+  status         String           // ONLINE, OFFLINE, MAINTENANCE, FAULT
+  location       String
+  telemetry      AssetTelemetry[]
+  alarms         AssetAlarm[]
+}
+
+model AssetTelemetry {
+  id             String     @id @default(uuid())
+  assetId        String
+  asset          ScadaAsset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  parameter      String     // VOLTAGE, CURRENT, TEMPERATURE, RPM, WIND_SPEED, IRRADIANCE, POWER, VIBRATION, PITCH
+  value          Float
+  timestamp      DateTime   @default(now())
+
+  @@index([assetId, parameter, timestamp])
+}
+
+model AssetAlarm {
+  id             String     @id @default(uuid())
+  assetId        String
+  asset          ScadaAsset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  alarmCode      String
+  description    String
+  severity       String     // LOW, HIGH, CRITICAL
+  triggeredAt    DateTime   @default(now())
+  acknowledgedAt DateTime?
+  clearedAt      DateTime?
+}
+
+model RetailCustomer {
+  id             String          @id @default(uuid())
+  segment        String          // Ej. "MILLENNIAL_TECH", "BARGAIN_HUNTER"
+  lifetimeValue  Float           @default(0.0)
+  sessions       RetailSession[]
+  orders         RetailOrder[]
+}
+
+model RetailSession {
+  id             String          @id @default(uuid())
+  customerId     String
+  customer       RetailCustomer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  startedAt      DateTime        @default(now())
+  device         String
+  events         RetailEvent[]
+}
+
+model RetailOrder {
+  id             String          @id @default(uuid())
+  customerId     String
+  customer       RetailCustomer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  totalAmount    Float
+  status         String          // PENDING, COMPLETED, CANCELLED
+  createdAt      DateTime        @default(now())
+}
+
+model RetailProduct {
+  id             String           @id @default(uuid())
+  sku            String           @unique
+  name           String
+  category       String
+  basePrice      Float
+  inventories    StoreInventory[]
+}
+
+model StoreInventory {
+  id             String        @id @default(uuid())
+  productId      String
+  product        RetailProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+  storeType      String        // DARK_STORE, RETAIL_STORE, MAIN_WAREHOUSE
+  locationLat    Float
+  locationLng    Float
+  stockLevel     Int
+}
+
+model RetailEvent {
+  id             String        @id @default(uuid())
+  sessionId      String
+  session        RetailSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  eventType      String        // PAGE_VIEW, ADD_TO_CART, CART_ABANDONED, PURCHASE
+  productId      String?
+  timestamp      DateTime      @default(now())
+
+  @@index([eventType, timestamp])
+}
+
+model TransitRoute {
+  id             String         @id @default(uuid())
+  routeCode      String         @unique // Ej. "401", "210v"
+  name           String
+  buses          BusUnit[]
+}
+
+model BusUnit {
+  id             String         @id @default(uuid())
+  plateNumber    String         @unique
+  routeId        String
+  route          TransitRoute   @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  capacity       Int
+  telemetry      BusTelemetry[]
+}
+
+model BusTelemetry {
+  id             String   @id @default(uuid())
+  busId          String
+  bus            BusUnit  @relation(fields: [busId], references: [id], onDelete: Cascade)
+  lat            Float
+  lng            Float
+  speed          Float
+  passengerCount Int
+  timestamp      DateTime @default(now())
+
+  @@index([timestamp, busId])
+}
+
+model CommuterValidation {
+  id             String   @id @default(uuid())
+  cardNumber     String   // Hash de la tarjeta bip!
+  stopId         String   // Paradero o estación de Metro
+  routeCode      String
+  timestamp      DateTime @default(now())
+  
+  @@index([stopId, timestamp]) // Crítico para calcular la Matriz Origen-Destino
+}
+
+model TrafficIntersection {
+  id             String   @id @default(uuid())
+  name           String
+  lat            Float
+  lng            Float
+  greenPhase     Int      // Segundos de duración
+  redPhase       Int
+  offset         Int      // Desfase para sincronización
+}
+
+model AssemblyLine {
+  id             String         @id @default(uuid())
+  name           String
+  targetUPH      Int            // Unidades Por Hora (Target)
+  machines       MachineNode[]
+  batches        ProductionBatch[]
+}
+
+model MachineNode {
+  id             String         @id @default(uuid())
+  lineId         String
+  line           AssemblyLine   @relation(fields: [lineId], references: [id], onDelete: Cascade)
+  type           String         // CNC, ROBOTIC_ARM, CONVEYOR, INSPECTION_STATION
+  sequenceOrder  Int            // Posición en la cadena
+  nominalCycleTime Float        // Tiempo ideal en segundos
+  downtimeLogs   DowntimeLog[]
+  telemetry      MachineTelemetry[]
+}
+
+model MachineTelemetry {
+  id             String         @id @default(uuid())
+  machineId      String
+  machine        MachineNode    @relation(fields: [machineId], references: [id], onDelete: Cascade)
+  actualCycleTime Float         // Tiempo real capturado por el sensor
+  energyConsumed  Float         // kWh consumidos
+  timestamp      DateTime       @default(now())
+
+  @@index([machineId, timestamp])
+}
+
+model ProductionBatch {
+  id             String         @id @default(uuid())
+  lineId         String
+  line           AssemblyLine   @relation(fields: [lineId], references: [id], onDelete: Cascade)
+  totalProduced  Int
+  defectsFound   Int
+  startTime      DateTime
+  endTime        DateTime?
+}
+
+model DowntimeLog {
+  id             String         @id @default(uuid())
+  machineId      String
+  machine        MachineNode    @relation(fields: [machineId], references: [id], onDelete: Cascade)
+  reasonCode     String         // Ej. "ERR_MATERIAL_JAM", "ERR_MOTOR_TEMP"
+  durationSecs   Int
+  timestamp      DateTime       @default(now())
+}
+

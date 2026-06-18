@@ -5,6 +5,14 @@
     "backend/api-arquimedes",
     "frontend/centrifuga-arquimedes",
     "frontend/erp-taller-automotriz",
+    "frontend/his-triage-tactico",
+    "frontend/smart-port-erp",
+    "frontend/fintech-sandbox",
+    "frontend/agrotech-dashboard",
+    "frontend/scada-renovables",
+    "frontend/retail-analytics-engine",
+    "frontend/smart-city-hub",
+    "frontend/industry40-digital-twin",
     "shared-schemas"
   ]
 }

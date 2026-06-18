@@ -58,6 +58,83 @@ services:
     depends_on:
       - backend
 
+  frontend-smartport:
+    build:
+      context: ..
+      dockerfile: frontend/smart-port-erp/Dockerfile
+    container_name: hub-arquimedes-frontend-smartport
+    restart: always
+    ports:
+      - "${HOST_PORT_SMARTPORT:-20007}:80"
+    depends_on:
+      - backend
+
+  frontend-agrotech:
+    build:
+      context: ..
+      dockerfile: frontend/agrotech-dashboard/Dockerfile
+    container_name: hub-arquimedes-frontend-agrotech
+    restart: always
+    ports:
+      - "${HOST_PORT_AGROTECH:-20008}:80"
+    depends_on:
+      - backend
+
+  frontend-fintech:
+    build:
+      context: ..
+      dockerfile: frontend/fintech-sandbox/Dockerfile
+    container_name: hub-arquimedes-frontend-fintech
+    restart: always
+    ports:
+      - "${HOST_PORT_FINTECH:-20009}:80"
+    depends_on:
+      - backend
+
+  frontend-scada:
+    build:
+      context: ..
+      dockerfile: frontend/scada-renovables/Dockerfile
+    container_name: hub-arquimedes-frontend-scada
+    restart: always
+    ports:
+      - "${HOST_PORT_SCADA:-20010}:80"
+    depends_on:
+      - backend
+
+  frontend-retail:
+    build:
+      context: ..
+      dockerfile: frontend/retail-analytics-engine/Dockerfile
+    container_name: hub-arquimedes-frontend-retail
+    restart: always
+    ports:
+      - "${HOST_PORT_RETAIL:-20011}:80"
+    depends_on:
+      - backend
+
+  frontend-smartcity:
+    build:
+      context: ..
+      dockerfile: frontend/smart-city-hub/Dockerfile
+    container_name: hub-arquimedes-frontend-smartcity
+    restart: always
+    ports:
+      - "${HOST_PORT_SMARTCITY:-20012}:80"
+    depends_on:
+      - backend
+
+  frontend-industry:
+    build:
+      context: ..
+      dockerfile: frontend/industry40-digital-twin/Dockerfile
+    container_name: hub-arquimedes-frontend-industry
+    restart: always
+    ports:
+      - "${HOST_PORT_INDUSTRY40:-20013}:80"
+    depends_on:
+      - backend
+
   frontend-web:
     build:
       context: ..
@@ -77,6 +154,13 @@ services:
     depends_on:
       - frontend-centrifuga
       - frontend-tallerautomotriz
+      - frontend-smartport
+      - frontend-agrotech
+      - frontend-fintech
+      - frontend-scada
+      - frontend-retail
+      - frontend-smartcity
+      - frontend-industry
       - frontend-web
       - backend
 

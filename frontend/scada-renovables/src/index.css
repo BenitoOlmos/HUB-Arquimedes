@@ -1,0 +1,499 @@
+/* ==========================================================================
+   SCADA Renovables Industrial HMI Stylesheet
+   ========================================================================== */
+
+:root {
+  /* HMI Color Palette */
+  --hmi-bg: #090b10;
+  --hmi-panel: #141722;
+  --hmi-panel-light: #1f2334;
+  --hmi-border: #2b3047;
+  --hmi-border-glow: #3e4668;
+  
+  /* HMI Indicator Colors (Wonderware / Ignition Standards) */
+  --hmi-online: #00ff66;       /* Normal / Connected */
+  --hmi-offline: #718096;      /* Grayed out / Disconnected */
+  --hmi-maintenance: #ffcc00;  /* Warning / Under repair */
+  --hmi-fault: #ff0055;        /* Critical alarm / Fault */
+  
+  /* Telemetry Cyan Highlight */
+  --hmi-cyan: #00f0ff;
+  --hmi-yellow: #ffdf00;
+  
+  /* Text */
+  --text-muted: #7f8fa4;
+  --text-normal: #c5d1e0;
+  --text-bright: #ffffff;
+  
+  /* Typography */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--hmi-bg);
+  color: var(--text-normal);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--hmi-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--hmi-border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--hmi-cyan);
+}
+
+/* Layout */
+#root {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header HMI */
+.scada-header {
+  height: 72px;
+  background: var(--hmi-panel);
+  border-bottom: 1px solid var(--hmi-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  z-index: 10;
+}
+
+.scada-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.scada-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text-bright);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.scada-subtitle {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  letter-spacing: 0.5px;
+}
+
+.scada-nav {
+  display: flex;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--hmi-border);
+  border-radius: 4px;
+  padding: 2px;
+}
+
+.scada-nav-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.scada-nav-btn:hover {
+  color: var(--text-bright);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.scada-nav-btn.active {
+  background: var(--hmi-border);
+  color: var(--hmi-cyan);
+  box-shadow: inset 0 0 8px rgba(0, 240, 255, 0.15);
+}
+
+/* Main Dashboard Workspace */
+.scada-workspace {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  height: calc(100vh - 72px);
+}
+
+/* Main Screen Panel */
+.scada-main-panel {
+  flex: 1;
+  height: 100%;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Control Console Panel (Sidebar) */
+.scada-console-panel {
+  width: 320px;
+  background: var(--hmi-panel);
+  border-left: 1px solid var(--hmi-border);
+  height: 100%;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  flex-shrink: 0;
+}
+
+/* HMI Panels & Containers */
+.hmi-card {
+  background: var(--hmi-panel);
+  border: 1px solid var(--hmi-border);
+  border-radius: 4px;
+  padding: 16px;
+  position: relative;
+}
+
+.hmi-card.highlight::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--hmi-cyan);
+}
+
+.hmi-card-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-bright);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 6px;
+}
+
+/* Technical instrumentation values */
+.instrument-gauge {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--hmi-border);
+  border-radius: 4px;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.instrument-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.instrument-value {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--hmi-cyan);
+  margin-top: 2px;
+}
+
+.instrument-unit {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-left: 4px;
+  font-weight: normal;
+}
+
+/* Alarm management row flashes (ISA 18.2) */
+.alarm-row {
+  display: grid;
+  grid-template-columns: 80px 100px 140px 120px 100px 90px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  padding: 8px 12px;
+  border-radius: 3px;
+  border: 1px solid transparent;
+  align-items: center;
+}
+
+/* Flashing animations */
+@keyframes flash-red {
+  0%, 100% {
+    background-color: rgba(255, 0, 85, 0.2);
+    border-color: var(--hmi-fault);
+  }
+  50% {
+    background-color: transparent;
+    border-color: transparent;
+  }
+}
+
+@keyframes flash-green {
+  0%, 100% {
+    background-color: rgba(0, 255, 102, 0.15);
+    border-color: var(--hmi-online);
+  }
+  50% {
+    background-color: transparent;
+    border-color: transparent;
+  }
+}
+
+.alarm-row.active-unack {
+  animation: flash-red 1.2s infinite;
+  color: var(--text-bright);
+}
+
+.alarm-row.active-ack {
+  background-color: rgba(255, 0, 85, 0.08);
+  border-color: rgba(255, 0, 85, 0.3);
+  color: var(--hmi-fault);
+}
+
+.alarm-row.inactive-unack {
+  animation: flash-green 1.5s infinite;
+  color: var(--hmi-online);
+}
+
+/* Grid layout helpers */
+.scada-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.scada-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+/* Single line diagram SVG power flow styles */
+.unifilar-line {
+  stroke: var(--hmi-border-glow);
+  stroke-width: 3;
+  fill: none;
+}
+
+.unifilar-line.energized {
+  stroke: var(--hmi-cyan);
+}
+
+.unifilar-line.faulted {
+  stroke: var(--hmi-fault);
+}
+
+.power-flow-particle {
+  stroke-dasharray: 6, 12;
+  animation: dash 5s linear infinite;
+}
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: -100;
+  }
+}
+
+/* SVG Circuit Breaker switch */
+.breaker-box {
+  cursor: pointer;
+  fill: var(--hmi-panel-light);
+  stroke: var(--hmi-border-glow);
+  stroke-width: 2;
+  transition: all 0.2s;
+}
+
+.breaker-box:hover {
+  stroke: var(--hmi-cyan);
+  fill: var(--hmi-border);
+}
+
+.breaker-switch {
+  stroke-width: 3;
+  transition: transform 0.2s ease;
+}
+
+.breaker-switch.closed {
+  stroke: var(--hmi-online);
+}
+
+.breaker-switch.open {
+  stroke: var(--hmi-fault);
+}
+
+/* Status Indicator Dot */
+.status-pill {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 3px;
+  border: 1px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status-pill.online {
+  background: rgba(0, 255, 102, 0.1);
+  color: var(--hmi-online);
+  border-color: rgba(0, 255, 102, 0.2);
+}
+
+.status-pill.offline {
+  background: rgba(113, 128, 150, 0.1);
+  color: var(--hmi-offline);
+  border-color: rgba(113, 128, 150, 0.2);
+}
+
+.status-pill.maintenance {
+  background: rgba(255, 204, 0, 0.1);
+  color: var(--hmi-maintenance);
+  border-color: rgba(255, 204, 0, 0.2);
+}
+
+.status-pill.fault {
+  background: rgba(255, 0, 85, 0.1);
+  color: var(--hmi-fault);
+  border-color: rgba(255, 0, 85, 0.2);
+}
+
+.status-pill-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: currentColor;
+}
+
+/* Double column table */
+.hmi-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.hmi-table th, .hmi-table td {
+  padding: 8px 10px;
+  text-align: left;
+}
+
+.hmi-table th {
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--hmi-border);
+  font-weight: 600;
+}
+
+.hmi-table td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+}
+
+.hmi-table tr:hover td {
+  background: rgba(255, 255, 255, 0.01);
+}
+
+/* Button & controls */
+.hmi-button {
+  background: transparent;
+  border: 1px solid var(--hmi-cyan);
+  color: var(--hmi-cyan);
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  border-radius: 3px;
+  text-transform: uppercase;
+  transition: all 0.2s;
+}
+
+.hmi-button:hover:not(:disabled) {
+  background: var(--hmi-cyan);
+  color: var(--hmi-bg);
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.3);
+}
+
+.hmi-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  border-color: var(--hmi-border);
+  color: var(--text-muted);
+}
+
+.hmi-button.danger {
+  border-color: var(--hmi-fault);
+  color: var(--hmi-fault);
+}
+
+.hmi-button.danger:hover:not(:disabled) {
+  background: var(--hmi-fault);
+  color: var(--text-bright);
+  box-shadow: 0 0 8px rgba(255, 0, 85, 0.3);
+}
+
+.hmi-button.danger.active {
+  background: var(--hmi-fault);
+  color: var(--text-bright);
+  box-shadow: 0 0 10px rgba(255, 0, 85, 0.5);
+}
+
+/* 3D Viewer Container */
+.viewer-3d-container {
+  width: 100%;
+  height: 480px;
+  background: #040508;
+  border-radius: 4px;
+  border: 1px solid var(--hmi-border);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Layout responsive details */
+@media (max-width: 1200px) {
+  .scada-workspace {
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  .scada-console-panel {
+    width: 100%;
+    height: auto;
+    border-left: none;
+    border-top: 1px solid var(--hmi-border);
+  }
+  .scada-main-panel {
+    height: auto;
+  }
+  .scada-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

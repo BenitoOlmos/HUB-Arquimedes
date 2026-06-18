@@ -54,6 +54,7 @@ HOST_PORT_DB=20002
 HOST_PORT_REDIS=20003
 HOST_PORT_WEB=20004
 HOST_PORT_CENTRIFUGA=20000
+HOST_PORT_TALLERAUTOMOTRIZ=20005
 
 # VARIABLES DEL BACKEND
 DATABASE_URL="postgresql://admin_arquimedes:admin_password_secure@localhost:20002/arquimedes_database?schema=public"
@@ -62,6 +63,7 @@ JWT_SECRET="CualquierClaveLargaYSecreta123"
 # VISUALIZACION EN LA WEB
 WEB_URL="https://www.arquimedes.online"
 CENTRIFUGA_URL="https://centrifuga.arquimedes.online"
+TALLERAUTOMOTRIZ_URL="https://tallerautomotriz.arquimedes.online"
 
 # CREDENCIALES ZOHO MAIL
 SMTP_HOST="smtp.zoho.com"
@@ -101,5 +103,6 @@ echo "=== 🚀 Despliegue Completado con Éxito ==="
 echo "Acceso a servicios:"
 echo " - Portal Web: http://localhost:20004"
 echo " - Simulador Bomba (React): http://localhost:20000"
+echo " - ERP Taller Automotriz (React): http://localhost:20005"
 echo " - API Backend: http://localhost:20001"
 echo " - PostgreSQL: localhost:20002"

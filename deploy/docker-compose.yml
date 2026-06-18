@@ -47,6 +47,17 @@ services:
     depends_on:
       - backend
 
+  frontend-tallerautomotriz:
+    build:
+      context: ..
+      dockerfile: frontend/erp-taller-automotriz/Dockerfile
+    container_name: hub-arquimedes-frontend-tallerautomotriz
+    restart: always
+    ports:
+      - "${HOST_PORT_TALLERAUTOMOTRIZ:-20005}:80"
+    depends_on:
+      - backend
+
   frontend-web:
     build:
       context: ..
@@ -65,6 +76,7 @@ services:
       - TUNNEL_TOKEN=${TUNNEL_TOKEN}
     depends_on:
       - frontend-centrifuga
+      - frontend-tallerautomotriz
       - frontend-web
       - backend
 

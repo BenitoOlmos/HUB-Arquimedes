@@ -4,6 +4,7 @@
   "workspaces": [
     "backend/api-arquimedes",
     "frontend/centrifuga-arquimedes",
+    "frontend/erp-taller-automotriz",
     "shared-schemas"
   ]
 }

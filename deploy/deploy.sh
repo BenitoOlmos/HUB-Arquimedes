@@ -81,7 +81,7 @@ FINTECH_URL="https://fintech.arquimedes.online"
 SCADA_URL="https://scada.arquimedes.online"
 RETAIL_URL="https://retail.arquimedes.online"
 SMARTCITY_URL="https://smartcity.arquimedes.online"
-INDUSTRY40_URL="https://industry40.arquimedes.online"
+INDUSTRY40_URL="https://industry.arquimedes.online"
 HOSPITALITY_URL="https://hospitality.arquimedes.online"
 GREENTECH_URL="https://greentech.arquimedes.online"
 

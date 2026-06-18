@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   ClipboardList, 
   AlertTriangle, 
@@ -14,12 +14,215 @@ import {
 } from 'lucide-react';
 
 const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
-  const [activeTab, setActiveTab] = useState('detail'); // 'detail', 'telemetry', 'logs'
+  const [activeTab, setActiveTab] = useState('detail'); // 'detail', 'telemetry', 'logs', 'lubrication'
   const [selectedStageInfo, setSelectedStageInfo] = useState(null);
   const [techName, setTechName] = useState('');
   const [logDesc, setLogDesc] = useState('');
   const [logStatus, setLogStatus] = useState('');
   const [formError, setFormError] = useState('');
+
+  // States for Telemetry simulation inputs
+  const [simMaxHours, setSimMaxHours] = useState(20000);
+  const [simCurrentHours, setSimCurrentHours] = useState(0);
+  const [simVibration, setSimVibration] = useState(1.5);
+  const [simTemp, setSimTemp] = useState(45);
+  const [simNoise, setSimNoise] = useState('No');
+  const [generatedPlan, setGeneratedPlan] = useState(null);
+
+  // States for Lubrication custom notes
+  const [lubricationNotes, setLubricationNotes] = useState('');
+  const [lubNotesSaved, setLubNotesSaved] = useState(false);
+
+  // Sync simulation values when selectedPart changes
+  useEffect(() => {
+    if (selectedPart) {
+      setSimCurrentHours(selectedPart.operatingHours || 0);
+      
+      let lastVib = 1.5;
+      try {
+        const vData = typeof selectedPart.vibrationHistory === 'string'
+          ? JSON.parse(selectedPart.vibrationHistory)
+          : selectedPart.vibrationHistory || [];
+        if (vData.length > 0) lastVib = vData[vData.length - 1];
+      } catch (e) {}
+      
+      setSimVibration(lastVib);
+      setSimTemp(selectedPart.id === 'bearings' ? 42 : (selectedPart.id === 'motor' ? 55 : 30));
+      setSimNoise('No');
+      setGeneratedPlan(null);
+      
+      const savedNotes = localStorage.getItem(`lub_notes_${selectedPart.id}`);
+      setLubricationNotes(savedNotes || '');
+      setLubNotesSaved(false);
+    }
+  }, [selectedPart]);
+
+  const handleSaveLubNotes = () => {
+    localStorage.setItem(`lub_notes_${selectedPart.id}`, lubricationNotes);
+    setLubNotesSaved(true);
+    setTimeout(() => setLubNotesSaved(false), 2000);
+  };
+
+  const getRecommendedToolsForPart = (partId) => {
+    switch (partId) {
+      case 'bearings':
+        return "Extractor hidráulico de rodamientos, extractor de garras, calentador de inducción, juego de galgas de espesores, llaves dinamométricas, alineador láser de acoplamiento.";
+      case 'motor':
+        return "Megger de resistencia de aislamiento, multímetro, pinza amperimétrica, llaves de vaso, extractor de poleas, pistola de engrase manual con manómetro.";
+      case 'impeller':
+        return "Juego de llaves de vaso y corona, extractor de impulsor, mazo de bronce o goma, calibre vernier, eslingas textiles de izaje.";
+      case 'mechanical_seal':
+        return "Juego de llaves Allen, destornillador plano de precisión, extractor de sello, toallitas de limpieza libres de pelusa, lubricante de silicona para juntas tóricas.";
+      case 'volute_casing':
+        return "Llaves dinamométricas de alto torque, cáncamos de izaje, eslingas de cadena, espátula para limpieza de bridas, juntas de repuesto de grafito espiralado.";
+      default:
+        return "Juego de herramientas manuales de taller (llaves fijas, destornilladores, alicates), torquímetro, cinta métrica, EPP reglamentario.";
+    }
+  };
+
+  const getRecommendedTasksForPart = (partId, severity) => {
+    const actionWord = severity === 'Critical' ? 'Proceder al reemplazo urgente del' : 'Realizar inspección exhaustiva y mantenimiento preventivo del';
+    switch (partId) {
+      case 'bearings':
+        return `${actionWord} rodamiento radial/axial. Verificar desgaste de pistas de rodadura, holgura axial y rellenar con Grasa Sintética Mobilith SHC 100 en la cantidad especificada.`;
+      case 'motor':
+        return `${actionWord} motor eléctrico. Medir aislamiento de bobinados con Megger, comprobar corriente de arranque por fase, limpiar aletas de refrigeración y lubricar rodamientos con Mobil Polyrex EM.`;
+      case 'impeller':
+        return `${actionWord} impulsor. Inspeccionar álabes contra cavitación, remover incrustaciones, verificar holgura respecto a anillos de desgaste y realizar balanceo dinámico ISO G2.5.`;
+      case 'mechanical_seal':
+        return `${actionWord} sello mecánico. Inspeccionar caras de rozamiento (carbón/carburo de silicio), verificar estanqueidad del resorte, cambiar juntas tóricas de Viton y comprobar flujo del Plan de Lavado.`;
+      case 'volute_casing':
+        return `${actionWord} cuerpo de voluta. Medir espesor de pared por ultrasonido para descartar erosión abrasiva, limpiar voluta interna y renovar pernos y juntas espiraladas.`;
+      default:
+        return `${actionWord} componente afectado. Verificar alineación del eje de transmisión, reapretar pernos de fijación al torque especificado y limpiar superficies de contacto.`;
+    }
+  };
+
+  const handleGeneratePlan = (e) => {
+    e.preventDefault();
+    
+    let severity = 'Normal';
+    let recommendation = 'NORMAL: Operación estable dentro de los rangos nominales de diseño. Se sugiere continuar con el monitoreo rutinario.';
+    let finalStatus = 'Operational';
+    let finalStatusLabel = 'Operativo';
+    
+    if (simVibration >= 4.5 || simTemp >= 75) {
+      severity = 'Critical';
+      recommendation = 'CRÍTICO: Severidad alta detectada. Se sugiere DETENER el equipo de forma INMEDIATA para evitar un fallo catastrófico en el rodamiento o eje de transmisión.';
+      finalStatus = 'Replace';
+      finalStatusLabel = 'Reemplazo';
+    } else if (simVibration >= 2.8 || simTemp >= 65 || simCurrentHours >= simMaxHours || simNoise === 'Sí') {
+      severity = 'Warning';
+      recommendation = 'ALERTA: Desviación de parámetros detectada. Se sugiere detener el equipo en un MÁXIMO DE UNA SEMANA para una inspección física detallada y corrección preventiva.';
+      finalStatus = 'Inspect';
+      finalStatusLabel = 'Inspección';
+    }
+    
+    const workPlan = {
+      severity,
+      recommendation,
+      status: finalStatus,
+      statusLabel: finalStatusLabel,
+      steps: [
+        {
+          title: "1. Solicitar permisos de trabajo",
+          desc: "Obtener Permiso de Trabajo en Caliente/Frío, firmar el análisis de riesgos (AST) y aplicar bloqueo de energía de alimentación (candado LOTO) en la consola eléctrica principal."
+        },
+        {
+          title: "2. Recopilar información técnica del equipo",
+          desc: `Revisar el manual de fabricante del componente ${selectedPart.spanishName || selectedPart.name}, tolerancias de holgura y torque de apriete nominal.`
+        },
+        {
+          title: "3. Recolectar las herramientas propuestas para la tarea",
+          desc: getRecommendedToolsForPart(selectedPart.id)
+        },
+        {
+          title: "4. Detallar las tareas a realizar en el equipo",
+          desc: getRecommendedTasksForPart(selectedPart.id, severity)
+        },
+        {
+          title: "5. Entrega del equipo y despeje del área de trabajo para producción",
+          desc: "Retirar herramientas, limpiar derrames de lubricante/agua, retirar candado de bloqueo LOTO y realizar prueba en vacío antes de autorizar la entrega formal a operaciones."
+        }
+      ]
+    };
+    
+    setGeneratedPlan(workPlan);
+    
+    // Save to Part's Bitácora (via onAddLog)
+    onAddLog(selectedPart.id, {
+      tech: "Simulador de Escenarios",
+      desc: `Simulación de escenario operativo. Diagnóstico: ${recommendation}. Parámetros ingresados: Vida: ${simCurrentHours}/${simMaxHours} Hrs, Vib: ${simVibration} mm/s RMS, Temp: ${simTemp}°C, Ruido anormal: ${simNoise}.`,
+      status: finalStatus
+    });
+    
+    // Also save to global History logs (shared in localStorage)
+    const newGlobalLog = {
+      id: `hlog-sim-${Date.now()}`,
+      date: new Date().toISOString().split('T')[0],
+      tech: "Simulador de Escenarios",
+      action: `Escenario simulado - ${selectedPart.spanishName || selectedPart.name}`,
+      status: finalStatus,
+      statusLabel: finalStatusLabel,
+      component: selectedPart.spanishName || selectedPart.name,
+      details: `Plan de trabajo generado por simulación. Recomendación: ${recommendation}. Variables: Horas: ${simCurrentHours}/${simMaxHours}, Vib: ${simVibration} mm/s, Temp: ${simTemp}°C, Ruido: ${simNoise}.`,
+      duration: '1.0 Hrs'
+    };
+    
+    try {
+      const saved = localStorage.getItem('hub_historical_logs');
+      const historicalLogs = [
+        {
+          id: 'hlog-1',
+          date: '2026-05-20',
+          tech: 'Ing. Carlos Mendoza',
+          action: 'Alineación láser de acoplamiento y balanceo de rodete',
+          status: 'Operational',
+          statusLabel: 'Operativo',
+          component: 'Eje y Acoplamiento',
+          details: 'Se detectó vibración elevada (3.8 mm/s RMS) en rodamiento radial del cuerpo de la bomba. Se procedió con alineación láser de precisión usando shims calibrados. Desviación final residual angular de 0.02 mm (tolerancia nominal < 0.05 mm). Se balanceó estáticamente el rodete retirando 4g de material acumulado por sedimentos.',
+          duration: '3.5 Hrs'
+        },
+        {
+          id: 'hlog-2',
+          date: '2026-04-12',
+          tech: 'Tec. Andrés Silva',
+          action: 'Reemplazo de sello mecánico e inspección de rodete',
+          status: 'Operational',
+          statusLabel: 'Operativo',
+          component: 'Sello Mecánico / Carcasa',
+          details: 'Goteo continuo observado en prensaestopas superando límites de diseño. Desmontaje completo del prensa, eje e impulsor. Se instaló sello mecánico de cartucho de silicio-silicio con juntas tóricas de Viton. Inspección de álabes del rodete no mostró desgaste abrasivo ni cavitación tipo panal. Limpieza interna de voluta completada.',
+          duration: '5.0 Hrs'
+        },
+        {
+          id: 'hlog-3',
+          date: '2026-03-05',
+          tech: 'Ing. Marina Riquelme',
+          action: 'Engrase y limpieza de rodamientos de motor',
+          status: 'Operational',
+          statusLabel: 'Operativo',
+          component: 'Motor Eléctrico - Cojinetes',
+          details: 'Mantenimiento preventivo cíclico. Limpieza de cámara de rodamientos del motor eléctrico de 5.5 kW. Inyección de grasa sintética Mobilith SHC 100 en cojinete delantero y trasero. La temperatura de operación nominal del estator disminuyó de 58°C a 44°C tras completar el servicio de lubricación.',
+          duration: '2.0 Hrs'
+        },
+        {
+          id: 'hlog-4',
+          date: '2026-01-15',
+          tech: 'Tec. Jorge Oyarzún',
+          action: 'Puesta en marcha e instrumentación inicial (IoT)',
+          status: 'Operational',
+          statusLabel: 'Operativo',
+          component: 'Bomba Completa',
+          details: 'Montaje inicial e instalación de la bomba centrífuga estándar GLB en el banco de ensayos del Laboratorio de Hidráulica. Calibración de transductores de presión piezoeléctricos (succión/descarga), sensor infrarrojo de cojinete y acelerómetro triaxial de vibraciones. Comprobación de sentido de giro del eje motor exitosa.',
+          duration: '8.0 Hrs'
+        }
+      ];
+      const currentGlobal = saved ? JSON.parse(saved) : historicalLogs;
+      localStorage.setItem('hub_historical_logs', JSON.stringify([newGlobalLog, ...currentGlobal]));
+    } catch (err) {
+      console.warn("Could not save to global logs in localStorage", err);
+    }
+  };
 
   if (loading) {
     return (
@@ -513,11 +716,26 @@ const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
 
           {/* Current State Pulsing Circle Indicator */}
           <g>
-            <circle cx={dotX} cy={dotY} r="6" fill={dotColor} opacity="0.4">
+            <circle 
+              cx={dotX} 
+              cy={dotY} 
+              r="6" 
+              fill={dotColor} 
+              opacity="0.4"
+              style={{ transition: 'cx 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), cy 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), fill 0.6s ease' }}
+            >
               <animate attributeName="r" values="6;12;6" dur="2s" repeatCount="indefinite" />
               <animate attributeName="opacity" values="0.8;0;0.8" dur="2s" repeatCount="indefinite" />
             </circle>
-            <circle cx={dotX} cy={dotY} r="4.5" fill={dotColor} stroke="#ffffff" strokeWidth="1.5" />
+            <circle 
+              cx={dotX} 
+              cy={dotY} 
+              r="4.5" 
+              fill={dotColor} 
+              stroke="#ffffff" 
+              strokeWidth="1.5" 
+              style={{ transition: 'cx 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), cy 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), fill 0.6s ease' }}
+            />
           </g>
 
           {/* Labels */}
@@ -644,14 +862,14 @@ const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
           className={`sidebar-tab ${activeTab === 'detail' ? 'active' : ''}`}
         >
           <ClipboardList size={14} />
-          Ficha Técnica
+          Ficha
         </button>
         <button 
           onClick={() => setActiveTab('telemetry')}
           className={`sidebar-tab ${activeTab === 'telemetry' ? 'active' : ''}`}
         >
           <Activity size={14} />
-          Telemetría y Uso
+          Telemetría
         </button>
         <button 
           onClick={() => setActiveTab('logs')}
@@ -659,6 +877,13 @@ const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
         >
           <FileText size={14} />
           Bitácora ({logsData.length})
+        </button>
+        <button 
+          onClick={() => setActiveTab('lubrication')}
+          className={`sidebar-tab ${activeTab === 'lubrication' ? 'active' : ''}`}
+        >
+          <Wrench size={14} />
+          Lubricación
         </button>
       </div>
 
@@ -670,7 +895,7 @@ const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
           {renderLifecycleStepper(lifecycleStage)}
 
           {/* Bathtub Curve Graphic */}
-          {renderBathtubCurve(lifecycleStage)}
+          {renderBathtubCurve(selectedStageInfo || lifecycleStage)}
 
           {/* Render expanded stage info here */}
           {selectedStageInfo && renderStageInfoContent(selectedStageInfo)}
@@ -795,6 +1020,145 @@ const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
               <span>{selectedPart.maintenanceInterval}</span>
             </div>
           </div>
+
+          {/* Simulation of scenarios */}
+          <div style={{
+            marginTop: '16px',
+            borderTop: '1px solid var(--border-glass)',
+            paddingTop: '16px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '12px'
+          }}>
+            <h4 style={{ fontSize: '0.82rem', fontWeight: '800', color: 'var(--accent-indigo)', display: 'flex', alignItems: 'center', gap: '6px', margin: 0 }}>
+              <Activity size={14} /> Simulador de Escenarios Operativos
+            </h4>
+            <p style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', lineHeight: '1.35', margin: 0 }}>
+              Ingresa variables de terreno para evaluar el impacto en la fiabilidad del componente y generar planes de trabajo automáticos.
+            </p>
+
+            <form onSubmit={handleGeneratePlan} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                  <label style={{ fontSize: '0.65rem', fontWeight: '700', color: 'var(--text-secondary)' }}>Vida de Diseño (Hrs)</label>
+                  <input 
+                    type="number"
+                    value={simMaxHours}
+                    onChange={(e) => setSimMaxHours(parseInt(e.target.value) || 0)}
+                    className="premium-input"
+                    style={{ padding: '6px', fontSize: '0.78rem' }}
+                  />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                  <label style={{ fontSize: '0.65rem', fontWeight: '700', color: 'var(--text-secondary)' }}>Uso Actual (Hrs)</label>
+                  <input 
+                    type="number"
+                    value={simCurrentHours}
+                    onChange={(e) => setSimCurrentHours(parseInt(e.target.value) || 0)}
+                    className="premium-input"
+                    style={{ padding: '6px', fontSize: '0.78rem' }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                  <label style={{ fontSize: '0.65rem', fontWeight: '700', color: 'var(--text-secondary)' }}>Vibración (mm/s RMS)</label>
+                  <input 
+                    type="number"
+                    step="0.1"
+                    value={simVibration}
+                    onChange={(e) => setSimVibration(parseFloat(e.target.value) || 0)}
+                    className="premium-input"
+                    style={{ padding: '6px', fontSize: '0.78rem' }}
+                  />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                  <label style={{ fontSize: '0.65rem', fontWeight: '700', color: 'var(--text-secondary)' }}>Temperatura (°C)</label>
+                  <input 
+                    type="number"
+                    step="1"
+                    value={simTemp}
+                    onChange={(e) => setSimTemp(parseInt(e.target.value) || 0)}
+                    className="premium-input"
+                    style={{ padding: '6px', fontSize: '0.78rem' }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                <label style={{ fontSize: '0.65rem', fontWeight: '700', color: 'var(--text-secondary)' }}>Presencia de Ruidos Anormales</label>
+                <select
+                  value={simNoise}
+                  onChange={(e) => setSimNoise(e.target.value)}
+                  className="premium-select"
+                  style={{ padding: '6px', fontSize: '0.78rem' }}
+                >
+                  <option value="No">No, sonido nominal estable</option>
+                  <option value="Sí">Sí, golpeteo metálico o chirrido</option>
+                </select>
+              </div>
+
+              <button 
+                type="submit" 
+                className="premium-btn active"
+                style={{ 
+                  marginTop: '6px', 
+                  padding: '8px', 
+                  fontSize: '0.78rem',
+                  background: 'var(--accent-indigo)',
+                  border: 'none',
+                  color: 'white',
+                  cursor: 'pointer',
+                  fontWeight: 'bold',
+                  borderRadius: '6px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '6px',
+                  boxShadow: '0 4px 10px rgba(99, 102, 241, 0.2)'
+                }}
+              >
+                <Wrench size={12} />
+                Generar Plan de Trabajo y Registrar
+              </button>
+            </form>
+          </div>
+
+          {/* Generated Plan Deployment */}
+          {generatedPlan && (
+            <div style={{
+              marginTop: '12px',
+              background: generatedPlan.severity === 'Critical' ? 'rgba(239, 68, 68, 0.05)' : 'rgba(245, 158, 11, 0.05)',
+              border: `1px solid ${generatedPlan.severity === 'Critical' ? 'var(--status-replace)' : 'var(--status-inspect)'}`,
+              borderRadius: '10px',
+              padding: '14px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '8px',
+              animation: 'fade-in-tooltip 0.3s ease'
+            }}>
+              <h4 style={{ fontSize: '0.82rem', fontWeight: '800', color: generatedPlan.severity === 'Critical' ? 'var(--status-replace)' : 'var(--status-inspect)', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <AlertTriangle size={14} /> Plan de Mantenimiento Sugerido
+              </h4>
+              <p style={{ fontSize: '0.74rem', color: 'var(--text-primary)', lineHeight: '1.4', margin: 0, fontWeight: 'bold' }}>
+                {generatedPlan.recommendation}
+              </p>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '6px', borderTop: '1px dashed var(--border-glass)', paddingTop: '10px' }}>
+                <span style={{ fontSize: '0.68rem', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Plan de Trabajo Paso a Paso:</span>
+                {generatedPlan.steps.map((st, i) => (
+                  <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: '2px', paddingLeft: '4px', borderLeft: '2px solid var(--border-glass)' }}>
+                    <strong style={{ fontSize: '0.74rem', color: 'var(--text-primary)' }}>{st.title}</strong>
+                    <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', lineHeight: '1.35' }}>{st.desc}</span>
+                  </div>
+                ))}
+              </div>
+              <span style={{ fontSize: '0.62rem', color: 'var(--text-muted)', textAlign: 'center', marginTop: '6px' }}>
+                💾 Registrado automáticamente en el historial de bitácoras del componente.
+              </span>
+            </div>
+          )}
         </div>
       )}
 
@@ -915,6 +1279,139 @@ const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
                 </div>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Tab 4: LUBRICATION */}
+      {activeTab === 'lubrication' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div style={{ background: 'var(--bg-sidebar-header)', padding: '14px', borderRadius: '12px', border: '1px solid var(--border-glass)' }}>
+            <h3 style={{ fontSize: '0.9rem', fontWeight: '800', color: 'var(--accent-cyan)', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px', margin: 0 }}>
+              <Wrench size={16} /> Gestión de Lubricación de la Bomba
+            </h3>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', lineHeight: '1.4', margin: 0 }}>
+              Base de datos industrial y recomendaciones automáticas basadas en la carga, potencia y horas de servicio del equipo.
+            </p>
+          </div>
+
+          {/* Recommended specs table */}
+          <div style={{ background: 'var(--bg-sidebar-header)', padding: '14px', borderRadius: '12px', border: '1px solid var(--border-glass)', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <span style={{ fontSize: '0.72rem', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              Especificación Industrial de Lubricantes
+            </span>
+            
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', fontSize: '0.72rem', borderCollapse: 'collapse', textAlign: 'left' }}>
+                <thead>
+                  <tr style={{ borderBottom: '1px solid var(--border-glass)' }}>
+                    <th style={{ padding: '6px', color: 'var(--text-muted)' }}>Componente</th>
+                    <th style={{ padding: '6px', color: 'var(--text-muted)' }}>Lubricante</th>
+                    <th style={{ padding: '6px', color: 'var(--text-muted)' }}>Cantidad</th>
+                    <th style={{ padding: '6px', color: 'var(--text-muted)' }}>Frecuencia</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
+                    <td style={{ padding: '6px', fontWeight: 'bold' }}>Rodamientos</td>
+                    <td style={{ padding: '6px' }}>Mobilith SHC 100</td>
+                    <td style={{ padding: '6px' }}>45g / cojinete</td>
+                    <td style={{ padding: '6px' }}>4000 h</td>
+                  </tr>
+                  <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
+                    <td style={{ padding: '6px', fontWeight: 'bold' }}>Motor Eléctrico</td>
+                    <td style={{ padding: '6px' }}>Mobil Polyrex EM</td>
+                    <td style={{ padding: '6px' }}>30g / rodamiento</td>
+                    <td style={{ padding: '6px' }}>6000 h</td>
+                  </tr>
+                  <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
+                    <td style={{ padding: '6px', fontWeight: 'bold' }}>Sello Mecánico</td>
+                    <td style={{ padding: '6px' }}>Aceite Silicona / Plan 11</td>
+                    <td style={{ padding: '6px' }}>Constante (Lavado)</td>
+                    <td style={{ padding: '6px' }}>Continuo</td>
+                  </tr>
+                  <tr>
+                    <td style={{ padding: '6px', fontWeight: 'bold' }}>Eje / Camisas</td>
+                    <td style={{ padding: '6px' }}>Grasa Grafito (Juntas)</td>
+                    <td style={{ padding: '6px' }}>Película delgada</td>
+                    <td style={{ padding: '6px' }}>Montaje</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Dynamic recommendations */}
+          <div style={{ 
+            background: 'rgba(6, 182, 212, 0.04)', 
+            border: '1px solid var(--border-glass-active)', 
+            borderRadius: '12px', 
+            padding: '14px' 
+          }}>
+            <h4 style={{ fontSize: '0.78rem', fontWeight: '800', color: 'var(--accent-cyan)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px', margin: 0 }}>
+              <TrendingUp size={12} /> Recomendaciones Dinámicas
+            </h4>
+            
+            {/* Logic for recommendations */}
+            {selectedPart.id === 'bearings' ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '8px' }}>
+                <p>Lubricante recomendado: <strong>Mobilith SHC 100 (Grasa sintética)</strong></p>
+                <p>Cantidad de inyección sugerida: <strong>45 gramos</strong> por punto.</p>
+                <p>Intervalo normal: <strong>4,000 Horas</strong> o 6 meses.</p>
+                <div style={{ marginTop: '4px', padding: '8px', borderRadius: '6px', background: simCurrentHours >= 4000 ? 'rgba(239, 68, 68, 0.08)' : 'rgba(16, 185, 129, 0.08)', border: `1px solid ${simCurrentHours >= 4000 ? 'var(--status-replace)' : 'var(--status-operational)'}`, color: simCurrentHours >= 4000 ? 'var(--status-replace)' : 'var(--status-operational)', fontWeight: 'bold' }}>
+                  {simCurrentHours >= 4000 
+                    ? "🔴 URGENTE: Las horas acumuladas exceden el límite recomendado de lubricación. Se requiere inyección de grasa inmediata."
+                    : "🟢 ÓPTIMO: Lubricación vigente. Se sugiere monitorear vibración y temperatura superficial regularmente."}
+                </div>
+              </div>
+            ) : selectedPart.id === 'motor' ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '8px' }}>
+                <p>Lubricante recomendado: <strong>Mobil Polyrex EM (Especificación polímero/litio)</strong></p>
+                <p>Cantidad de inyección sugerida: <strong>30 gramos</strong> por rodamiento.</p>
+                <p>Intervalo normal: <strong>6,000 Horas</strong> o 12 meses.</p>
+                <div style={{ marginTop: '4px', padding: '8px', borderRadius: '6px', background: simCurrentHours >= 6000 ? 'rgba(239, 68, 68, 0.08)' : 'rgba(16, 185, 129, 0.08)', border: `1px solid ${simCurrentHours >= 6000 ? 'var(--status-replace)' : 'var(--status-operational)'}`, color: simCurrentHours >= 6000 ? 'var(--status-replace)' : 'var(--status-operational)', fontWeight: 'bold' }}>
+                  {simCurrentHours >= 6000 
+                    ? "🔴 URGENTE: Rodamientos del motor requieren relubricación inmediata para evitar daño en las bobinas por sobrecalentamiento."
+                    : "🟢 ÓPTIMO: Estado del lubricante óptimo. Programado para engrase rutinario anual."}
+                </div>
+              </div>
+            ) : (
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '8px' }}>
+                Este componente ({selectedPart.spanishName || selectedPart.name}) no requiere lubricación directa. Se aconseja vigilar el estado de los sellos mecánicos adyacentes y la temperatura del cuerpo de rodamientos de la bomba.
+              </div>
+            )}
+          </div>
+
+          {/* Custom Notes Section */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            <label style={{ fontSize: '0.72rem', fontWeight: '800', color: 'var(--text-secondary)' }}>Observaciones Adicionales (Profesor / Alumno)</label>
+            <textarea
+              placeholder="Escribe recomendaciones personalizadas sobre la lubricación de este componente..."
+              value={lubricationNotes}
+              onChange={(e) => setLubricationNotes(e.target.value)}
+              className="premium-textarea"
+              rows={3}
+              style={{ fontSize: '0.78rem' }}
+            />
+            <button 
+              onClick={handleSaveLubNotes}
+              className="premium-btn"
+              style={{ 
+                alignSelf: 'flex-end', 
+                padding: '6px 12px', 
+                fontSize: '0.75rem',
+                background: lubNotesSaved ? 'var(--status-operational)' : 'var(--accent-indigo)',
+                border: 'none',
+                color: 'white',
+                cursor: 'pointer',
+                fontWeight: 'bold',
+                borderRadius: '6px',
+                transition: 'all 0.2s ease',
+                marginTop: '4px'
+              }}
+            >
+              {lubNotesSaved ? "✓ Notas Guardadas" : "Guardar Observaciones"}
+            </button>
           </div>
         </div>
       )}

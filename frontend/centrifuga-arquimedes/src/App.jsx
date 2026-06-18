@@ -8,7 +8,8 @@ import DiagnosisPanel from './components/UI/DiagnosisPanel';
 import SecurityPanel from './components/UI/SecurityPanel';
 import HistoryPanel from './components/UI/HistoryPanel';
 import { usePumpSimulation } from './hooks/usePumpSimulation';
-import { RotateCcw, Activity, HelpCircle, Eye, EyeOff, BookOpen, ClipboardList, ShieldCheck, BarChart3, Menu, X } from 'lucide-react';
+import { RotateCcw, Activity, HelpCircle, Eye, EyeOff, BookOpen, ClipboardList, ShieldCheck, BarChart3, Menu, X, User, Wrench } from 'lucide-react';
+import ScrewCalculatorPanel from './components/UI/ScrewCalculatorPanel';
 
 function App() {
   const [currentView, setCurrentView] = useState('simulator'); // 'simulator', 'pedagogy', 'diagnosis', 'security'
@@ -31,6 +32,8 @@ function App() {
   const [sidebarWidth, setSidebarWidth] = useState(380);
   const [isResizing, setIsResizing] = useState(false);
   const [controlsExpanded, setControlsExpanded] = useState(window.innerWidth > 768);
+  const [userRole, setUserRole] = useState('Leader'); // 'Tech' or 'Leader'
+
   
   const {
     explodeFactor,
@@ -156,7 +159,37 @@ function App() {
             <BarChart3 size={14} />
             <span>Historial e Informes</span>
           </button>
+          <button 
+            className={`nav-tab ${currentView === 'screws' ? 'active' : ''}`}
+            onClick={() => setCurrentView('screws')}
+          >
+            <Wrench size={14} />
+            <span>Cálculo de Pernos</span>
+          </button>
         </nav>
+
+        {/* User Role Selector */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(255, 255, 255, 0.08)', padding: '4px 10px', borderRadius: '20px', border: '1px solid var(--border-glass)', marginRight: '12px', flexShrink: 0 }}>
+          <User size={12} style={{ color: 'var(--accent-cyan)' }} />
+          <select 
+            value={userRole} 
+            onChange={(e) => setUserRole(e.target.value)}
+            className="premium-select"
+            style={{ 
+              padding: '2px 4px', 
+              fontSize: '0.78rem', 
+              background: 'transparent', 
+              border: 'none', 
+              color: 'var(--text-primary)', 
+              fontWeight: '700', 
+              cursor: 'pointer',
+              outline: 'none'
+            }}
+          >
+            <option value="Tech" style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)' }}>Técnico</option>
+            <option value="Leader" style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)' }}>Líder</option>
+          </select>
+        </div>
         
         {/* Hamburger Menu Toggle Button (Mobile-only) */}
         <button 
@@ -220,6 +253,16 @@ function App() {
           >
             <BarChart3 size={16} />
             <span>Historial e Informes</span>
+          </button>
+          <button 
+            className={`mobile-nav-item ${currentView === 'screws' ? 'active' : ''}`}
+            onClick={() => {
+              setCurrentView('screws');
+              setMobileMenuOpen(false);
+            }}
+          >
+            <Wrench size={16} />
+            <span>Cálculo de Pernos</span>
           </button>
         </nav>
       )}
@@ -487,7 +530,8 @@ function App() {
             {currentView === 'pedagogy' && <PedagogyPanel />}
             {currentView === 'diagnosis' && <DiagnosisPanel />}
             {currentView === 'security' && <SecurityPanel />}
-            {currentView === 'history' && <HistoryPanel />}
+            {currentView === 'history' && <HistoryPanel userRole={userRole} />}
+            {currentView === 'screws' && <ScrewCalculatorPanel />}
           </div>
         )}
       </main>

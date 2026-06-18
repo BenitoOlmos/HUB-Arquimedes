@@ -61,6 +61,72 @@ const SecurityPanel = () => {
     return 'var(--status-operational)';
   };
 
+  const renderContextualTempChart = (currentVal, label, limitNorm, limitCrit, maxScale = 120) => {
+    const pctNorm = (limitNorm / maxScale) * 100;
+    const pctCrit = ((limitCrit - limitNorm) / maxScale) * 100;
+    const pctDanger = ((maxScale - limitCrit) / maxScale) * 100;
+    const pctPointer = Math.min(100, Math.max(0, (currentVal / maxScale) * 100));
+    
+    let pointerColor = 'var(--status-operational)';
+    if (currentVal >= limitCrit) {
+      pointerColor = 'var(--status-replace)';
+    } else if (currentVal >= limitNorm) {
+      pointerColor = 'var(--status-inspect)';
+    }
+
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', width: '100%', marginTop: '6px' }}>
+        {label && (
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', fontWeight: 'bold', color: 'var(--text-secondary)' }}>
+            <span>{label}</span>
+            <span style={{ color: pointerColor, fontFamily: 'monospace' }}>{currentVal.toFixed(1)}°C</span>
+          </div>
+        )}
+        
+        {/* Horizontal bar containing the 3 zones */}
+        <div style={{ position: 'relative', height: '14px', width: '100%', borderRadius: '4px', display: 'flex', overflow: 'hidden', border: '1px solid rgba(0,0,0,0.08)' }}>
+          {/* Normal Zone */}
+          <div style={{ width: `${pctNorm}%`, background: 'linear-gradient(90deg, #10b981 0%, #34d399 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ fontSize: '0.55rem', color: '#ffffff', fontWeight: 'bold' }}>Norm</span>
+          </div>
+          {/* Warning Zone */}
+          <div style={{ width: `${pctCrit}%`, background: 'linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ fontSize: '0.55rem', color: '#ffffff', fontWeight: 'bold' }}>Prev</span>
+          </div>
+          {/* Critical Zone */}
+          <div style={{ width: `${pctDanger}%`, background: 'linear-gradient(90deg, #ef4444 0%, #f87171 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ fontSize: '0.55rem', color: '#ffffff', fontWeight: 'bold' }}>Crit</span>
+          </div>
+        </div>
+
+        {/* Ruler with ticks */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.6rem', color: 'var(--text-muted)', fontFamily: 'monospace', padding: '0 2px', marginTop: '1px' }}>
+          <span>0°C</span>
+          <span>{limitNorm}°C</span>
+          <span>{limitCrit}°C</span>
+          <span>{maxScale}°C</span>
+        </div>
+
+        {/* Current reading pointer */}
+        <div style={{ position: 'relative', width: '100%', height: '8px', marginTop: '-14px', pointerEvents: 'none' }}>
+          <div style={{ 
+            position: 'absolute', 
+            left: `calc(${pctPointer}% - 5px)`, 
+            top: '-2px',
+            width: '10px', 
+            height: '10px', 
+            background: '#ffffff', 
+            border: `2.5px solid ${pointerColor}`,
+            borderRadius: '50%',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
+            transition: 'left 0.4s ease, border-color 0.4s ease',
+            zIndex: 10
+          }}></div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto', color: 'var(--text-primary)', display: 'flex', flexDirection: 'column', gap: '24px', width: '100%' }}>
       
@@ -95,7 +161,7 @@ const SecurityPanel = () => {
               <ShieldCheck size={18} color="var(--status-operational)" style={{ flexShrink: 0, marginTop: '2px' }} />
               <div>
                 <strong style={{ fontSize: '0.85rem', color: 'var(--text-primary)', display: 'block', marginBottom: '2px' }}>Protocolo LOTO (Bloqueo y Etiquetado)</strong>
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>El estudiante aprende la secuencia obligatoria de bloqueo de disyuntores mecánicos/eléctricos y colocación de candados de seguridad antes de manipular las piezas.</span>
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>El estudiante aprende la sequence obligatoria de bloqueo de disyuntores mecánicos/eléctricos y colocación de candados de seguridad antes de manipular las piezas.</span>
               </div>
             </div>
           </div>
@@ -172,26 +238,44 @@ const SecurityPanel = () => {
           </div>
         </div>
 
-        {/* Warning Banner if failMode active */}
+        {/* Warning Banner with visual contextual temperature charts if thermal failMode active */}
         {failMode !== 'normal' && (
           <div style={{ 
             background: 'rgba(220, 38, 38, 0.06)', 
-            border: '1px solid var(--status-replace)', 
-            padding: '12px 16px', 
-            borderRadius: '8px', 
+            border: '2px solid var(--status-replace)', 
+            padding: '16px', 
+            borderRadius: '10px', 
             display: 'flex', 
-            gap: '10px', 
-            alignItems: 'center',
-            color: 'var(--status-replace)',
+            flexDirection: 'column',
+            gap: '12px',
+            color: 'var(--text-primary)',
             fontSize: '0.88rem'
           }}>
-            <AlertOctagon size={20} style={{ flexShrink: 0 }} />
-            <div>
-              <strong>ALARMA GENERAL DE PLANTA:</strong>{' '}
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', color: 'var(--status-replace)' }}>
+              <AlertOctagon size={22} style={{ flexShrink: 0 }} />
+              <strong style={{ fontSize: '0.92rem', textTransform: 'uppercase' }}>ALARMA CRÍTICA DE PLANTA:</strong>
+            </div>
+            <div style={{ fontWeight: '500', color: 'var(--text-secondary)', lineHeight: '1.4' }}>
               {failMode === 'cavitation' && 'Se detecta caída drástica de presión hidráulica e incremento destructivo de vibraciones en bomba (Posible obstrucción en succión).'}
               {failMode === 'bearing' && 'Temperatura límite superada en rodamiento radial de la bomba. Peligro de gripado del eje.'}
               {failMode === 'overheat' && 'Bobinados del estator registran temperatura crítica (>95°C). Alta corriente y peligro de daño del aislamiento.'}
             </div>
+            
+            {(failMode === 'bearing' || failMode === 'overheat') && (
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', 
+                gap: '16px', 
+                background: 'rgba(0,0,0,0.02)', 
+                padding: '14px', 
+                borderRadius: '8px', 
+                border: '1px solid var(--border-glass)',
+                marginTop: '6px'
+              }}>
+                {renderContextualTempChart(bearingTemp, 'Contraste Térmico: Rodamientos de Bomba', 65, 80)}
+                {renderContextualTempChart(coilTemp, 'Contraste Térmico: Bobinas Estator Motor', 80, 95)}
+              </div>
+            )}
           </div>
         )}
 
@@ -225,8 +309,8 @@ const SecurityPanel = () => {
             </div>
           </div>
 
-          {/* Temperature gauges */}
-          <div style={{ border: '1px solid var(--border-glass)', padding: '16px', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          {/* Temperature gauges with integrated contextual range bar charts */}
+          <div style={{ border: '1px solid var(--border-glass)', padding: '16px', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <Thermometer size={14} color="var(--status-inspect)" /> Temp. Rodamientos
             </span>
@@ -237,9 +321,10 @@ const SecurityPanel = () => {
               </div>
               <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Nominal: &lt; 65 °C</span>
             </div>
+            {renderContextualTempChart(bearingTemp, '', 65, 80)}
           </div>
 
-          <div style={{ border: '1px solid var(--border-glass)', padding: '16px', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <div style={{ border: '1px solid var(--border-glass)', padding: '16px', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <Thermometer size={14} color="var(--status-inspect)" /> Temp. Bobinas Motor
             </span>
@@ -250,6 +335,7 @@ const SecurityPanel = () => {
               </div>
               <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Nominal: &lt; 80 °C</span>
             </div>
+            {renderContextualTempChart(coilTemp, '', 80, 95)}
           </div>
 
           {/* Vibration gauge */}

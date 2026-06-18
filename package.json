@@ -13,6 +13,8 @@
     "frontend/retail-analytics-engine",
     "frontend/smart-city-hub",
     "frontend/industry40-digital-twin",
+    "frontend/hospitality-erp",
+    "frontend/greentech-esg-tracker",
     "shared-schemas"
   ]
 }

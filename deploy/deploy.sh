@@ -62,6 +62,8 @@ HOST_PORT_SCADA=20010
 HOST_PORT_RETAIL=20011
 HOST_PORT_SMARTCITY=20012
 HOST_PORT_INDUSTRY40=20013
+HOST_PORT_HOSPITALITY=20014
+HOST_PORT_GREENTECH=20015
 
 # VARIABLES DEL BACKEND
 DATABASE_URL="postgresql://admin_arquimedes:admin_password_secure@localhost:20002/arquimedes_database?schema=public"
@@ -78,6 +80,10 @@ SCADA_URL="https://scada.arquimedes.online"
 RETAIL_URL="https://retail.arquimedes.online"
 SMARTCITY_URL="https://smartcity.arquimedes.online"
 INDUSTRY40_URL="https://industry40.arquimedes.online"
+HOSPITALITY_URL="https://hospitality.arquimedes.online"
+GREENTECH_URL="https://greentech.arquimedes.online"
+
+
 
 # CREDENCIALES ZOHO MAIL
 SMTP_HOST="smtp.zoho.com"
@@ -125,5 +131,7 @@ echo " - SCADA Panel (React): http://localhost:20010"
 echo " - Retail Analytics (React): http://localhost:20011"
 echo " - Smart City Hub (React): http://localhost:20012"
 echo " - Industry 4.0 Digital Twin (React): http://localhost:20013"
+echo " - Hospitality ERP (React): http://localhost:20014"
+echo " - GreenTech ESG Tracker (React): http://localhost:20015"
 echo " - API Backend: http://localhost:20001"
 echo " - PostgreSQL: localhost:20002"

@@ -135,6 +135,28 @@ services:
     depends_on:
       - backend
 
+  frontend-hospitality:
+    build:
+      context: ..
+      dockerfile: frontend/hospitality-erp/Dockerfile
+    container_name: hub-arquimedes-frontend-hospitality
+    restart: always
+    ports:
+      - "${HOST_PORT_HOSPITALITY:-20014}:80"
+    depends_on:
+      - backend
+
+  frontend-greentech:
+    build:
+      context: ..
+      dockerfile: frontend/greentech-esg-tracker/Dockerfile
+    container_name: hub-arquimedes-frontend-greentech
+    restart: always
+    ports:
+      - "${HOST_PORT_GREENTECH:-20015}:80"
+    depends_on:
+      - backend
+
   frontend-web:
     build:
       context: ..
@@ -161,6 +183,8 @@ services:
       - frontend-retail
       - frontend-smartcity
       - frontend-industry
+      - frontend-hospitality
+      - frontend-greentech
       - frontend-web
       - backend
 

@@ -1215,6 +1215,333 @@ async function main() {
   }
 
   console.log('Industry 4.0 Digital Twin seeding finished.');
+
+  console.log('Purging Hospitality tables...');
+  await prisma.housekeepingTask.deleteMany();
+  await prisma.hotelReservation.deleteMany();
+  await prisma.hotelRoom.deleteMany();
+  await prisma.revenueMetric.deleteMany();
+  await prisma.guestReview.deleteMany();
+
+  console.log('Seeding Hotel Rooms...');
+  const rooms = [];
+  // 3 floors, 8 rooms per floor
+  for (let floor = 1; floor <= 3; floor++) {
+    for (let r = 1; r <= 8; r++) {
+      const roomNum = `${floor}0${r}`;
+      let category = 'STANDARD';
+      let credits = 15;
+      if (floor === 2) {
+        category = 'DELUXE';
+        credits = 20;
+      } else if (floor === 3) {
+        category = 'SUITE';
+        credits = 30;
+      }
+
+      // Random initial status
+      let status = 'CLEAN';
+      if (r === 3 || r === 7) status = 'DIRTY';
+      if (r === 1 || r === 5) status = 'INSPECTED';
+      if (r === 8 && floor === 3) status = 'OUT_OF_ORDER';
+
+      const room = await prisma.hotelRoom.create({
+        data: {
+          roomNumber: roomNum,
+          category,
+          status,
+          cleaningCredits: credits
+        }
+      });
+      rooms.push(room);
+    }
+  }
+
+  console.log('Seeding Housekeeping Tasks...');
+  // Add some initial tasks for dirty rooms
+  const dirtyRooms = rooms.filter(rm => rm.status === 'DIRTY');
+  for (const dr of dirtyRooms) {
+    await prisma.housekeepingTask.create({
+      data: {
+        roomId: dr.id,
+        assignedTo: 'Unassigned',
+        status: 'PENDING',
+        credits: dr.cleaningCredits
+      }
+    });
+  }
+
+  console.log('Seeding Guest Reviews...');
+  const reviewsData = [
+    { score: 9, category: 'CLEANLINESS', comment: 'Habitación impecable y servicio de check-in rápido.', date: new Date(seedNow.getTime() - 2 * 24 * 3605 * 1000) },
+    { score: 3, category: 'SERVICE', comment: 'Overbooking! Me tuvieron esperando 2 horas en el lobby para reubicarme en otro hotel.', date: new Date(seedNow.getTime() - 4 * 24 * 3605 * 1000) },
+    { score: 5, category: 'CLEANLINESS', comment: 'El baño tenía toallas usadas cuando entramos. Housekeeping demoró mucho.', date: new Date(seedNow.getTime() - 5 * 24 * 3605 * 1000) },
+    { score: 8, category: 'VALUE_FOR_MONEY', comment: 'Excelente suite con linda vista, aunque la tarifa dinámica es algo elevada los fines de semana.', date: new Date(seedNow.getTime() - 6 * 24 * 3605 * 1000) },
+    { score: 10, category: 'SERVICE', comment: 'Personal muy amable. Resolvieron todas mis consultas al instante.', date: new Date(seedNow.getTime() - 1 * 24 * 3605 * 1000) }
+  ];
+  for (const rev of reviewsData) {
+    await prisma.guestReview.create({ data: rev });
+  }
+
+  console.log('Seeding Revenue Metrics...');
+  // Seed past 30 days of metrics
+  for (let i = 30; i >= 1; i--) {
+    const metricDate = new Date(seedNow.getTime() - i * 24 * 60 * 60 * 1000);
+    const isWeekend = metricDate.getDay() === 0 || metricDate.getDay() === 6;
+    const occupancyRate = isWeekend ? 0.8 + Math.random() * 0.15 : 0.4 + Math.random() * 0.25;
+    const adr = isWeekend ? 160 + Math.random() * 20 : 110 + Math.random() * 15;
+    const revpar = occupancyRate * adr;
+
+    await prisma.revenueMetric.create({
+      data: {
+        date: new Date(metricDate.toISOString().substring(0, 10) + 'T00:00:00Z'),
+        occupancyRate: parseFloat((occupancyRate * 100).toFixed(2)),
+        adr: parseFloat(adr.toFixed(2)),
+        revpar: parseFloat(revpar.toFixed(2))
+      }
+    });
+  }
+
+  console.log('Seeding Hotel Reservations (Pacing)...');
+  // Seed ~500 reservations: 250 in the past, 250 in the future
+  const guests = [
+    'Juan Pérez', 'María Rodríguez', 'John Doe', 'Alice Cooper', 'Bob Marley',
+    'Carlos Valdivia', 'Ana María Torres', 'Luis Silva', 'Sofía Vergara', 'Guillermo Coppola',
+    'Diego Maradona', 'Lionel Messi', 'Esteban Paredes', 'Pedro Pascal', 'Alexis Sánchez',
+    'Francisca Valenzuela', 'Mon Laferte', 'Jorge González', 'Claudio Arrau', 'Gabriela Mistral'
+  ];
+  const channels = ['DIRECT', 'OTA', 'CORPORATE'];
+
+  const reservations = [];
+
+  for (let i = -30; i <= 30; i++) {
+    const checkInDate = new Date(seedNow.getTime() + i * 24 * 60 * 60 * 1000);
+    checkInDate.setHours(15, 0, 0, 0);
+
+    const lengthOfStay = 1 + Math.floor(Math.random() * 4); // 1-4 nights
+    const checkOutDate = new Date(checkInDate.getTime() + lengthOfStay * 24 * 60 * 60 * 1000);
+    checkOutDate.setHours(11, 0, 0, 0);
+
+    // Number of bookings arriving on this day: 3 to 10
+    const numBookings = 3 + Math.floor(Math.random() * 7);
+
+    for (let b = 0; b < numBookings; b++) {
+      const guestName = guests[Math.floor(Math.random() * guests.length)] + ' #' + Math.floor(Math.random() * 1000);
+      const leadTime = 2 + Math.floor(Math.random() * 45); // booked 2-45 days ago
+      const bookingDate = new Date(checkInDate.getTime() - leadTime * 24 * 60 * 60 * 1000);
+
+      const channel = channels[Math.floor(Math.random() * channels.length)];
+
+      // Choose room category
+      const catRand = Math.random();
+      let roomCategory = 'STANDARD';
+      let baseRate = 100;
+      if (catRand > 0.8) {
+        roomCategory = 'SUITE';
+        baseRate = 300;
+      } else if (catRand > 0.5) {
+        roomCategory = 'DELUXE';
+        baseRate = 180;
+      }
+
+      // Add seasonal price spikes
+      const isWeekend = checkInDate.getDay() === 0 || checkInDate.getDay() === 6;
+      let price = baseRate * lengthOfStay;
+      if (isWeekend) price *= 1.25;
+
+      let status = 'CONFIRMED';
+      if (i < 0) {
+        const statusRand = Math.random();
+        if (statusRand < 0.1) {
+          status = 'CANCELLED';
+        } else if (statusRand < 0.15) {
+          status = 'NO_SHOW';
+        } else {
+          status = 'CHECKED_IN';
+        }
+      }
+
+      // Find an available room of that category
+      const categoryRooms = rooms.filter(rm => rm.category === roomCategory);
+      const matchedRoom = categoryRooms[Math.floor(Math.random() * categoryRooms.length)];
+
+      reservations.push({
+        guestName,
+        roomId: status === 'CHECKED_IN' || (status === 'CONFIRMED' && Math.random() < 0.7) ? matchedRoom.id : null,
+        bookingDate,
+        checkInDate,
+        checkOutDate,
+        totalPrice: parseFloat(price.toFixed(2)),
+        status,
+        channel
+      });
+    }
+  }
+
+  // Bulk create reservations
+  const resChunk = 100;
+  for (let i = 0; i < reservations.length; i += resChunk) {
+    const chunk = reservations.slice(i, i + resChunk);
+    await prisma.hotelReservation.createMany({ data: chunk });
+  }
+
+  console.log('Hospitality ERP seeding finished.');
+
+  console.log('Purging ESG tables...');
+  await prisma.activityData.deleteMany();
+  await prisma.esgFacility.deleteMany();
+  await prisma.emissionFactor.deleteMany();
+  await prisma.carbonMarket.deleteMany();
+
+  console.log('Seeding Emission Factors...');
+  const factorData = [
+    // Scope 1 - Fuels
+    { source: 'EPA', category: 'DIESEL', unit: 'Liters', co2ePerUnit: 0.00268, validYear: 2024 },
+    { source: 'EPA', category: 'DIESEL', unit: 'Liters', co2ePerUnit: 0.00268, validYear: 2025 },
+    { source: 'EPA', category: 'GASOLINE', unit: 'Liters', co2ePerUnit: 0.00231, validYear: 2024 },
+    { source: 'EPA', category: 'GASOLINE', unit: 'Liters', co2ePerUnit: 0.00231, validYear: 2025 },
+    { source: 'EPA', category: 'NATURAL_GAS', unit: 'm3', co2ePerUnit: 0.00191, validYear: 2024 },
+    { source: 'EPA', category: 'NATURAL_GAS', unit: 'm3', co2ePerUnit: 0.00191, validYear: 2025 },
+    // Scope 2 - Electricity
+    { source: 'EPA', category: 'ELECTRICITY_US', unit: 'kWh', co2ePerUnit: 0.00038, validYear: 2024 },
+    { source: 'EPA', category: 'ELECTRICITY_US', unit: 'kWh', co2ePerUnit: 0.00038, validYear: 2025 },
+    { source: 'DEFRA', category: 'ELECTRICITY_UK', unit: 'kWh', co2ePerUnit: 0.00021, validYear: 2024 },
+    { source: 'DEFRA', category: 'ELECTRICITY_UK', unit: 'kWh', co2ePerUnit: 0.00021, validYear: 2025 },
+    { source: 'IPCC', category: 'ELECTRICITY_DE', unit: 'kWh', co2ePerUnit: 0.00035, validYear: 2024 },
+    { source: 'IPCC', category: 'ELECTRICITY_DE', unit: 'kWh', co2ePerUnit: 0.00035, validYear: 2025 },
+    { source: 'IPCC', category: 'ELECTRICITY_CL', unit: 'kWh', co2ePerUnit: 0.00029, validYear: 2024 },
+    { source: 'IPCC', category: 'ELECTRICITY_CL', unit: 'kWh', co2ePerUnit: 0.00029, validYear: 2025 },
+    // Scope 3 - Logistics and Waste
+    { source: 'DEFRA', category: 'FLIGHT', unit: 'Passenger-km', co2ePerUnit: 0.00015, validYear: 2024 },
+    { source: 'DEFRA', category: 'FLIGHT', unit: 'Passenger-km', co2ePerUnit: 0.00015, validYear: 2025 },
+    { source: 'DEFRA', category: 'LOGISTICS_ROAD', unit: 'ton-km', co2ePerUnit: 0.00012, validYear: 2024 },
+    { source: 'DEFRA', category: 'LOGISTICS_ROAD', unit: 'ton-km', co2ePerUnit: 0.00012, validYear: 2025 },
+    { source: 'EPA', category: 'WASTE_LANDFILL', unit: 'Metric-Tons', co2ePerUnit: 0.45, validYear: 2024 },
+    { source: 'EPA', category: 'WASTE_LANDFILL', unit: 'Metric-Tons', co2ePerUnit: 0.45, validYear: 2025 },
+    { source: 'EPA', category: 'PLASTIC_VIRGIN', unit: 'Metric-Tons', co2ePerUnit: 1.85, validYear: 2024 },
+    { source: 'EPA', category: 'PLASTIC_VIRGIN', unit: 'Metric-Tons', co2ePerUnit: 1.85, validYear: 2025 },
+    { source: 'EPA', category: 'PAPER_RECYCLED', unit: 'Metric-Tons', co2ePerUnit: 0.32, validYear: 2024 },
+    { source: 'EPA', category: 'PAPER_RECYCLED', unit: 'Metric-Tons', co2ePerUnit: 0.32, validYear: 2025 }
+  ];
+
+  await prisma.emissionFactor.createMany({ data: factorData });
+  const dbFactors = await prisma.emissionFactor.findMany();
+
+  console.log('Seeding ESG Facilities...');
+  const facilityData = [
+    { name: 'Planta de Manufactura Santiago', country: 'CL', gridFactorId: dbFactors.find(f => f.category === 'ELECTRICITY_CL' && f.validYear === 2025)?.id || '' },
+    { name: 'Centro de Distribución Texas', country: 'US', gridFactorId: dbFactors.find(f => f.category === 'ELECTRICITY_US' && f.validYear === 2025)?.id || '' },
+    { name: 'Oficinas Centrales Londres', country: 'UK', gridFactorId: dbFactors.find(f => f.category === 'ELECTRICITY_UK' && f.validYear === 2025)?.id || '' },
+    { name: 'Planta de Ensamble Munich', country: 'DE', gridFactorId: dbFactors.find(f => f.category === 'ELECTRICITY_DE' && f.validYear === 2025)?.id || '' }
+  ];
+
+  await prisma.esgFacility.createMany({ data: facilityData });
+  const dbFacilities = await prisma.esgFacility.findMany();
+
+  console.log('Seeding ESG Activity Data with noise/errors...');
+  const activities = [];
+  
+  // Seed last 12 months
+  const categories = [
+    { name: 'DIESEL', scope: 1, defaultUnit: 'Liters' },
+    { name: 'GASOLINE', scope: 1, defaultUnit: 'Liters' },
+    { name: 'NATURAL_GAS', scope: 1, defaultUnit: 'm3' },
+    { name: 'ELECTRICITY', scope: 2, defaultUnit: 'kWh' },
+    { name: 'FLIGHT', scope: 3, defaultUnit: 'Passenger-km' },
+    { name: 'LOGISTICS_ROAD', scope: 3, defaultUnit: 'ton-km' },
+    { name: 'WASTE_LANDFILL', scope: 3, defaultUnit: 'Metric-Tons' },
+    { name: 'PLASTIC_VIRGIN', scope: 3, defaultUnit: 'Metric-Tons' }
+  ];
+
+  for (let m = 0; m < 12; m++) {
+    const timestamp = new Date(seedNow.getFullYear(), seedNow.getMonth() - m, 15);
+    const year = timestamp.getFullYear();
+
+    for (const facility of dbFacilities) {
+      for (const cat of categories) {
+        // Find correct factor
+        let searchCategory = cat.name;
+        if (cat.name === 'ELECTRICITY') {
+          if (facility.country === 'CL') searchCategory = 'ELECTRICITY_CL';
+          else if (facility.country === 'US') searchCategory = 'ELECTRICITY_US';
+          else if (facility.country === 'UK') searchCategory = 'ELECTRICITY_UK';
+          else if (facility.country === 'DE') searchCategory = 'ELECTRICITY_DE';
+        }
+        
+        const factor = dbFactors.find(f => f.category === searchCategory && f.validYear === year) || dbFactors[0];
+
+        // Random amount
+        let rawAmount = 1000 + Math.floor(Math.random() * 20000);
+        let unit = cat.defaultUnit;
+        let isNoisy = Math.random() < 0.15; // 15% noise
+        let calculatedCo2e = 0;
+
+        if (isNoisy) {
+          // Induce common billing noise
+          if (cat.name === 'ELECTRICITY') {
+            unit = 'MJ';
+            // 360000 MJ instead of 100000 kWh. The true amount in kWh is rawAmount,
+            // but the bill registers in MJ, so rawAmountInMJ = rawAmount * 3.6
+            rawAmount = parseFloat((rawAmount * 3.6).toFixed(1));
+            // Error: calculatedCo2e is computed without converting MJ to kWh!
+            calculatedCo2e = rawAmount * factor.co2ePerUnit; // Direct multiplication error
+          } else if (cat.name === 'FLIGHT') {
+            unit = 'Miles';
+            // true distance in km is rawAmount, but bill registers in Miles, so rawAmountInMiles = rawAmount / 1.60934
+            rawAmount = parseFloat((rawAmount / 1.60934).toFixed(1));
+            calculatedCo2e = rawAmount * factor.co2ePerUnit; // Direct multiplication error
+          } else if (cat.name === 'LOGISTICS_ROAD') {
+            unit = 'ton-miles';
+            rawAmount = parseFloat((rawAmount / 1.45997).toFixed(1));
+            calculatedCo2e = rawAmount * factor.co2ePerUnit; // Direct multiplication error
+          } else {
+            // General noise or outdated factor
+            calculatedCo2e = rawAmount * factor.co2ePerUnit * (Math.random() > 0.5 ? 1.2 : 0.8);
+          }
+        } else {
+          // Standard clean calculation
+          calculatedCo2e = rawAmount * factor.co2ePerUnit;
+        }
+
+        const proofDocHash = 'SHA256-' + Math.random().toString(36).substring(2, 10).toUpperCase();
+
+        activities.push({
+          facilityId: facility.id,
+          scope: cat.scope,
+          category: cat.name,
+          rawAmount,
+          unit,
+          factorId: factor.id,
+          calculatedCo2e: parseFloat(calculatedCo2e.toFixed(3)),
+          proofDocument: proofDocHash,
+          originalAmount: rawAmount,
+          originalUnit: unit,
+          timestamp
+        });
+      }
+    }
+  }
+
+  // Bulk create ActivityData
+  const actChunk = 100;
+  for (let i = 0; i < activities.length; i += actChunk) {
+    const chunk = activities.slice(i, i + actChunk);
+    await prisma.activityData.createMany({ data: chunk });
+  }
+
+  console.log('Seeding Carbon Market Projects...');
+  const marketData = [
+    { projectName: 'Reforestación de Selva Amazónica', projectType: 'FORESTRY', certification: 'VERRA', pricePerTon: 15.5, availableTons: 25000 },
+    { projectName: 'Captura Directa de Aire (DAC) Climeworks', projectType: 'DAC', certification: 'GOLD_STANDARD', pricePerTon: 120.0, availableTons: 5000 },
+    { projectName: 'Parque Eólico de la Patagonia', projectType: 'RENEWABLE', certification: 'VERRA', pricePerTon: 8.2, availableTons: 50000 },
+    { projectName: 'Reforestación Comunitaria en Kenya', projectType: 'FORESTRY', certification: 'GOLD_STANDARD', pricePerTon: 22.0, availableTons: 15000 },
+    { projectName: 'Captura de Biochar Agrícola', projectType: 'DAC', certification: 'VERRA', pricePerTon: 45.0, availableTons: 8000 },
+    { projectName: 'Planta Solar Atacama', projectType: 'RENEWABLE', certification: 'GOLD_STANDARD', pricePerTon: 9.5, availableTons: 35000 }
+  ];
+
+  await prisma.carbonMarket.createMany({ data: marketData });
+
+  console.log('GreenTech ESG Tracker seeding finished.');
 }
 
 main()

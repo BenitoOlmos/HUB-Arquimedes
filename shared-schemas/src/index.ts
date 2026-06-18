@@ -244,6 +244,109 @@ export interface DowntimeLogItem {
   timestamp: string;
 }
 
+// Hospitality ERP Interfaces
+export interface HotelRoom {
+  id: string;
+  roomNumber: string;
+  category: 'STANDARD' | 'DELUXE' | 'SUITE';
+  status: 'DIRTY' | 'CLEAN' | 'INSPECTED' | 'OUT_OF_ORDER';
+  cleaningCredits: number;
+}
+
+export interface HotelReservation {
+  id: string;
+  guestName: string;
+  roomId: string | null;
+  bookingDate: string;
+  checkInDate: string;
+  checkOutDate: string;
+  totalPrice: number;
+  status: 'CONFIRMED' | 'CANCELLED' | 'NO_SHOW' | 'CHECKED_IN';
+  channel: 'DIRECT' | 'OTA' | 'CORPORATE';
+}
+
+export interface RevenueMetric {
+  id: string;
+  date: string;
+  occupancyRate: number;
+  adr: number;
+  revpar: number;
+}
+
+export interface GuestReview {
+  id: string;
+  score: number;
+  category: 'CLEANLINESS' | 'SERVICE' | 'VALUE_FOR_MONEY';
+  comment: string;
+  date: string;
+}
+
+export interface HousekeepingTask {
+  id: string;
+  roomId: string;
+  assignedTo: string | null;
+  status: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED';
+  credits: number;
+  updatedAt: string;
+}
+
+// GreenTech ESG Tracker Interfaces
+export interface EsgFacility {
+  id: string;
+  name: string;
+  country: string;
+  gridFactorId: string;
+}
+
+export interface EmissionFactor {
+  id: string;
+  source: string;
+  category: string;
+  unit: string;
+  co2ePerUnit: number;
+  validYear: number;
+}
+
+export interface ActivityData {
+  id: string;
+  facilityId: string;
+  scope: number;
+  category: string;
+  rawAmount: number;
+  unit: string;
+  factorId: string;
+  calculatedCo2e: number;
+  proofDocument: string | null;
+  timestamp: string;
+  facility?: EsgFacility;
+  factor?: EmissionFactor;
+}
+
+export interface CarbonMarket {
+  id: string;
+  projectName: string;
+  projectType: 'FORESTRY' | 'RENEWABLE' | 'DAC';
+  certification: 'VERRA' | 'GOLD_STANDARD';
+  pricePerTon: number;
+  availableTons: number;
+}
+
+export interface EsgMetrics {
+  totalScope1: number;
+  totalScope2: number;
+  totalScope3: number;
+  totalEmissions: number;
+  targetEmissions: number; // SBTi target for the current period
+  offsetEmissions: number; // Compensated emissions through carbon credits
+  netEmissions: number; // totalEmissions - offsetEmissions
+  budget: number; // Budget left for operations / credits
+  auditErrorsCount: number; // Number of uncorrected audit errors (e.g. MJ instead of kWh)
+  reputationScore: number; // Client reputation based on Greenwashing/SBTi compliance
+  legalFines: number; // Penalties from TCFD compliance failures
+}
+
+
+
 
 
 

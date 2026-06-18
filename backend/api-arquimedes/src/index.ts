@@ -13,6 +13,8 @@ import scadaRoutes from './routes/scada.routes';
 import retailRoutes from './routes/retail.routes';
 import mobilityRoutes from './routes/mobility.routes';
 import manufacturingRoutes from './routes/manufacturing.routes';
+import pmsRoutes from './routes/pms.routes';
+import revenueRoutes from './routes/revenue.routes';
 import { PortService } from './services/port.service';
 import { AgrotechService } from './services/agrotech.service';
 import { FintechService } from './services/fintech.service';
@@ -20,6 +22,11 @@ import { ScadaService } from './services/scada.service';
 import { RetailService } from './services/retail.service';
 import { TrafficService } from './services/traffic.service';
 import { ManufacturingService } from './services/manufacturing.service';
+import { PmsService } from './services/pms.service';
+import { RevenueService } from './services/revenue.service';
+import esgRoutes from './routes/esg.routes';
+import { EsgService } from './services/esg.service';
+
 
 // Initialize Pino Logger
 export const logger = pino({
@@ -80,6 +87,10 @@ app.use('/api/scada', scadaRoutes);
 app.use('/api/retail', retailRoutes);
 app.use('/api/mobility', mobilityRoutes);
 app.use('/api/manufacturing', manufacturingRoutes);
+app.use('/api/pms', pmsRoutes);
+app.use('/api/revenue', revenueRoutes);
+app.use('/api/esg', esgRoutes);
+
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -257,7 +268,40 @@ httpServer.listen(PORT, () => {
   logger.info(`Retail Analytics API is active at http://localhost:${PORT}/api/retail`);
   logger.info(`Smart City Mobility API is active at http://localhost:${PORT}/api/mobility`);
   logger.info(`Industry 4.0 Digital Twin API is active at http://localhost:${PORT}/api/manufacturing`);
+  logger.info(`Hospitality PMS API is active at http://localhost:${PORT}/api/pms`);
 });
+
+// Hospitality Simulation Tick Loop
+const pmsService = new PmsService();
+const revenueService = new RevenueService();
+// 1 tick every 2.5 seconds
+setInterval(async () => {
+  try {
+    if (pmsService.getSimulationActive()) {
+      await pmsService.runSimulationStep();
+      
+      const rooms = await pmsService.getRooms();
+      const reservations = await pmsService.getReservations();
+      const reviews = await pmsService.getReviews();
+      const kpis = await revenueService.getKpis();
+      const activeCrisis = pmsService.getActiveCrisis();
+      const budget = pmsService.getBudgetCredits();
+      const reputation = pmsService.getReputationScore();
+
+      io.emit('hospitality-telemetry-update', {
+        rooms,
+        reservations,
+        reviews,
+        kpis,
+        activeCrisis,
+        budgetCredits: budget,
+        reputationScore: reputation
+      });
+    }
+  } catch (error) {
+    logger.error({ error }, 'Error during Hospitality simulation tick execution');
+  }
+}, 2500);
 
 // Manufacturing Simulation Tick Loop
 const manufacturingService = new ManufacturingService();
@@ -283,3 +327,21 @@ setInterval(async () => {
     logger.error({ error }, 'Error during Manufacturing simulation tick execution');
   }
 }, 2000);
+
+// ESG Carbon Market Fluctuation Simulation Tick Loop
+const esgService = new EsgService();
+// 1 tick every 4 seconds (representing live trading updates of carbon offsets)
+setInterval(async () => {
+  try {
+    await esgService.fluctuateMarketPrices();
+    const market = await esgService.getCarbonMarket();
+    const metrics = await esgService.getEsgMetrics();
+    io.emit('esg-telemetry-update', {
+      market,
+      metrics
+    });
+  } catch (error) {
+    logger.error({ error }, 'Error during ESG simulation tick execution');
+  }
+}, 4000);
+

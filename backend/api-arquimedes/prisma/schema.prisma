@@ -342,3 +342,97 @@ model DowntimeLog {
   timestamp      DateTime       @default(now())
 }
 
+model HotelRoom {
+  id              String             @id @default(uuid())
+  roomNumber      String             @unique
+  category        String             // STANDARD, DELUXE, SUITE
+  status          String             // DIRTY, CLEAN, INSPECTED, OUT_OF_ORDER
+  cleaningCredits Int                // Tiempo estimado de limpieza
+  reservations    HotelReservation[]
+  housekeeping    HousekeepingTask[]
+}
+
+model HotelReservation {
+  id           String     @id @default(uuid())
+  guestName    String
+  roomId       String?    // Se asigna en el check-in o pre-asignación
+  room         HotelRoom? @relation(fields: [roomId], references: [id], onDelete: SetNull)
+  bookingDate  DateTime   // Cuándo se hizo la reserva
+  checkInDate  DateTime   // Cuándo llega el huésped
+  checkOutDate DateTime
+  totalPrice   Float      // Calculado por el motor de Revenue
+  status       String     // CONFIRMED, CANCELLED, NO_SHOW, CHECKED_IN
+  channel      String     // OTA (Booking.com), DIRECT, CORPORATE
+}
+
+model RevenueMetric {
+  id            String   @id @default(uuid())
+  date          DateTime @unique
+  occupancyRate Float    // Porcentaje de ocupación
+  adr           Float    // Average Daily Rate (Tarifa Promedio Diaria)
+  revpar        Float    // Revenue Per Available Room
+}
+
+model GuestReview {
+  id       String   @id @default(uuid())
+  score    Int      // 1 a 10
+  category String   // CLEANLINESS, SERVICE, VALUE_FOR_MONEY
+  comment  String
+  date     DateTime @default(now())
+}
+
+model HousekeepingTask {
+  id         String    @id @default(uuid())
+  roomId     String
+  room       HotelRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  assignedTo String?   // Name of staff or "Unassigned"
+  status     String    // PENDING, IN_PROGRESS, COMPLETED
+  credits    Int
+  updatedAt  DateTime  @updatedAt
+}
+
+model EsgFacility {
+  id           String         @id @default(uuid())
+  name         String         // Ej. "Planta de Manufactura Norte"
+  country      String
+  gridFactorId String         // Relación al factor de emisión de la red local
+  activities   ActivityData[]
+}
+
+model EmissionFactor {
+  id          String         @id @default(uuid())
+  source      String         // Ej. "EPA", "DEFRA", "IPCC"
+  category    String         // Ej. "ELECTRICITY", "DIESEL", "FLIGHT_SHORT_HAUL"
+  unit        String         // Ej. "kWh", "Liters", "Passenger-km"
+  co2ePerUnit Float          // Multiplicador clave
+  validYear   Int
+  activities  ActivityData[]
+}
+
+model ActivityData {
+  id             String         @id @default(uuid())
+  facilityId     String
+  facility       EsgFacility    @relation(fields: [facilityId], references: [id], onDelete: Cascade)
+  scope          Int            // 1, 2 o 3
+  category       String
+  rawAmount      Float          // El dato crudo (Ej. 5000)
+  unit           String         // Ej. "Liters"
+  factorId       String
+  factor         EmissionFactor @relation(fields: [factorId], references: [id])
+  calculatedCo2e Float          // rawAmount * factor.co2ePerUnit
+  proofDocument  String?        // Hash simulado de la factura original
+  originalAmount Float?
+  originalUnit   String?
+  timestamp      DateTime
+}
+
+model CarbonMarket {
+  id            String @id @default(uuid())
+  projectName   String
+  projectType   String // FORESTRY, RENEWABLE, DAC
+  certification String // VERRA, GOLD_STANDARD
+  pricePerTon   Float  // Precio dinámico
+  availableTons Int
+}
+
+

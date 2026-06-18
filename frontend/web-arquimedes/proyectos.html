@@ -1,195 +1,556 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Ecosistema de Proyectos | Arquímedes Online</title>
-    
-    <!-- Metaetiquetas SEO -->
-    <meta name="description" content="Portal de proyectos de Arquímedes Online. Accede a las aplicaciones de simulación hidráulica, el portal principal y los sistemas de administración de bombas.">
-    <meta name="keywords" content="Arquímedes, proyectos, hidráulica, administración, bomba centrífuga, simulación de fluidos">
-    
-    <!-- Estilos -->
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
 
+    <!-- Metaetiquetas SEO -->
+    <meta
+      name="description"
+      content="Portal de proyectos de Arquímedes Online. Accede a las aplicaciones de simulación hidráulica, el portal principal y los sistemas de administración de bombas."
+    />
+    <meta
+      name="keywords"
+      content="Arquímedes, proyectos, hidráulica, administración, bomba centrífuga, simulación de fluidos"
+    />
+
+    <!-- Estilos -->
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="light-theme">
     <!-- Canvas para Partículas de Fondo -->
     <canvas id="particle-canvas"></canvas>
 
     <!-- Engranajes de Fondo Decorativos -->
     <div class="background-gears" aria-hidden="true">
-        <!-- Engranaje 1 (Abajo Derecha) -->
-        <svg class="gear-svg gear-2" style="bottom:-100px; right:-100px; left:auto; width:450px; height:450px;" viewBox="0 0 100 100">
-            <path d="M50 35c-8.3 0-15 6.7-15 15s6.7 15 15 15 15-6.7 15-15-6.7-15-15-15zm0 24c-5 0-9-4-9-9s4-9 9-9 9 4 9 9-4 9-9 9zm8-36.2l-1.6-4.9c-.3-.9-1.2-1.4-2.1-1.2l-5.8 1.5c-1.3-.6-2.6-1.1-4-1.4L44 1.1c-.2-.9-1-1.6-2-1.5L37 0c-1 .1-1.7.9-1.7 1.9l.4 5.9c-1.3.4-2.6 1-3.8 1.7l-4.5-3.9c-.7-.6-1.8-.6-2.4.2L22 9.1c-.6.7-.5 1.8.2 2.4l4.5 3.9c-1 1-1.8 2.1-2.4 3.4l-5.6-2c-.9-.3-1.9.2-2.1 1.1L15 23.8c-.3.9.2 1.9 1.1 2.1l5.6 2c-.4 1.4-.6 2.8-.6 4.3L15.2 33c-.9-.1-1.8.6-1.9 1.5L13 39.4c-.1 1 .6 1.8 1.5 1.9l5.9.8c.2 1.4.5 2.7 1 4l-4.8 3.5c-.8.6-1 1.6-.5 2.4L20 57.5c.5.8 1.6 1 2.4.5l4.8-3.5c.8 1.1 1.8 2.1 2.9 3l-3.3 5c-.5.8-.3 1.9.5 2.4l4.8 3.2c.8.5 1.9.3 2.4-.5l3.3-5c1.2.6 2.5 1.1 3.9 1.4l1.3 5.8c.2.9 1.1 1.5 2 1.3l5 .6c.9-.1 1.6-.9 1.5-1.9l-1.3-5.8c1.3-.4 2.6-.9 3.8-1.6l4 4.4c.6.7 1.7.8 2.4.2l4.1-4.4c.7-.6.7-1.7.2-2.4l-4-4.4c1.1-1 2-2.1 2.6-3.4l5.3 2.7c.9.4 1.9-.1 2.2-1l2-5.5c.3-.9-.1-1.9-1-2.2l-5.3-2.7c.5-1.3.8-2.7.9-4.2l5.7.4c1 .1 1.8-.6 1.9-1.5l.8-5c.1-.9-.6-1.8-1.5-1.9l-5.7-.4c-.1-1.4-.4-2.8-.9-4.1l5.2-2.9c.8-.5 1.1-1.5.7-2.3l-2.6-5.2c-.5-.8-1.5-1.1-2.3-.7l-5.2 2.9c-.9-1.1-2-2.1-3.2-2.9l2.4-5.5c.4-.9-.1-1.9-1-2.3l-5.2-2.3c-.9-.4-1.9.1-2.3 1L58 22.8z"/>
-        </svg>
+      <!-- Engranaje 1 (Abajo Derecha) -->
+      <svg
+        class="gear-svg gear-2"
+        style="bottom: -100px; right: -100px; left: auto; width: 450px; height: 450px"
+        viewBox="0 0 100 100"
+      >
+        <path
+          d="M50 35c-8.3 0-15 6.7-15 15s6.7 15 15 15 15-6.7 15-15-6.7-15-15-15zm0 24c-5 0-9-4-9-9s4-9 9-9 9 4 9 9-4 9-9 9zm8-36.2l-1.6-4.9c-.3-.9-1.2-1.4-2.1-1.2l-5.8 1.5c-1.3-.6-2.6-1.1-4-1.4L44 1.1c-.2-.9-1-1.6-2-1.5L37 0c-1 .1-1.7.9-1.7 1.9l.4 5.9c-1.3.4-2.6 1-3.8 1.7l-4.5-3.9c-.7-.6-1.8-.6-2.4.2L22 9.1c-.6.7-.5 1.8.2 2.4l4.5 3.9c-1 1-1.8 2.1-2.4 3.4l-5.6-2c-.9-.3-1.9.2-2.1 1.1L15 23.8c-.3.9.2 1.9 1.1 2.1l5.6 2c-.4 1.4-.6 2.8-.6 4.3L15.2 33c-.9-.1-1.8.6-1.9 1.5L13 39.4c-.1 1 .6 1.8 1.5 1.9l5.9.8c.2 1.4.5 2.7 1 4l-4.8 3.5c-.8.6-1 1.6-.5 2.4L20 57.5c.5.8 1.6 1 2.4.5l4.8-3.5c.8 1.1 1.8 2.1 2.9 3l-3.3 5c-.5.8-.3 1.9.5 2.4l4.8 3.2c.8.5 1.9.3 2.4-.5l3.3-5c1.2.6 2.5 1.1 3.9 1.4l1.3 5.8c.2.9 1.1 1.5 2 1.3l5 .6c.9-.1 1.6-.9 1.5-1.9l-1.3-5.8c1.3-.4 2.6-.9 3.8-1.6l4 4.4c.6.7 1.7.8 2.4.2l4.1-4.4c.7-.6.7-1.7.2-2.4l-4-4.4c1.1-1 2-2.1 2.6-3.4l5.3 2.7c.9.4 1.9-.1 2.2-1l2-5.5c.3-.9-.1-1.9-1-2.2l-5.3-2.7c.5-1.3.8-2.7.9-4.2l5.7.4c1 .1 1.8-.6 1.9-1.5l.8-5c.1-.9-.6-1.8-1.5-1.9l-5.7-.4c-.1-1.4-.4-2.8-.9-4.1l5.2-2.9c.8-.5 1.1-1.5.7-2.3l-2.6-5.2c-.5-.8-1.5-1.1-2.3-.7l-5.2 2.9c-.9-1.1-2-2.1-3.2-2.9l2.4-5.5c.4-.9-.1-1.9-1-2.3l-5.2-2.3c-.9-.4-1.9.1-2.3 1L58 22.8z"
+        />
+      </svg>
     </div>
 
     <!-- Encabezado / Nav -->
     <header>
-        <div class="nav-container">
-            <a href="index.html" class="logo">
-                <svg class="logo-gear" viewBox="0 0 100 100" aria-hidden="true">
-                    <path d="M50 35c-8.3 0-15 6.7-15 15s6.7 15 15 15 15-6.7 15-15-6.7-15-15-15zm0 24c-5 0-9-4-9-9s4-9 9-9 9 4 9 9-4 9-9 9zm8-36.2l-1.6-4.9c-.3-.9-1.2-1.4-2.1-1.2l-5.8 1.5c-1.3-.6-2.6-1.1-4-1.4L44 1.1c-.2-.9-1-1.6-2-1.5L37 0c-1 .1-1.7.9-1.7 1.9l.4 5.9c-1.3.4-2.6 1-3.8 1.7l-4.5-3.9c-.7-.6-1.8-.6-2.4.2L22 9.1c-.6.7-.5 1.8.2 2.4l4.5 3.9c-1 1-1.8 2.1-2.4 3.4l-5.6-2c-.9-.3-1.9.2-2.1 1.1L15 23.8c-.3.9.2 1.9 1.1 2.1l5.6 2c-.4 1.4-.6 2.8-.6 4.3L15.2 33c-.9-.1-1.8.6-1.9 1.5L13 39.4c-.1 1 .6 1.8 1.5 1.9l5.9.8c.2 1.4.5 2.7 1 4l-4.8 3.5c-.8.6-1 1.6-.5 2.4L20 57.5c.5.8 1.6 1 2.4.5l4.8-3.5c.8 1.1 1.8 2.1 2.9 3l-3.3 5c-.5.8-.3 1.9.5 2.4l4.8 3.2c.8.5 1.9.3 2.4-.5l3.3-5c1.2.6 2.5 1.1 3.9 1.4l1.3 5.8c.2.9 1.1 1.5 2 1.3l5 .6c.9-.1 1.6-.9 1.5-1.9l-1.3-5.8c1.3-.4 2.6-.9 3.8-1.6l4 4.4c.6.7 1.7.8 2.4.2l4.1-4.4c.7-.6.7-1.7.2-2.4l-4-4.4c1.1-1 2-2.1 2.6-3.4l5.3 2.7c.9.4 1.9-.1 2.2-1l2-5.5c.3-.9-.1-1.9-1-2.2l-5.3-2.7c.5-1.3.8-2.7.9-4.2l5.7.4c1 .1 1.8-.6 1.9-1.5l.8-5c.1-.9-.6-1.8-1.5-1.9l-5.7-.4c-.1-1.4-.4-2.8-.9-4.1l5.2-2.9c.8-.5 1.1-1.5.7-2.3l-2.6-5.2c-.5-.8-1.5-1.1-2.3-.7l-5.2 2.9c-.9-1.1-2-2.1-3.2-2.9l2.4-5.5c.4-.9-.1-1.9-1-2.3l-5.2-2.3c-.9-.4-1.9.1-2.3 1L58 22.8z"/>
-                </svg>
-                <span class="logo-text">ARQUÍMEDES</span>
-            </a>
-            <ul class="nav-links">
-                <li><a href="index.html#hero">Inicio</a></li>
-                <li><a href="index.html#history">Historia</a></li>
-                <li><a href="index.html#inventions">Inventos</a></li>
-                <li><a href="#" class="btn-nav-projects active" id="btn-nav-projects">Proyectos</a></li>
-            </ul>
-        </div>
+      <div class="nav-container">
+        <a href="index.html" class="logo">
+          <svg class="logo-gear" viewBox="0 0 100 100" aria-hidden="true">
+            <path
+              d="M50 35c-8.3 0-15 6.7-15 15s6.7 15 15 15 15-6.7 15-15-6.7-15-15-15zm0 24c-5 0-9-4-9-9s4-9 9-9 9 4 9 9-4 9-9 9zm8-36.2l-1.6-4.9c-.3-.9-1.2-1.4-2.1-1.2l-5.8 1.5c-1.3-.6-2.6-1.1-4-1.4L44 1.1c-.2-.9-1-1.6-2-1.5L37 0c-1 .1-1.7.9-1.7 1.9l.4 5.9c-1.3.4-2.6 1-3.8 1.7l-4.5-3.9c-.7-.6-1.8-.6-2.4.2L22 9.1c-.6.7-.5 1.8.2 2.4l4.5 3.9c-1 1-1.8 2.1-2.4 3.4l-5.6-2c-.9-.3-1.9.2-2.1 1.1L15 23.8c-.3.9.2 1.9 1.1 2.1l5.6 2c-.4 1.4-.6 2.8-.6 4.3L15.2 33c-.9-.1-1.8.6-1.9 1.5L13 39.4c-.1 1 .6 1.8 1.5 1.9l5.9.8c.2 1.4.5 2.7 1 4l-4.8 3.5c-.8.6-1 1.6-.5 2.4L20 57.5c.5.8 1.6 1 2.4.5l4.8-3.5c.8 1.1 1.8 2.1 2.9 3l-3.3 5c-.5.8-.3 1.9.5 2.4l4.8 3.2c.8.5 1.9.3 2.4-.5l3.3-5c1.2.6 2.5 1.1 3.9 1.4l1.3 5.8c.2.9 1.1 1.5 2 1.3l5 .6c.9-.1 1.6-.9 1.5-1.9l-1.3-5.8c1.3-.4 2.6-.9 3.8-1.6l4 4.4c.6.7 1.7.8 2.4.2l4.1-4.4c.7-.6.7-1.7.2-2.4l-4-4.4c1.1-1 2-2.1 2.6-3.4l5.3 2.7c.9.4 1.9-.1 2.2-1l2-5.5c.3-.9-.1-1.9-1-2.2l-5.3-2.7c.5-1.3.8-2.7.9-4.2l5.7.4c1 .1 1.8-.6 1.9-1.5l.8-5c.1-.9-.6-1.8-1.5-1.9l-5.7-.4c-.1-1.4-.4-2.8-.9-4.1l5.2-2.9c.8-.5 1.1-1.5.7-2.3l-2.6-5.2c-.5-.8-1.5-1.1-2.3-.7l-5.2 2.9c-.9-1.1-2-2.1-3.2-2.9l2.4-5.5c.4-.9-.1-1.9-1-2.3l-5.2-2.3c-.9-.4-1.9.1-2.3 1L58 22.8z"
+            />
+          </svg>
+          <span class="logo-text">ARQUÍMEDES</span>
+        </a>
+        <ul class="nav-links">
+          <li><a href="index.html#hero">Inicio</a></li>
+          <li><a href="index.html#history">Historia</a></li>
+          <li><a href="index.html#inventions">Inventos</a></li>
+          <li><a href="#" class="btn-nav-projects active" id="btn-nav-projects">Proyectos</a></li>
+        </ul>
+      </div>
     </header>
 
     <!-- Sección Principal Proyectos -->
     <main>
-        <section class="hub-hero">
-            <div class="section-container" style="padding:0;">
-                <span class="section-tag" style="margin-bottom:0.8rem; display:block;">Ecosistema</span>
-                <h1 class="hero-title" style="margin-bottom:1.5rem;" id="projects-heading">Plataforma e Ingeniería</h1>
-                <p class="hero-description" style="margin: 0 auto; max-width:700px;">
-                    Portal unificado de desarrollo. Conecta con las distintas aplicaciones y módulos funcionales asociados a la investigación e ingeniería de Arquímedes.
-                </p>
+      <section class="hub-hero">
+        <div class="section-container" style="padding: 0">
+          <span class="section-tag" style="margin-bottom: 0.8rem; display: block">Ecosistema</span>
+          <h1 class="hero-title" style="margin-bottom: 1.5rem" id="projects-heading">
+            Plataforma e Ingeniería
+          </h1>
+          <p class="hero-description" style="margin: 0 auto; max-width: 700px">
+            Portal unificado de desarrollo. Conecta con las distintas aplicaciones y módulos
+            funcionales asociados a la investigación e ingeniería de Arquímedes.
+          </p>
+        </div>
+      </section>
+
+      <section class="projects-container">
+        <div class="projects-grid">
+          <!-- Proyecto 1: Simulador Bomba (Administración Bomba) -->
+          <div class="project-card main-hub" id="project-bomba">
+            <span class="project-status active">
+              <span class="status-dot pulse"></span>Activo
+            </span>
+            <div class="project-icon">
+              <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="3" />
+                <path
+                  d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
+                />
+              </svg>
             </div>
-        </section>
+            <h2 class="project-name">Administración de Bomba</h2>
+            <p class="project-desc">
+              Plataforma interactiva para el monitoreo, telemetría de fluidos y control de
+              velocidad/presión en sistemas de bombas centrífugas.
+            </p>
+            <a href="https://centrifuga.arquimedes.online" class="btn-project-link" id="link-bomba">
+              Acceso Sistema
+              <svg width="16" height="16" viewBox="0 0 24 24">
+                <path
+                  d="M5 12h14M12 5l7 7-7 7"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </a>
+          </div>
 
-        <section class="projects-container">
-            <div class="projects-grid">
-                
-                <!-- Proyecto 1: Portal Hub (Principal) -->
-                <div class="project-card main-hub" id="project-portal">
-                    <span class="project-status active">
-                        <span class="status-dot pulse"></span>Activo
-                    </span>
-                    <div class="project-icon">
-                        <!-- Icono Templo / Portal -->
-                        <svg viewBox="0 0 24 24"><path d="M4 10v11h16V10M2 10l10-8 10 8M9 21v-8h6v8"/></svg>
-                    </div>
-                    <h2 class="project-name">Portal de Entrada</h2>
-                    <p class="project-desc">Página principal interactiva con el resumen biográfico, línea temporal interactiva y detalles técnicos de sus mayores inventos históricos.</p>
-                    <a href="https://www.arquimedes.online" class="btn-project-link" id="link-portal">
-                        Entrar al Portal
-                        <svg width="16" height="16" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </a>
-                </div>
-
-                <!-- Proyecto 3: Administración / Bomba Centrífuga -->
-                <div class="project-card main-hub" id="project-bomba">
-                    <span class="project-status development">
-                        <span class="status-dot"></span>En Desarrollo
-                    </span>
-                    <div class="project-icon">
-                        <!-- Icono Configuración / Engranajes / Bomba -->
-                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-                    </div>
-                    <h2 class="project-name">Administración Bomba</h2>
-                    <p class="project-desc">Plataforma interna para la gestión, telemetría y pruebas funcionales del proyecto de desarrollo de la Bomba Centrífuga de agua.</p>
-                    <a href="https://centrifuga.arquimedes.online" class="btn-project-link" id="link-bomba">
-                        Acceso Sistema
-                        <svg width="16" height="16" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </a>
-                </div>
-
-                <!-- Proyecto 4: ERP Taller Automotriz -->
-                <div class="project-card automotive-card" id="project-tallerautomotriz">
-                    <span class="project-status active">
-                        <span class="status-dot pulse"></span>Activo
-                    </span>
-                    <div class="project-icon">
-                        <!-- Icono Llave de Tuercas / Mecánica -->
-                        <svg viewBox="0 0 24 24"><path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5.1-2.4-7.5-1.2l3.8 3.8-2.8 2.8-3.8-3.8c-1.2 2.4-.8 5.5 1.2 7.5 1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2-2c.4-.4.4-1.1 0-1.5z"/></svg>
-                    </div>
-                    <h2 class="project-name">ERP Taller Automotriz</h2>
-                    <p class="project-desc">Simulador interactivo de administración y toma de decisiones en un taller mecánico: gestión de andenes, bodega de stock real/virtual y proveedores.</p>
-                    <a href="https://tallerautomotriz.arquimedes.online" class="btn-project-link" id="link-tallerautomotriz">
-                        Abrir ERP Taller
-                        <svg width="16" height="16" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </a>
-                </div>
-
-                <!-- Proyecto 5: Gemelo Digital Industria 4.0 -->
-                <div class="project-card hydraulic-card" id="project-industry40">
-                    <span class="project-status active">
-                        <span class="status-dot pulse"></span>Activo
-                    </span>
-                    <div class="project-icon">
-                        <!-- Icono Fábrica / CPU / Industria -->
-                        <svg viewBox="0 0 24 24"><path d="M22 22H2V2l4 4 4-4 4 4 4-4 4 4V22z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
-                    </div>
-                    <h2 class="project-name">Gemelo Digital 4.0</h2>
-                    <p class="project-desc">Simulador HMI/SCADA interactivo de línea de producción con visualizador 3D para análisis OEE, balanceo de líneas y Seis Sigma.</p>
-                    <a href="https://industry40.arquimedes.online" class="btn-project-link" id="link-industry40">
-                        Abrir Digital Twin
-                        <svg width="16" height="16" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </a>
-                </div>
-
-                <!-- Proyecto 6: Hospitality ERP (PMS & Revenue) -->
-                <div class="project-card hospitality-card" id="project-hospitality">
-                    <span class="project-status active">
-                        <span class="status-dot pulse"></span>Activo
-                    </span>
-                    <div class="project-icon">
-                        <!-- Icono Edificio / Hotel -->
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16M9 7h1m-1 4h1m-1 4h1m5-12h1m-1 4h1m-1 4h1"/></svg>
-                    </div>
-                    <h2 class="project-name">Hospitality ERP</h2>
-                    <p class="project-desc">Simulador de PMS y Revenue Management para redes hoteleras con gemelo digital 3D de limpieza de habitaciones y motor de yield dynamic pricing.</p>
-                    <a href="https://hospitality.arquimedes.online" class="btn-project-link" id="link-hospitality">
-                        Abrir Hospitality ERP
-                        <svg width="16" height="16" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </a>
-                </div>
-
-                <!-- Proyecto HIS: Triage Táctico Hospitalario -->
-                <div class="project-card his-card" id="project-his">
-                    <span class="project-status active">
-                        <span class="status-dot pulse"></span>Activo
-                    </span>
-                    <div class="project-icon">
-                        <!-- Icono Corazón / Médico / Corazón con línea de pulso -->
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-                    </div>
-                    <h2 class="project-name">HIS Triage Táctico</h2>
-                    <p class="project-desc">Simulador de gestión hospitalaria y triage en tiempo real con panel de camas crítico/básico y gestión logística de farmacia para simulación bajo estrés.</p>
-                    <a href="https://his.arquimedes.online" class="btn-project-link" id="link-his">
-                        Abrir Triage Táctico
-                        <svg width="16" height="16" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </a>
-                </div>
-
-                <!-- Proyecto 7: GreenTech ESG Tracker -->
-                <div class="project-card greentech-card" id="project-greentech">
-                    <span class="project-status active">
-                        <span class="status-dot pulse"></span>Activo
-                    </span>
-                    <div class="project-icon">
-                        <!-- Icono Hoja / Planta -->
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 22s8-4 8-10V5L4 9v4M22 22s-8-4-8-10V5l6 4v4"/></svg>
-                    </div>
-                    <h2 class="project-name">GreenTech ESG Tracker</h2>
-                    <p class="project-desc">Simulador de gestión corporativa ESG y contabilidad de GEI con diagramas Sankey de Alcance 3, auditoría de facturas y mercado de bonos de carbono.</p>
-                    <a href="https://greentech.arquimedes.online" class="btn-project-link" id="link-greentech">
-                        Abrir ESG Tracker
-                        <svg width="16" height="16" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </a>
-                </div>
-
+          <!-- Proyecto 2: ERP Taller Automotriz -->
+          <div class="project-card automotive-card" id="project-tallerautomotriz">
+            <span class="project-status active">
+              <span class="status-dot pulse"></span>Activo
+            </span>
+            <div class="project-icon">
+              <svg viewBox="0 0 24 24">
+                <path
+                  d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5.1-2.4-7.5-1.2l3.8 3.8-2.8 2.8-3.8-3.8c-1.2 2.4-.8 5.5 1.2 7.5 1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2-2c.4-.4.4-1.1 0-1.5z"
+                />
+              </svg>
             </div>
-        </section>
+            <h2 class="project-name">ERP Taller Automotriz</h2>
+            <p class="project-desc">
+              Simulador interactivo de toma de decisiones en un taller mecánico: control de andenes,
+              stock de repuestos y órdenes de servicio.
+            </p>
+            <a
+              href="https://tallerautomotriz.arquimedes.online"
+              class="btn-project-link"
+              id="link-tallerautomotriz"
+            >
+              Abrir ERP Taller
+              <svg width="16" height="16" viewBox="0 0 24 24">
+                <path
+                  d="M5 12h14M12 5l7 7-7 7"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </a>
+          </div>
+
+          <!-- Proyecto 3: HIS Triage Táctico -->
+          <div class="project-card his-card" id="project-his">
+            <span class="project-status active">
+              <span class="status-dot pulse"></span>Activo
+            </span>
+            <div class="project-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+              </svg>
+            </div>
+            <h2 class="project-name">HIS Triage Táctico</h2>
+            <p class="project-desc">
+              Sistema de información hospitalaria y triage en tiempo real, con mapa de camas
+              interactivo 3D y asignación ágil de pacientes.
+            </p>
+            <a href="https://his.arquimedes.online" class="btn-project-link" id="link-his">
+              Abrir Triage Táctico
+              <svg width="16" height="16" viewBox="0 0 24 24">
+                <path
+                  d="M5 12h14M12 5l7 7-7 7"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </a>
+          </div>
+
+          <!-- Proyecto 4: ERP Puerto Inteligente (Smart Port) -->
+          <div class="project-card hydraulic-card" id="project-smartport">
+            <span class="project-status active">
+              <span class="status-dot pulse"></span>Activo
+            </span>
+            <div class="project-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="12" cy="5" r="3" />
+                <path d="M12 22V8m0 0a4 4 0 1 0-4-4v4h4zm0 0a4 4 0 1 1 4-4v4h-4zM5 12h14M2 17h20" />
+              </svg>
+            </div>
+            <h2 class="project-name">ERP Puerto Inteligente</h2>
+            <p class="project-desc">
+              Simulador portuario para optimizar el atraque de buques, operaciones de grúas y
+              logística de almacenamiento de contenedores.
+            </p>
+            <a
+              href="https://smartport.arquimedes.online"
+              class="btn-project-link"
+              id="link-smartport"
+            >
+              Abrir Smart Port
+              <svg width="16" height="16" viewBox="0 0 24 24">
+                <path
+                  d="M5 12h14M12 5l7 7-7 7"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </a>
+          </div>
+
+          <!-- Proyecto 5: Panel AgroTech (AgroTech Dashboard) -->
+          <div class="project-card greentech-card" id="project-agrotech">
+            <span class="project-status active">
+              <span class="status-dot pulse"></span>Activo
+            </span>
+            <div class="project-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M12 22V12m0 0c-2-2-5-2-7-2M12 12c2-2 5-2 7-2M12 7c-1-2-3-3-5-3M12 7c1-2 3-3 5-3"
+                />
+              </svg>
+            </div>
+            <h2 class="project-name">Panel AgroTech</h2>
+            <p class="project-desc">
+              Dashboard agrícola con telemetría de suelo, pronósticos climáticos y automatización
+              inteligente de riego por goteo.
+            </p>
+            <a
+              href="https://agrotech.arquimedes.online"
+              class="btn-project-link"
+              id="link-agrotech"
+            >
+              Abrir AgroTech
+              <svg width="16" height="16" viewBox="0 0 24 24">
+                <path
+                  d="M5 12h14M12 5l7 7-7 7"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </a>
+          </div>
+
+          <!-- Proyecto 6: Fintech Sandbox -->
+          <div class="project-card automotive-card" id="project-fintech">
+            <span class="project-status active">
+              <span class="status-dot pulse"></span>Activo
+            </span>
+            <div class="project-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <line x1="18" y1="20" x2="18" y2="10" />
+                <line x1="12" y1="20" x2="12" y2="4" />
+                <line x1="6" y1="20" x2="6" y2="14" />
+                <path d="M2 17l6-6 4 4 8-8" />
+              </svg>
+            </div>
+            <h2 class="project-name">Fintech Sandbox</h2>
+            <p class="project-desc">
+              Plataforma de pruebas financieras con motores de decisión de riesgo de crédito e
+              inversiones algorítmicas simuladas.
+            </p>
+            <a href="https://fintech.arquimedes.online" class="btn-project-link" id="link-fintech">
+              Abrir Fintech
+              <svg width="16" height="16" viewBox="0 0 24 24">
+                <path
+                  d="M5 12h14M12 5l7 7-7 7"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </a>
+          </div>
+
+          <!-- Proyecto 7: SCADA Energía Renovable (SCADA Renovables) -->
+          <div class="project-card hydraulic-card" id="project-scada">
+            <span class="project-status active">
+              <span class="status-dot pulse"></span>Activo
+            </span>
+            <div class="project-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="12" cy="12" r="5" />
+                <path
+                  d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"
+                />
+              </svg>
+            </div>
+            <h2 class="project-name">SCADA Energía Renovable</h2>
+            <p class="project-desc">
+              Consola SCADA interactiva para monitoreo y control de redes de energía renovable,
+              aerogeneradores y paneles fotovoltaicos.
+            </p>
+            <a href="https://scada.arquimedes.online" class="btn-project-link" id="link-scada">
+              Abrir SCADA
+              <svg width="16" height="16" viewBox="0 0 24 24">
+                <path
+                  d="M5 12h14M12 5l7 7-7 7"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </a>
+          </div>
+
+          <!-- Proyecto 8: Analítica de Retail (Retail Analytics Engine) -->
+          <div class="project-card main-hub" id="project-retail">
+            <span class="project-status active">
+              <span class="status-dot pulse"></span>Activo
+            </span>
+            <div class="project-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="9" cy="21" r="1" />
+                <circle cx="20" cy="21" r="1" />
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+              </svg>
+            </div>
+            <h2 class="project-name">Analítica de Retail</h2>
+            <p class="project-desc">
+              Motor analítico interactivo con mapas de calor para tiendas físicas, optimización de
+              inventarios y predicción de compras.
+            </p>
+            <a href="https://retail.arquimedes.online" class="btn-project-link" id="link-retail">
+              Abrir Retail Engine
+              <svg width="16" height="16" viewBox="0 0 24 24">
+                <path
+                  d="M5 12h14M12 5l7 7-7 7"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </a>
+          </div>
+
+          <!-- Proyecto 9: Centro de Control Smart City -->
+          <div class="project-card automotive-card" id="project-smartcity">
+            <span class="project-status active">
+              <span class="status-dot pulse"></span>Activo
+            </span>
+            <div class="project-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+            </div>
+            <h2 class="project-name">Centro de Control Smart City</h2>
+            <p class="project-desc">
+              Monitoreo de tráfico, semáforos, gestión de vehículos de emergencia y sensores de
+              contaminación de la ciudad inteligente.
+            </p>
+            <a
+              href="https://smartcity.arquimedes.online"
+              class="btn-project-link"
+              id="link-smartcity"
+            >
+              Abrir Smart City
+              <svg width="16" height="16" viewBox="0 0 24 24">
+                <path
+                  d="M5 12h14M12 5l7 7-7 7"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </a>
+          </div>
+
+          <!-- Proyecto 10: Gemelo Digital Industria 4.0 -->
+          <div class="project-card hydraulic-card" id="project-industry40">
+            <span class="project-status active">
+              <span class="status-dot pulse"></span>Activo
+            </span>
+            <div class="project-icon">
+              <svg viewBox="0 0 24 24">
+                <path
+                  d="M22 22H2V2l4 4 4-4 4 4 4-4 4 4V22z"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </div>
+            <h2 class="project-name">Gemelo Digital Industria 4.0</h2>
+            <p class="project-desc">
+              HMI interactivo 3D para análisis OEE, balanceo de líneas de ensamblaje industrial y
+              simulación de mantenimiento preventivo.
+            </p>
+            <a
+              href="https://industry40.arquimedes.online"
+              class="btn-project-link"
+              id="link-industry40"
+            >
+              Abrir Digital Twin
+              <svg width="16" height="16" viewBox="0 0 24 24">
+                <path
+                  d="M5 12h14M12 5l7 7-7 7"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </a>
+          </div>
+
+          <!-- Proyecto 11: ERP de Hospitalidad (Hospitality ERP) -->
+          <div class="project-card hospitality-card" id="project-hospitality">
+            <span class="project-status active">
+              <span class="status-dot pulse"></span>Activo
+            </span>
+            <div class="project-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M3 21h18M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16M9 7h1m-1 4h1m-1 4h1m5-12h1m-1 4h1m-1 4h1"
+                />
+              </svg>
+            </div>
+            <h2 class="project-name">ERP de Hospitalidad</h2>
+            <p class="project-desc">
+              Simulador hotelero PMS con motor de Revenue Management (Yield Pricing) y vista 3D de
+              limpieza de habitaciones.
+            </p>
+            <a
+              href="https://hospitality.arquimedes.online"
+              class="btn-project-link"
+              id="link-hospitality"
+            >
+              Abrir Hospitality ERP
+              <svg width="16" height="16" viewBox="0 0 24 24">
+                <path
+                  d="M5 12h14M12 5l7 7-7 7"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </a>
+          </div>
+
+          <!-- Proyecto 12: Seguimiento ESG GreenTech (GreenTech ESG Tracker) -->
+          <div class="project-card greentech-card" id="project-greentech">
+            <span class="project-status active">
+              <span class="status-dot pulse"></span>Activo
+            </span>
+            <div class="project-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M2 22s8-4 8-10V5L4 9v4M22 22s-8-4-8-10V5l6 4v4" />
+              </svg>
+            </div>
+            <h2 class="project-name">Seguimiento ESG GreenTech</h2>
+            <p class="project-desc">
+              Simulador corporativo de contabilidad de huella de carbono Alcance 1, 2 y 3 y control
+              financiero de bonos verdes.
+            </p>
+            <a
+              href="https://greentech.arquimedes.online"
+              class="btn-project-link"
+              id="link-greentech"
+            >
+              Abrir ESG Tracker
+              <svg width="16" height="16" viewBox="0 0 24 24">
+                <path
+                  d="M5 12h14M12 5l7 7-7 7"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </a>
+          </div>
+        </div>
+      </section>
     </main>
 
     <!-- Pie de Página -->
     <footer>
-        <div class="footer-container">
-            <p class="footer-quote">"Dadme un punto de apoyo y moveré el mundo."</p>
-            <p class="footer-copy">&copy; 2026 Arquímedes Online - Ecosistema de Ingeniería y Desarrollo.</p>
-        </div>
+      <div class="footer-container">
+        <p class="footer-quote">"Dadme un punto de apoyo y moveré el mundo."</p>
+        <p class="footer-copy">
+          &copy; 2026 Arquímedes Online - Ecosistema de Ingeniería y Desarrollo.
+        </p>
+      </div>
     </footer>
 
     <!-- Lógica Interactiva -->
     <script src="app.js"></script>
-</body>
+  </body>
 </html>

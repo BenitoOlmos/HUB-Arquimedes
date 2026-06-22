@@ -1,14 +1,114 @@
 import React, { useState } from 'react';
 import { ToggleLeft, Trash2, Droplets, Heart, AlertTriangle, PlayCircle } from 'lucide-react';
 
-const RulesManager = ({ zones, rules, kpis, onCreateRule, onDeleteRule, onTriggerAlert }) => {
+const RulesManager = ({
+  zones,
+  rules,
+  kpis,
+  onCreateRule,
+  onDeleteRule,
+  onTriggerAlert,
+  isLoading
+}) => {
   const [ruleName, setRuleName] = useState('');
   const [selectedZoneId, setSelectedZoneId] = useState('');
   const [sensorType, setSensorType] = useState('SOIL_MOISTURE');
   const [operator, setOperator] = useState('LT');
   const [threshold, setThreshold] = useState(25);
   const [duration, setDuration] = useState(30);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingState, setIsLoadingState] = useState(false);
+
+  if (isLoading) {
+    return (
+      <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '1.5rem' }}>
+        {/* Left Panel Skeleton */}
+        <div
+          className="glass-panel skeleton-pulse"
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            padding: '1.5rem',
+            gap: '1rem',
+            minHeight: '415px'
+          }}
+        >
+          <div
+            className="skeleton-block"
+            style={{
+              height: '20px',
+              width: '240px',
+              marginBottom: '1.5rem',
+              backgroundColor: '#E2E8F0',
+              borderRadius: '4px'
+            }}
+          ></div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '0.6rem' }}>
+            <div
+              className="skeleton-block"
+              style={{ height: '35px', borderRadius: '6px', backgroundColor: '#E2E8F0' }}
+            ></div>
+            <div
+              className="skeleton-block"
+              style={{ height: '35px', borderRadius: '6px', backgroundColor: '#E2E8F0' }}
+            ></div>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.6rem' }}>
+            <div
+              className="skeleton-block"
+              style={{ height: '35px', borderRadius: '6px', backgroundColor: '#E2E8F0' }}
+            ></div>
+            <div
+              className="skeleton-block"
+              style={{ height: '35px', borderRadius: '6px', backgroundColor: '#E2E8F0' }}
+            ></div>
+            <div
+              className="skeleton-block"
+              style={{ height: '35px', borderRadius: '6px', backgroundColor: '#E2E8F0' }}
+            ></div>
+          </div>
+          <div
+            className="skeleton-block"
+            style={{
+              height: '40px',
+              borderRadius: '6px',
+              marginTop: '1rem',
+              backgroundColor: '#E2E8F0'
+            }}
+          ></div>
+        </div>
+
+        {/* Right Panel Skeleton */}
+        <div
+          className="glass-panel skeleton-pulse"
+          style={{ display: 'flex', flexDirection: 'column', padding: '1.5rem', gap: '1rem' }}
+        >
+          <div
+            className="skeleton-block"
+            style={{
+              height: '20px',
+              width: '220px',
+              marginBottom: '1.5rem',
+              backgroundColor: '#E2E8F0',
+              borderRadius: '4px'
+            }}
+          ></div>
+          <div
+            className="skeleton-block"
+            style={{ height: '90px', borderRadius: '8px', background: '#E2E8F0' }}
+          ></div>
+          <div
+            className="skeleton-block"
+            style={{
+              height: '90px',
+              borderRadius: '8px',
+              background: '#E2E8F0',
+              marginTop: '1rem'
+            }}
+          ></div>
+        </div>
+      </div>
+    );
+  }
 
   // Set default zone selection
   React.useEffect(() => {
@@ -58,7 +158,10 @@ const RulesManager = ({ zones, rules, kpis, onCreateRule, onDeleteRule, onTrigge
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '1.5rem' }}>
       {/* Rules Editor & List */}
-      <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column' }}>
+      <div
+        className="glass-panel slide-in-left-panel"
+        style={{ display: 'flex', flexDirection: 'column' }}
+      >
         <div className="panel-header">
           <div className="panel-title">
             <ToggleLeft size={18} color="var(--color-moisture)" /> Programador de Reglas de Riego
@@ -216,10 +319,19 @@ const RulesManager = ({ zones, rules, kpis, onCreateRule, onDeleteRule, onTrigge
               manual.
             </div>
           ) : (
-            rules.map((rule) => {
+            rules.map((rule, idx) => {
               const zoneName = zones.find((z) => z.id === rule.zoneId)?.name || 'Cuadrante';
               return (
-                <div key={rule.id} className="rule-card">
+                <div
+                  key={rule.id}
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    padding: '0.75rem 0',
+                    borderBottom: idx < rules.length - 1 ? '1px solid #F1F5F9' : 'none'
+                  }}
+                >
                   <div
                     style={{
                       display: 'flex',
@@ -228,8 +340,8 @@ const RulesManager = ({ zones, rules, kpis, onCreateRule, onDeleteRule, onTrigge
                       fontSize: '0.8rem'
                     }}
                   >
-                    <strong>{rule.name}</strong>
-                    <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>
+                    <span style={{ fontWeight: '600', color: '#1E293B' }}>{rule.name}</span>
+                    <span style={{ fontSize: '0.7rem', color: '#64748B' }}>
                       SI {rule.sensorType === 'SOIL_MOISTURE' ? 'Humedad' : rule.sensorType}{' '}
                       {rule.operator === 'LT' ? '<' : '>'} {rule.thresholdValue}% ENTONCES Regar{' '}
                       {rule.durationMinutes} min en {zoneName}
@@ -239,8 +351,15 @@ const RulesManager = ({ zones, rules, kpis, onCreateRule, onDeleteRule, onTrigge
                     className="btn-secondary"
                     style={{
                       padding: '0.25rem 0.5rem',
-                      borderColor: 'var(--color-valve-closed)',
-                      color: 'var(--color-valve-closed)'
+                      borderColor: '#ef4444',
+                      color: '#ef4444',
+                      background: 'transparent',
+                      border: '1px solid rgba(239, 68, 68, 0.2)',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
                     }}
                     onClick={() => handleDelete(rule.id, rule.name)}
                   >
@@ -254,7 +373,10 @@ const RulesManager = ({ zones, rules, kpis, onCreateRule, onDeleteRule, onTrigge
       </div>
 
       {/* Huella Hídrica & Crop Health Penalty */}
-      <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column' }}>
+      <div
+        className="glass-panel slide-in-right-panel"
+        style={{ display: 'flex', flexDirection: 'column' }}
+      >
         <div className="panel-header">
           <div className="panel-title">
             <Droplets size={18} color="var(--color-moisture)" /> Rastreador de Huella Hídrica y

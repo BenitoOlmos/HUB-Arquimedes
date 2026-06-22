@@ -4,6 +4,16 @@ import FarmGlobe from './components/FarmGlobe';
 import RulesManager from './components/RulesManager';
 import PestPredictor from './components/PestPredictor';
 import {
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  Tooltip as ChartTooltip,
+  Legend as ChartLegend,
+  CartesianGrid
+} from 'recharts';
+import {
   Sprout,
   Activity,
   ToggleLeft,
@@ -26,6 +36,9 @@ function App() {
   const [rules, setRules] = useState([]);
   const [pestHistory, setPestHistory] = useState([]);
   const [isConnected, setIsConnected] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [historyData, setHistoryData] = useState([]);
   const [kpis, setKpis] = useState({
     waterConsumed: 0,
     cropHealth: 100,
@@ -39,6 +52,25 @@ function App() {
       text: 'Simulador AgroTech IoT iniciado. Conectando al servicio de telemetría...'
     }
   ]);
+
+  const generateMoistureHistory = () => {
+    const data = [];
+    const baseTime = new Date();
+    for (let i = 10; i >= 0; i--) {
+      const timeLabel = new Date(baseTime.getTime() - i * 60 * 60 * 1000).toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+      data.push({
+        time: timeLabel,
+        'Cuadrante Norte': Math.round(35 + Math.sin(i * 0.5) * 15 + Math.random() * 5),
+        'Cuadrante Sur': Math.round(42 + Math.cos(i * 0.5) * 10 + Math.random() * 4),
+        'Cuadrante Este': Math.round(28 + Math.sin(i * 0.8) * 8 + Math.random() * 6),
+        'Cuadrante Oeste': Math.round(48 - Math.sin(i * 0.3) * 12 + Math.random() * 5)
+      });
+    }
+    return data;
+  };
 
   const addLog = (text) => {
     setLogs((prev) => [
@@ -84,6 +116,9 @@ function App() {
 
   useEffect(() => {
     fetchData();
+    const timer = setTimeout(() => {
+      setInitialLoading(false);
+    }, 400);
 
     // Establish WebSocket stream
     const socket = io();
@@ -109,6 +144,7 @@ function App() {
 
     return () => {
       socket.disconnect();
+      clearTimeout(timer);
     };
   }, []);
 
@@ -384,7 +420,12 @@ function App() {
       {/* 3. Main view panel */}
       <main className="main-view">
         {activeTab === 'telemetry' && (
-          <FarmGlobe zones={zones} onToggleValve={handleToggleValve} onTriggerAlert={addLog} />
+          <FarmGlobe
+            zones={zones}
+            onToggleValve={handleToggleValve}
+            onTriggerAlert={addLog}
+            isLoading={initialLoading}
+          />
         )}
 
         {activeTab === 'rules' && (
@@ -395,11 +436,17 @@ function App() {
             onCreateRule={handleCreateRule}
             onDeleteRule={handleDeleteRule}
             onTriggerAlert={addLog}
+            isLoading={initialLoading}
           />
         )}
 
         {activeTab === 'pests' && (
-          <PestPredictor zones={zones} pestHistory={pestHistory} onTriggerAlert={addLog} />
+          <PestPredictor
+            zones={zones}
+            pestHistory={pestHistory}
+            onTriggerAlert={addLog}
+            isLoading={initialLoading}
+          />
         )}
 
         {activeTab === 'teacher' && (
@@ -549,6 +596,101 @@ function App() {
             </div>
           </div>
         )}
+        {/* 3.5 Collapsible Soil Moisture History Chart */}
+        <div className="glass-panel" style={{ padding: '1rem', marginBottom: '1.5rem' }}>
+          <div
+            onClick={() => {
+              if (!isHistoryOpen) {
+                setHistoryData(generateMoistureHistory());
+              }
+              setIsHistoryOpen(!isHistoryOpen);
+            }}
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              cursor: 'pointer',
+              fontWeight: 'bold',
+              fontSize: '0.8rem',
+              color: 'var(--text-primary)'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <TrendingUp size={16} color="#4E7D6B" />
+              <span>Histórico de Datos y Reporte de Humedad del Suelo</span>
+            </div>
+            <button
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: 'var(--text-secondary)',
+                cursor: 'pointer',
+                fontWeight: 'bold',
+                fontSize: '0.8rem'
+              }}
+            >
+              {isHistoryOpen ? '▲ Ocultar Gráfico' : '▼ Mostrar Gráfico'}
+            </button>
+          </div>
+
+          {isHistoryOpen && (
+            <div
+              style={{
+                marginTop: '1rem',
+                height: '220px',
+                width: '100%'
+              }}
+            >
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={historyData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="colorNorte" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.2} />
+                      <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient id="colorSur" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.2} />
+                      <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
+                  <XAxis dataKey="time" tick={{ fill: '#64748B', fontSize: 10 }} />
+                  <YAxis domain={[0, 100]} tick={{ fill: '#64748B', fontSize: 10 }} />
+                  <ChartTooltip
+                    contentStyle={{
+                      background: '#ffffff',
+                      borderColor: 'var(--border-glass)',
+                      color: 'var(--text-primary)',
+                      borderRadius: '8px',
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
+                    }}
+                  />
+                  <ChartLegend wrapperStyle={{ fontSize: 10 }} />
+                  <Area
+                    name="Cuadrante Norte"
+                    type="monotone"
+                    dataKey="Cuadrante Norte"
+                    stroke="#0ea5e9"
+                    fillOpacity={1}
+                    fill="url(#colorNorte)"
+                    isAnimationActive={true}
+                    animationDuration={500}
+                  />
+                  <Area
+                    name="Cuadrante Sur"
+                    type="monotone"
+                    dataKey="Cuadrante Sur"
+                    stroke="#10b981"
+                    fillOpacity={1}
+                    fill="url(#colorSur)"
+                    isAnimationActive={true}
+                    animationDuration={500}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+        </div>
 
         {/* 4. Telemetry Events Log */}
         <div className="glass-panel" style={{ padding: '1rem', marginTop: '1.5rem' }}>

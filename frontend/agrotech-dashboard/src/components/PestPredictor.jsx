@@ -1,11 +1,112 @@
 import React, { useState, useEffect } from 'react';
 import { ShieldAlert, BookOpen, Brain, Bell, AlertTriangle } from 'lucide-react';
 
-const PestPredictor = ({ zones, pestHistory, onTriggerAlert }) => {
+const PestPredictor = ({ zones, pestHistory, onTriggerAlert, isLoading }) => {
   const [minTemp, setMinTemp] = useState(14);
   const [maxTemp, setMaxTemp] = useState(22);
   const [minHumidity, setMinHumidity] = useState(78);
   const [predictions, setPredictions] = useState([]);
+
+  if (isLoading) {
+    return (
+      <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '1.5rem' }}>
+        {/* Left Panel Skeleton */}
+        <div
+          className="glass-panel skeleton-pulse"
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            padding: '1.5rem',
+            gap: '1rem',
+            minHeight: '450px'
+          }}
+        >
+          <div
+            className="skeleton-block"
+            style={{
+              height: '20px',
+              width: '250px',
+              marginBottom: '1rem',
+              backgroundColor: '#E2E8F0',
+              borderRadius: '4px'
+            }}
+          ></div>
+          <div
+            className="skeleton-block"
+            style={{
+              height: '14px',
+              width: '100%',
+              marginBottom: '1.5rem',
+              backgroundColor: '#E2E8F0',
+              borderRadius: '4px'
+            }}
+          ></div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div
+              className="skeleton-block"
+              style={{ height: '35px', borderRadius: '6px', backgroundColor: '#E2E8F0' }}
+            ></div>
+            <div
+              className="skeleton-block"
+              style={{ height: '35px', borderRadius: '6px', backgroundColor: '#E2E8F0' }}
+            ></div>
+          </div>
+          <div
+            className="skeleton-block"
+            style={{
+              height: '15px',
+              width: '180px',
+              marginTop: '1.5rem',
+              marginBottom: '0.5rem',
+              backgroundColor: '#E2E8F0',
+              borderRadius: '4px'
+            }}
+          ></div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            {[1, 2].map((n) => (
+              <div
+                key={n}
+                className="skeleton-block"
+                style={{ height: '70px', borderRadius: '8px', background: '#E2E8F0' }}
+              ></div>
+            ))}
+          </div>
+        </div>
+
+        {/* Right Panel Skeleton */}
+        <div
+          className="glass-panel skeleton-pulse"
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            height: '450px',
+            padding: '1.5rem',
+            gap: '1rem'
+          }}
+        >
+          <div
+            className="skeleton-block"
+            style={{
+              height: '20px',
+              width: '220px',
+              marginBottom: '1.5rem',
+              backgroundColor: '#E2E8F0',
+              borderRadius: '4px'
+            }}
+          ></div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            {[1, 2, 3, 4, 5].map((n) => (
+              <div
+                key={n}
+                className="skeleton-block"
+                style={{ height: '30px', borderRadius: '4px', background: '#E2E8F0' }}
+              ></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Calculate live risks when threshold settings or zone sensors change
   useEffect(() => {
@@ -64,10 +165,23 @@ const PestPredictor = ({ zones, pestHistory, onTriggerAlert }) => {
     return 'var(--color-valve-open)';
   };
 
+  const getRiskTagStyle = (risk) => {
+    if (risk === 'CRITICAL') {
+      return { bg: '#FEE2E2', text: '#991B1B', label: 'ALTO' };
+    }
+    if (risk === 'MEDIUM') {
+      return { bg: '#FEF3C7', text: '#92400E', label: 'MEDIO' };
+    }
+    return { bg: '#D1FAE5', text: '#065F46', label: 'BAJO' };
+  };
+
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '1.5rem' }}>
       {/* Blackbox ML Parameters & Live Risk */}
-      <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column' }}>
+      <div
+        className="glass-panel slide-in-left-panel"
+        style={{ display: 'flex', flexDirection: 'column' }}
+      >
         <div className="panel-header">
           <div className="panel-title">
             <Brain size={18} color="var(--color-ph)" /> Simulador de Predicción Fitosanitaria (ML)
@@ -155,52 +269,106 @@ const PestPredictor = ({ zones, pestHistory, onTriggerAlert }) => {
             maxHeight: '180px'
           }}
         >
-          {predictions.map((p, idx) => (
-            <div
-              key={idx}
-              style={{
-                border: '1px solid var(--border-glass)',
-                borderLeft: `4px solid ${getRiskColor(p.risk)}`,
-                background: 'rgba(255, 255, 255, 0.01)',
-                padding: '0.65rem',
-                borderRadius: '6px',
-                fontSize: '0.78rem'
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold' }}>
-                <span>
-                  {p.zoneName} - {p.pestName}
-                </span>
-                <span style={{ color: getRiskColor(p.risk) }}>
-                  RIESGO: {p.risk} ({p.probability}%)
-                </span>
-              </div>
-              <div style={{ color: 'var(--text-muted)', fontSize: '0.7rem', marginTop: '2px' }}>
-                Condiciones: {p.currentTemp.toFixed(1)}°C | Humedad: {p.currentHum.toFixed(1)}%
-              </div>
+          {predictions.map((p, idx) => {
+            const tag = getRiskTagStyle(p.risk);
+            return (
               <div
+                key={idx}
                 style={{
-                  marginTop: '4px',
-                  fontSize: '0.72rem',
-                  color: 'var(--text-secondary)',
+                  border: '1px solid var(--border-glass)',
+                  background: '#ffffff',
+                  padding: '0.85rem',
+                  borderRadius: '8px',
+                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.015)',
+                  fontSize: '0.78rem',
                   display: 'flex',
-                  gap: '3px',
-                  alignItems: 'center'
+                  flexDirection: 'column',
+                  gap: '0.5rem'
                 }}
               >
-                {p.risk === 'CRITICAL' && (
-                  <AlertTriangle size={12} color="var(--color-valve-closed)" />
-                )}
-                {p.recommendation}
+                <div
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                >
+                  <span style={{ fontWeight: '600', color: '#1E293B' }}>
+                    {p.zoneName} - {p.pestName}
+                  </span>
+                  <span
+                    style={{
+                      fontSize: '0.65rem',
+                      fontWeight: '700',
+                      padding: '2px 8px',
+                      borderRadius: '12px',
+                      backgroundColor: tag.bg,
+                      color: tag.text,
+                      textTransform: 'uppercase'
+                    }}
+                  >
+                    {tag.label}
+                  </span>
+                </div>
+
+                <div style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>
+                  Condiciones: <strong>{p.currentTemp.toFixed(1)}°C</strong> | Humedad:{' '}
+                  <strong>{p.currentHum.toFixed(1)}%</strong>
+                </div>
+
+                {/* Probability Horizontal Progress Bar */}
+                <div
+                  style={{ display: 'flex', flexDirection: 'column', gap: '3px', marginTop: '2px' }}
+                >
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      fontSize: '0.68rem',
+                      color: 'var(--text-secondary)'
+                    }}
+                  >
+                    <span>Probabilidad de Brote</span>
+                    <span style={{ fontWeight: 'bold' }}>{p.probability}%</span>
+                  </div>
+                  <div
+                    style={{
+                      width: '100%',
+                      height: '6px',
+                      backgroundColor: '#E2E8F0',
+                      borderRadius: '3px',
+                      overflow: 'hidden'
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: `${p.probability}%`,
+                        height: '100%',
+                        backgroundColor: '#4E7D6B',
+                        borderRadius: '3px'
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div
+                  style={{
+                    marginTop: '4px',
+                    fontSize: '0.72rem',
+                    color: 'var(--text-secondary)',
+                    display: 'flex',
+                    gap: '4px',
+                    alignItems: 'center'
+                  }}
+                >
+                  {p.risk === 'CRITICAL' && <AlertTriangle size={12} color="#991B1B" />}
+                  <span>{p.recommendation}</span>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
       {/* Historical Outbreaks Database */}
       <div
-        className="glass-panel"
+        className="glass-panel slide-in-right-panel"
         style={{ display: 'flex', flexDirection: 'column', height: '450px' }}
       >
         <div className="panel-header">

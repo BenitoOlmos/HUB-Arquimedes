@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Droplet, Thermometer, Sun, Activity, Settings, Eye } from 'lucide-react';
 
-const FarmGlobe = ({ zones, onToggleValve, onTriggerAlert }) => {
+const FarmGlobe = ({ zones, onToggleValve, onTriggerAlert, isLoading }) => {
   const [selectedZone, setSelectedZone] = useState(null);
 
   // Auto-select first zone if none selected
@@ -13,6 +13,114 @@ const FarmGlobe = ({ zones, onToggleValve, onTriggerAlert }) => {
       if (updated) setSelectedZone(updated);
     }
   }, [zones]);
+
+  if (isLoading) {
+    return (
+      <div style={{ display: 'grid', gridTemplateColumns: '2.2fr 1fr', gap: '1.5rem' }}>
+        {/* Left Panel Skeleton */}
+        <div
+          className="glass-panel skeleton-pulse"
+          style={{
+            padding: '1.5rem',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '1rem',
+            minHeight: '480px'
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '1rem'
+            }}
+          >
+            <div
+              className="skeleton-block"
+              style={{
+                height: '20px',
+                width: '200px',
+                backgroundColor: '#E2E8F0',
+                borderRadius: '4px'
+              }}
+            ></div>
+            <div
+              className="skeleton-block"
+              style={{
+                height: '15px',
+                width: '150px',
+                backgroundColor: '#E2E8F0',
+                borderRadius: '4px'
+              }}
+            ></div>
+          </div>
+          <div
+            style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem', flexGrow: 1 }}
+          >
+            {[1, 2, 3, 4].map((n) => (
+              <div
+                key={n}
+                className="skeleton-block"
+                style={{ height: '170px', borderRadius: '12px', background: '#E2E8F0' }}
+              ></div>
+            ))}
+          </div>
+        </div>
+
+        {/* Right Panel Skeleton */}
+        <div
+          className="glass-panel skeleton-pulse"
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            height: '480px',
+            padding: '1.5rem',
+            gap: '1rem'
+          }}
+        >
+          <div
+            className="skeleton-block"
+            style={{
+              height: '24px',
+              width: '120px',
+              marginBottom: '1rem',
+              backgroundColor: '#E2E8F0',
+              borderRadius: '4px'
+            }}
+          ></div>
+          <div
+            className="skeleton-block"
+            style={{
+              height: '14px',
+              width: '160px',
+              marginBottom: '1.5rem',
+              backgroundColor: '#E2E8F0',
+              borderRadius: '4px'
+            }}
+          ></div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+            {[1, 2, 3, 4].map((n) => (
+              <div
+                key={n}
+                className="skeleton-block"
+                style={{ height: '60px', borderRadius: '8px', background: '#E2E8F0' }}
+              ></div>
+            ))}
+          </div>
+          <div
+            className="skeleton-block"
+            style={{
+              height: '40px',
+              marginTop: 'auto',
+              borderRadius: '6px',
+              background: '#E2E8F0'
+            }}
+          ></div>
+        </div>
+      </div>
+    );
+  }
 
   const getMoistureColor = (val) => {
     if (val < 20)
@@ -38,7 +146,7 @@ const FarmGlobe = ({ zones, onToggleValve, onTriggerAlert }) => {
     <div style={{ display: 'grid', gridTemplateColumns: '2.2fr 1fr', gap: '1.5rem' }}>
       {/* 2D Landscape Grid */}
       <div
-        className="glass-panel"
+        className="glass-panel slide-in-left-panel"
         style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -84,7 +192,7 @@ const FarmGlobe = ({ zones, onToggleValve, onTriggerAlert }) => {
             gap: '1.25rem',
             flexGrow: 1,
             minHeight: '380px',
-            background: 'rgba(15, 23, 42, 0.02)',
+            background: '#F8F9FA',
             border: '1px solid var(--border-glass)',
             borderRadius: '12px',
             padding: '1.25rem'
@@ -97,6 +205,20 @@ const FarmGlobe = ({ zones, onToggleValve, onTriggerAlert }) => {
             const isSelected = selectedZone?.id === zone.id;
             const isValveOpen = zone.valves.some((v) => v.status === 'ABIERTA');
 
+            const isAlert = moistureVal < 40;
+            const cardBg = isAlert
+              ? isSelected
+                ? '#faf5f0'
+                : '#F4EAE1'
+              : isSelected
+                ? '#e3ece8'
+                : '#D8E2DC';
+            const cardBorder = isSelected
+              ? isAlert
+                ? '2px solid #92400E'
+                : '2px solid #3B6653'
+              : '1px solid var(--border-glass)';
+
             return (
               <div
                 key={zone.id}
@@ -105,11 +227,11 @@ const FarmGlobe = ({ zones, onToggleValve, onTriggerAlert }) => {
                   onTriggerAlert(`Predio Seleccionado: ${zone.name}`);
                 }}
                 style={{
-                  background: isSelected ? '#ffffff' : 'rgba(255, 255, 255, 0.8)',
-                  border: isSelected
-                    ? '2px solid var(--accent-blue)'
-                    : '1px solid var(--border-glass)',
-                  boxShadow: isSelected ? 'var(--shadow-hover)' : 'var(--shadow-premium)',
+                  background: cardBg,
+                  border: cardBorder,
+                  boxShadow: isSelected
+                    ? '0 4px 12px rgba(0, 0, 0, 0.04)'
+                    : '0 2px 4px rgba(0, 0, 0, 0.015)',
                   borderRadius: '12px',
                   padding: '1rem',
                   cursor: 'pointer',
@@ -291,7 +413,7 @@ const FarmGlobe = ({ zones, onToggleValve, onTriggerAlert }) => {
 
       {/* Selected zone details */}
       <div
-        className="glass-panel"
+        className="glass-panel slide-in-right-panel"
         style={{ display: 'flex', flexDirection: 'column', height: '480px' }}
       >
         {selectedZone ? (

@@ -1314,14 +1314,17 @@ footer {
    ESTILOS DE TEMA CLARO (.light-theme) PARA proyectos.html
    ========================================================================== */
 body.light-theme {
-  --bg-primary: #f8fafc;
+  --bg-primary: #f8f9fa;
   --bg-secondary: #ffffff;
   --bg-glass: rgba(255, 255, 255, 0.85);
-  --border-glass: rgba(197, 168, 128, 0.25);
+  --border-glass: rgba(15, 23, 42, 0.08);
 
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
   --text-muted: #94a3b8;
+
+  --accent-gold: #3b6653; /* Verde Botánico */
+  --accent-gold-muted: #4e7d6b; /* Verde Salvia */
 
   background-color: var(--bg-primary);
   color: var(--text-primary);
@@ -1330,20 +1333,25 @@ body.light-theme {
 /* Header claro */
 body.light-theme header {
   background: rgba(248, 250, 252, 0.9);
-  border-bottom: 1px solid rgba(197, 168, 128, 0.25);
+  border-bottom: 1px solid var(--border-glass);
 }
 
 /* Nav links en tema claro */
 body.light-theme .nav-links a {
-  color: #475569;
+  color: var(--text-secondary);
 }
 body.light-theme .nav-links a:hover {
-  color: #0f172a;
+  color: var(--text-primary);
 }
 
 /* Logo en tema claro */
 body.light-theme .logo-text {
-  background: linear-gradient(135deg, var(--accent-gold), #0f172a 60%, var(--accent-cyan-muted));
+  background: linear-gradient(
+    135deg,
+    var(--accent-gold),
+    var(--text-primary) 60%,
+    var(--accent-gold-muted)
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -1352,9 +1360,9 @@ body.light-theme .logo-text {
 body.light-theme .hero-title {
   background: linear-gradient(
     135deg,
-    #0f172a 40%,
-    var(--accent-gold-muted) 70%,
-    var(--accent-cyan-muted)
+    var(--text-primary) 40%,
+    var(--accent-gold) 70%,
+    var(--accent-gold-muted)
   );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -1364,52 +1372,75 @@ body.light-theme .hero-title {
 body.light-theme .project-card {
   background: var(--bg-glass);
   border: 1px solid var(--border-glass);
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+  transition: var(--transition-smooth);
 }
 
 body.light-theme .project-card:hover {
-  box-shadow:
-    0 20px 40px rgba(212, 175, 55, 0.08),
-    0 0 15px rgba(212, 175, 55, 0.02);
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+  border-color: rgba(78, 125, 107, 0.2);
 }
 
-body.light-theme .project-card.hydraulic-card:hover {
-  box-shadow:
-    0 20px 40px rgba(0, 229, 255, 0.08),
-    0 0 15px rgba(0, 229, 255, 0.02);
-}
-
-body.light-theme .project-card.automotive-card:hover {
-  box-shadow:
-    0 20px 40px rgba(168, 85, 247, 0.08),
-    0 0 15px rgba(168, 85, 247, 0.02);
-}
-
-body.light-theme .project-card.hospitality-card:hover {
-  box-shadow:
-    0 20px 40px rgba(16, 185, 129, 0.08),
-    0 0 15px rgba(16, 185, 129, 0.02);
-}
-
-body.light-theme .project-card.his-card:hover {
-  box-shadow:
-    0 20px 40px rgba(244, 63, 94, 0.08),
-    0 0 15px rgba(244, 63, 94, 0.02);
-}
-
+/* Override category-specific border hovers on light theme to stay uniform */
+body.light-theme .project-card.hydraulic-card:hover,
+body.light-theme .project-card.automotive-card:hover,
+body.light-theme .project-card.hospitality-card:hover,
+body.light-theme .project-card.his-card:hover,
 body.light-theme .project-card.greentech-card:hover {
-  box-shadow:
-    0 20px 40px rgba(0, 229, 255, 0.08),
-    0 0 15px rgba(0, 229, 255, 0.02);
+  border-color: rgba(78, 125, 107, 0.3);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
 }
 
+/* Status y Badge */
 body.light-theme .project-status {
-  background: rgba(15, 23, 42, 0.03);
+  background: rgba(78, 125, 107, 0.08) !important;
+  border: 1px solid rgba(78, 125, 107, 0.15) !important;
+  color: var(--accent-gold-muted) !important;
 }
 
+/* Iconos de las tarjetas */
 body.light-theme .project-icon {
-  background: rgba(15, 23, 42, 0.02);
-  border: 1px solid rgba(15, 23, 42, 0.05);
+  background: rgba(78, 125, 107, 0.05) !important;
+  border: 1px solid rgba(78, 125, 107, 0.1) !important;
+}
+
+body.light-theme .project-icon svg {
+  fill: var(--accent-gold-muted) !important;
+}
+
+body.light-theme .project-card:hover .project-icon {
+  background: rgba(78, 125, 107, 0.1) !important;
+  border-color: var(--accent-gold) !important;
+}
+
+body.light-theme .project-card:hover .project-icon svg {
+  fill: var(--accent-gold) !important;
+  transform: scale(1.05) rotate(0deg) !important;
+}
+
+/* Override all project types hover icon transformations to keep it minimal */
+body.light-theme .project-card.hydraulic-card:hover .project-icon svg,
+body.light-theme .project-card.automotive-card:hover .project-icon svg,
+body.light-theme .project-card.hospitality-card:hover .project-icon svg,
+body.light-theme .project-card.his-card:hover .project-icon svg,
+body.light-theme .project-card.greentech-card:hover .project-icon svg {
+  transform: scale(1.05) !important;
+}
+
+/* Botones de acción "Ingresar" / "Abrir" */
+body.light-theme .btn-project-link {
+  background: var(--accent-gold-muted) !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02) !important;
+  border-radius: 8px !important;
+}
+
+body.light-theme .project-card:hover .btn-project-link {
+  background: var(--accent-gold) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(78, 125, 107, 0.2) !important;
 }
 
 /* Ajustes de Engranajes y Partículas de Fondo en Tema Claro */

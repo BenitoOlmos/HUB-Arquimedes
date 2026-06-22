@@ -73,7 +73,7 @@ const ProceduralPump = ({
       name: 'Suction Flange',
       explodeDir: [0, 0, -2.5], // Moves forward along Z
       render: () => {
-        const diaScale = 0.5 + activeDiameter * 0.25;
+        const diaScale = 0.5 + Math.min(4.0, activeDiameter) * 0.25;
         return (
           <group scale={[diaScale, diaScale, 1.0]}>
             {/* Suction Pipe Tube - rotated to Z-axis */}
@@ -95,7 +95,7 @@ const ProceduralPump = ({
       name: 'Volute Casing',
       explodeDir: [0, 0, 0], // Stays central
       render: () => {
-        const diaScale = 0.5 + activeDiameter * 0.25;
+        const diaScale = 0.5 + Math.min(4.0, activeDiameter) * 0.25;
         return (
           <group>
             {/* Main Volute Ring */}
@@ -250,8 +250,8 @@ const ProceduralPump = ({
       name: 'Electric Motor',
       explodeDir: [0, 0, 5.2], // Slides furthest backward
       render: () => {
-        const motorLength = 1.6 + (motorPower - 2) * 0.4;
-        const motorRadius = 0.8 + (motorPower - 2) * 0.15;
+        const motorLength = 1.6 + (Math.min(5, motorPower) - 2) * 0.4;
+        const motorRadius = 0.8 + (Math.min(5, motorPower) - 2) * 0.15;
         return (
           <group>
             {/* Motor Stator Body - rotated to Z-axis */}
@@ -436,14 +436,14 @@ const GLBPumpModel = ({
 
         // Dynamic scaling based on simulation parameters
         if (name.includes('motor') || name.includes('stator') || name.includes('moteur')) {
-          const motorScale = 1.0 + (motorPower - 2) * 0.15;
+          const motorScale = 1.0 + (Math.min(5, motorPower) - 2) * 0.15;
           child.scale.copy(child.userData.baseScale).multiplyScalar(motorScale);
         } else if (
           name.includes('suction') ||
           name.includes('inlet') ||
           name.includes('aspiracion')
         ) {
-          const pipeScale = 0.5 + activeDiameter * 0.25;
+          const pipeScale = 0.5 + Math.min(4.0, activeDiameter) * 0.25;
           child.scale.copy(child.userData.baseScale);
           child.scale.x *= pipeScale;
           child.scale.y *= pipeScale;
@@ -452,7 +452,7 @@ const GLBPumpModel = ({
           name.includes('outlet') ||
           name.includes('descarga')
         ) {
-          const pipeScale = 0.5 + activeDiameter * 0.25;
+          const pipeScale = 0.5 + Math.min(4.0, activeDiameter) * 0.25;
           child.scale.copy(child.userData.baseScale);
           child.scale.x *= pipeScale;
           child.scale.z *= pipeScale;

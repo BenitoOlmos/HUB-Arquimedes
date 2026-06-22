@@ -468,9 +468,9 @@ const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
               {(i === points.length - 1 || p.val === Math.max(...data)) && (
                 <text
                   x={p.x}
-                  y={p.y - 8}
+                  y={p.y - 12}
                   fill="var(--text-primary)"
-                  fontSize="8"
+                  fontSize="16"
                   fontFamily="monospace"
                   textAnchor="middle"
                   fontWeight="bold"
@@ -482,23 +482,23 @@ const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
           ))}
 
           {/* X axis labels */}
-          <text x={padding} y={height - 4} fill="var(--text-muted)" fontSize="8">
+          <text x={padding} y={height - 5} fill="var(--text-muted)" fontSize="16">
             Inicio
           </text>
           <text
             x={width / 2}
-            y={height - 4}
+            y={height - 5}
             fill="var(--text-muted)"
-            fontSize="8"
+            fontSize="16"
             textAnchor="middle"
           >
             Operación
           </text>
           <text
             x={width - padding}
-            y={height - 4}
+            y={height - 5}
             fill="var(--text-muted)"
-            fontSize="8"
+            fontSize="16"
             textAnchor="right"
           >
             Actual
@@ -630,9 +630,9 @@ const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
               {(i === points.length - 1 || p.val === Math.max(...data)) && (
                 <text
                   x={p.x}
-                  y={p.y - 8}
+                  y={p.y - 12}
                   fill="var(--text-primary)"
-                  fontSize="8"
+                  fontSize="16"
                   fontFamily="monospace"
                   textAnchor="middle"
                   fontWeight="bold"
@@ -643,23 +643,23 @@ const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
             </g>
           ))}
 
-          <text x={padding} y={height - 4} fill="var(--text-muted)" fontSize="8">
+          <text x={padding} y={height - 5} fill="var(--text-muted)" fontSize="16">
             Inicio
           </text>
           <text
             x={width / 2}
-            y={height - 4}
+            y={height - 5}
             fill="var(--text-muted)"
-            fontSize="8"
+            fontSize="16"
             textAnchor="middle"
           >
             Calibración
           </text>
           <text
             x={width - padding}
-            y={height - 4}
+            y={height - 5}
             fill="var(--text-muted)"
-            fontSize="8"
+            fontSize="16"
             textAnchor="right"
           >
             Actual
@@ -2079,7 +2079,7 @@ const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
           >
             <h3
               style={{
-                fontSize: '0.9rem',
+                fontSize: '1.2rem',
                 fontWeight: '800',
                 color: 'var(--accent-cyan)',
                 display: 'flex',
@@ -2093,7 +2093,7 @@ const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
             </h3>
             <p
               style={{
-                fontSize: '0.75rem',
+                fontSize: '1.05rem',
                 color: 'var(--text-secondary)',
                 lineHeight: '1.4',
                 margin: 0
@@ -2118,7 +2118,7 @@ const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
           >
             <span
               style={{
-                fontSize: '0.72rem',
+                fontSize: '1.05rem',
                 fontWeight: '800',
                 color: 'var(--text-muted)',
                 textTransform: 'uppercase',
@@ -2132,7 +2132,7 @@ const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
               <table
                 style={{
                   width: '100%',
-                  fontSize: '0.72rem',
+                  fontSize: '1.1rem',
                   borderCollapse: 'collapse',
                   textAlign: 'left'
                 }}
@@ -2186,7 +2186,7 @@ const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
           >
             <h4
               style={{
-                fontSize: '0.78rem',
+                fontSize: '1.15rem',
                 fontWeight: '800',
                 color: 'var(--accent-cyan)',
                 marginBottom: '8px',
@@ -2206,7 +2206,7 @@ const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
                   display: 'flex',
                   flexDirection: 'column',
                   gap: '6px',
-                  fontSize: '0.75rem',
+                  fontSize: '1.1rem',
                   color: 'var(--text-secondary)',
                   marginTop: '8px'
                 }}
@@ -2248,7 +2248,7 @@ const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
                   display: 'flex',
                   flexDirection: 'column',
                   gap: '6px',
-                  fontSize: '0.75rem',
+                  fontSize: '1.1rem',
                   color: 'var(--text-secondary)',
                   marginTop: '8px'
                 }}
@@ -2286,7 +2286,7 @@ const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
                 </div>
               </div>
             ) : (
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '8px' }}>
+              <div style={{ fontSize: '1.1rem', color: 'var(--text-muted)', marginTop: '8px' }}>
                 Este componente ({selectedPart.spanishName || selectedPart.name}) no requiere
                 lubricación directa. Se aconseja vigilar el estado de los sellos mecánicos
                 adyacentes y la temperatura del cuerpo de rodamientos de la bomba.
@@ -2297,7 +2297,7 @@ const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
           {/* Custom Notes Section */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
             <label
-              style={{ fontSize: '0.72rem', fontWeight: '800', color: 'var(--text-secondary)' }}
+              style={{ fontSize: '1.1rem', fontWeight: '800', color: 'var(--text-secondary)' }}
             >
               Observaciones Adicionales (Profesor / Alumno)
             </label>
@@ -2307,7 +2307,7 @@ const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
               onChange={(e) => setLubricationNotes(e.target.value)}
               className="premium-textarea"
               rows={3}
-              style={{ fontSize: '0.78rem' }}
+              style={{ fontSize: '1.1rem' }}
             />
             <button
               onClick={handleSaveLubNotes}
@@ -2315,7 +2315,7 @@ const InfoPanel = ({ selectedPart, loading, onStatusChange, onAddLog }) => {
               style={{
                 alignSelf: 'flex-end',
                 padding: '6px 12px',
-                fontSize: '0.75rem',
+                fontSize: '1.1rem',
                 background: lubNotesSaved ? 'var(--status-operational)' : 'var(--accent-indigo)',
                 border: 'none',
                 color: 'white',

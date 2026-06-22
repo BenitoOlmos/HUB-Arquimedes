@@ -53,7 +53,19 @@ const PumpSimulatorPanel = ({
         flowRate: 20,
         flowUnit: 'm3h',
         activeDiameter: 1,
-        enabledDiameters: { 1: true, 1.5: true, 2: true, 3: true }
+        enabledDiameters: {
+          1: true,
+          1.5: true,
+          2: true,
+          3: true,
+          4: false,
+          6: false,
+          8: false,
+          10: false,
+          12: false,
+          14: false,
+          16: false
+        }
       }
     },
     {
@@ -67,7 +79,19 @@ const PumpSimulatorPanel = ({
         flowRate: 25,
         flowUnit: 'm3h',
         activeDiameter: 3,
-        enabledDiameters: { 1: false, 1.5: false, 2: true, 3: true }
+        enabledDiameters: {
+          1: false,
+          1.5: false,
+          2: true,
+          3: true,
+          4: false,
+          6: false,
+          8: false,
+          10: false,
+          12: false,
+          14: false,
+          16: false
+        }
       }
     },
     {
@@ -81,7 +105,97 @@ const PumpSimulatorPanel = ({
         flowRate: 12,
         flowUnit: 'm3h',
         activeDiameter: 1.5,
-        enabledDiameters: { 1: true, 1.5: true, 2: true, 3: false }
+        enabledDiameters: {
+          1: true,
+          1.5: true,
+          2: true,
+          3: false,
+          4: false,
+          6: false,
+          8: false,
+          10: false,
+          12: false,
+          14: false,
+          16: false
+        }
+      }
+    },
+    {
+      name: 'Gran Caudal Industrial (500 HP)',
+      desc: 'Operación a gran escala con motor de 500 HP, 16" de diámetro y alto flujo.',
+      config: {
+        motorPower: 500,
+        geomHeight: 20,
+        pipeLength: 120,
+        lossK: 5.0,
+        flowRate: 8000,
+        flowUnit: 'm3h',
+        activeDiameter: 16,
+        enabledDiameters: {
+          1: false,
+          1.5: false,
+          2: false,
+          3: false,
+          4: false,
+          6: true,
+          8: true,
+          10: true,
+          12: true,
+          14: true,
+          16: true
+        }
+      }
+    },
+    {
+      name: 'Bomba Pequeña Estable (1.5 HP)',
+      desc: 'Bomba pequeña de 1.5 HP, circuito de 10m y 1.5 pulgadas en régimen constante.',
+      config: {
+        motorPower: 1.5,
+        geomHeight: 4,
+        pipeLength: 10,
+        lossK: 2.5,
+        flowRate: 8,
+        flowUnit: 'm3h',
+        activeDiameter: 1.5,
+        enabledDiameters: {
+          1: true,
+          1.5: true,
+          2: true,
+          3: false,
+          4: false,
+          6: false,
+          8: false,
+          10: false,
+          12: false,
+          14: false,
+          16: false
+        }
+      }
+    },
+    {
+      name: 'Altura Crítica (Cavitación Límite)',
+      desc: 'Altura geométrica de 22m que forzaría cavitación inmediata por caída crítica de NPSHa.',
+      config: {
+        motorPower: 5,
+        geomHeight: 22,
+        pipeLength: 50,
+        lossK: 4.0,
+        flowRate: 30,
+        flowUnit: 'm3h',
+        activeDiameter: 2,
+        enabledDiameters: {
+          1: false,
+          1.5: true,
+          2: true,
+          3: true,
+          4: true,
+          6: false,
+          8: false,
+          10: false,
+          12: false,
+          14: false,
+          16: false
+        }
       }
     }
   ];
@@ -102,8 +216,20 @@ const PumpSimulatorPanel = ({
   const Q_calc = flowUnit === 'lh' ? flowRate / 1000 : flowRate;
 
   // 3. Fluid Dynamics Constants & Calculations
-  const diameters = [1, 1.5, 2, 3]; // in inches
-  const diameterValues = { 1: 0.0254, 1.5: 0.0381, 2: 0.0508, 3: 0.0762 }; // meters
+  const diameters = [1, 1.5, 2, 3, 4, 6, 8, 10, 12, 14, 16]; // in inches
+  const diameterValues = {
+    1: 0.0254,
+    1.5: 0.0381,
+    2: 0.0508,
+    3: 0.0762,
+    4: 0.1016,
+    6: 0.1524,
+    8: 0.2032,
+    10: 0.254,
+    12: 0.3048,
+    14: 0.3556,
+    16: 0.4064
+  }; // meters
 
   // Suction lift (altura de aspiración): assumed 45% of geometric height
   const H_suction = 0.45 * geomHeight;
@@ -185,8 +311,13 @@ const PumpSimulatorPanel = ({
     }
   }, [isCavitatingActive, hasDismissedAlert]);
 
-  // Compute maximum flow rate limit (where pump head is 0 for 3" pipe)
-  const Q_limit = 100; // fixed X-axis range (m3/h)
+  // Compute maximum flow rate limit dynamically
+  const H_max_calc = 12 + 8 * motorPower + 1.5 * (activeDiameter - 1);
+  const maxHeadAxis = Math.max(50, Math.ceil(H_max_calc / 10) * 10);
+
+  const a_coeff_active = 0.022 / (motorPower * (1 + 0.25 * (activeDiameter - 1)));
+  const Q_zero_head = Math.sqrt(H_max_calc / a_coeff_active);
+  const Q_limit = Math.max(100, Math.ceil(Q_zero_head / 10) * 10);
 
   // 4. Mouse Hover Interaction mapping
   const handleMouseMove = (e, containerRef) => {
@@ -213,8 +344,8 @@ const PumpSimulatorPanel = ({
   };
 
   // 5. SVG Coordinate Conversions
-  const maxHeadAxis = 50; // Y-axis limit for Head (m)
-  const maxNPSHAxis = 10; // Y-axis limit for NPSH (m)
+  const maxNPSHr = getNPSHRequired(Q_limit);
+  const maxNPSHAxis = Math.max(10, Math.ceil(maxNPSHr / 2) * 2);
 
   const getSvgX = (q) => {
     const paddingLeft = 40;
@@ -276,7 +407,14 @@ const PumpSimulatorPanel = ({
     1: '#eab308', // Yellow
     1.5: '#f97316', // Orange
     2: '#06b6d4', // Cyan
-    3: '#3b82f6' // Blue
+    3: '#3b82f6', // Blue
+    4: '#10b981', // Emerald
+    6: '#8b5cf6', // Violet
+    8: '#ec4899', // Pink
+    10: '#f43f5e', // Rose
+    12: '#14b8a6', // Teal
+    14: '#f59e0b', // Amber
+    16: '#6366f1' // Indigo
   };
 
   const flowDisplayVal = (q) => {
@@ -404,12 +542,12 @@ const PumpSimulatorPanel = ({
           >
             <Zap size={14} color="var(--accent-cyan)" /> Potencia del Motor (HP)
           </span>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
-            {[1, 2, 3].map((powerVal) => (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px' }}>
+            {[1, 1.5, 2, 3, 5, 10, 15].map((powerVal) => (
               <label
                 key={powerVal}
                 className={`premium-radio-card ${motorPower === powerVal ? 'active' : ''}`}
-                style={{ cursor: 'pointer', textAlign: 'center', padding: '8px 2px' }}
+                style={{ cursor: 'pointer', textAlign: 'center', padding: '6px 2px' }}
               >
                 <input
                   type="radio"
@@ -421,7 +559,7 @@ const PumpSimulatorPanel = ({
                 />
                 <div
                   style={{
-                    fontSize: '1.0rem',
+                    fontSize: '0.85rem',
                     fontWeight: '800',
                     color: motorPower === powerVal ? 'var(--accent-cyan)' : 'var(--text-primary)'
                   }}
@@ -430,6 +568,23 @@ const PumpSimulatorPanel = ({
                 </div>
               </label>
             ))}
+          </div>
+          <div style={{ marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <span className="detail-label" style={{ fontSize: '0.78rem', fontWeight: '700' }}>
+              Ajustar Potencia del Motor (HP) [Max: 500 HP]
+            </span>
+            <input
+              type="number"
+              min="0.5"
+              max="500"
+              step="0.5"
+              value={motorPower}
+              onChange={(e) =>
+                setMotorPower(Math.max(0.5, Math.min(500, parseFloat(e.target.value) || 0.5)))
+              }
+              className="premium-input"
+              style={{ padding: '6px', fontSize: '0.95rem' }}
+            />
           </div>
         </div>
 
@@ -459,7 +614,13 @@ const PumpSimulatorPanel = ({
             >
               <Droplet size={14} color="var(--accent-blue)" /> Diámetros de Succión Habilitados
             </span>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '6px' }}>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(42px, 1fr))',
+                gap: '6px'
+              }}
+            >
               {diameters.map((d) => (
                 <button
                   key={d}
@@ -663,48 +824,54 @@ const PumpSimulatorPanel = ({
 
           <svg viewBox="0 0 400 220" width="100%" height="150" style={{ overflow: 'visible' }}>
             {/* Grid lines */}
-            {[0, 20, 40, 60, 80, 100].map((tickQ) => (
-              <g key={tickQ}>
-                <line
-                  x1={getSvgX(tickQ)}
-                  y1={getSvgYHead(0)}
-                  x2={getSvgX(tickQ)}
-                  y2={getSvgYHead(50)}
-                  stroke="rgba(15, 23, 42, 0.04)"
-                  strokeDasharray="3,3"
-                />
-                <text
-                  x={getSvgX(tickQ)}
-                  y={212}
-                  fill="var(--text-muted)"
-                  fontSize="8"
-                  textAnchor="middle"
-                >
-                  {flowDisplayVal(tickQ)}
-                </text>
-              </g>
-            ))}
-            {[0, 10, 20, 30, 40, 50].map((tickH) => (
-              <g key={tickH}>
-                <line
-                  x1={getSvgX(0)}
-                  y1={getSvgYHead(tickH)}
-                  x2={getSvgX(100)}
-                  y2={getSvgYHead(tickH)}
-                  stroke="rgba(15, 23, 42, 0.04)"
-                  strokeDasharray="3,3"
-                />
-                <text
-                  x={32}
-                  y={getSvgYHead(tickH) + 3}
-                  fill="var(--text-muted)"
-                  fontSize="8"
-                  textAnchor="end"
-                >
-                  {tickH}
-                </text>
-              </g>
-            ))}
+            {[0, 0.2, 0.4, 0.6, 0.8, 1.0].map((ratio) => {
+              const tickQ = ratio * Q_limit;
+              return (
+                <g key={ratio}>
+                  <line
+                    x1={getSvgX(tickQ)}
+                    y1={getSvgYHead(0)}
+                    x2={getSvgX(tickQ)}
+                    y2={getSvgYHead(maxHeadAxis)}
+                    stroke="rgba(15, 23, 42, 0.04)"
+                    strokeDasharray="3,3"
+                  />
+                  <text
+                    x={getSvgX(tickQ)}
+                    y={212}
+                    fill="var(--text-muted)"
+                    fontSize="8"
+                    textAnchor="middle"
+                  >
+                    {flowDisplayVal(tickQ).toFixed(0)}
+                  </text>
+                </g>
+              );
+            })}
+            {[0, 0.2, 0.4, 0.6, 0.8, 1.0].map((ratio) => {
+              const tickH = ratio * maxHeadAxis;
+              return (
+                <g key={ratio}>
+                  <line
+                    x1={getSvgX(0)}
+                    y1={getSvgYHead(tickH)}
+                    x2={getSvgX(Q_limit)}
+                    y2={getSvgYHead(tickH)}
+                    stroke="rgba(15, 23, 42, 0.04)"
+                    strokeDasharray="3,3"
+                  />
+                  <text
+                    x={32}
+                    y={getSvgYHead(tickH) + 3}
+                    fill="var(--text-muted)"
+                    fontSize="8"
+                    textAnchor="end"
+                  >
+                    {tickH.toFixed(0)}
+                  </text>
+                </g>
+              );
+            })}
 
             {/* Families of Pump curves */}
             {diameters.map((d) => {
@@ -884,48 +1051,54 @@ const PumpSimulatorPanel = ({
 
           <svg viewBox="0 0 400 220" width="100%" height="150" style={{ overflow: 'visible' }}>
             {/* Grid lines */}
-            {[0, 20, 40, 60, 80, 100].map((tickQ) => (
-              <g key={tickQ}>
-                <line
-                  x1={getSvgX(tickQ)}
-                  y1={getSvgYNPSH(0)}
-                  x2={getSvgX(tickQ)}
-                  y2={getSvgYNPSH(10)}
-                  stroke="rgba(15, 23, 42, 0.04)"
-                  strokeDasharray="3,3"
-                />
-                <text
-                  x={getSvgX(tickQ)}
-                  y={212}
-                  fill="var(--text-muted)"
-                  fontSize="8"
-                  textAnchor="middle"
-                >
-                  {flowDisplayVal(tickQ)}
-                </text>
-              </g>
-            ))}
-            {[0, 2, 4, 6, 8, 10].map((tickN) => (
-              <g key={tickN}>
-                <line
-                  x1={getSvgX(0)}
-                  y1={getSvgYNPSH(tickN)}
-                  x2={getSvgX(100)}
-                  y2={getSvgYNPSH(tickN)}
-                  stroke="rgba(15, 23, 42, 0.04)"
-                  strokeDasharray="3,3"
-                />
-                <text
-                  x={32}
-                  y={getSvgYNPSH(tickN) + 3}
-                  fill="var(--text-muted)"
-                  fontSize="8"
-                  textAnchor="end"
-                >
-                  {tickN}
-                </text>
-              </g>
-            ))}
+            {[0, 0.2, 0.4, 0.6, 0.8, 1.0].map((ratio) => {
+              const tickQ = ratio * Q_limit;
+              return (
+                <g key={ratio}>
+                  <line
+                    x1={getSvgX(tickQ)}
+                    y1={getSvgYNPSH(0)}
+                    x2={getSvgX(tickQ)}
+                    y2={getSvgYNPSH(maxNPSHAxis)}
+                    stroke="rgba(15, 23, 42, 0.04)"
+                    strokeDasharray="3,3"
+                  />
+                  <text
+                    x={getSvgX(tickQ)}
+                    y={212}
+                    fill="var(--text-muted)"
+                    fontSize="8"
+                    textAnchor="middle"
+                  >
+                    {flowDisplayVal(tickQ).toFixed(0)}
+                  </text>
+                </g>
+              );
+            })}
+            {[0, 0.2, 0.4, 0.6, 0.8, 1.0].map((ratio) => {
+              const tickN = ratio * maxNPSHAxis;
+              return (
+                <g key={ratio}>
+                  <line
+                    x1={getSvgX(0)}
+                    y1={getSvgYNPSH(tickN)}
+                    x2={getSvgX(Q_limit)}
+                    y2={getSvgYNPSH(tickN)}
+                    stroke="rgba(15, 23, 42, 0.04)"
+                    strokeDasharray="3,3"
+                  />
+                  <text
+                    x={32}
+                    y={getSvgYNPSH(tickN) + 3}
+                    fill="var(--text-muted)"
+                    fontSize="8"
+                    textAnchor="end"
+                  >
+                    {tickN.toFixed(0)}
+                  </text>
+                </g>
+              );
+            })}
 
             {/* Curves */}
             {/* NPSHr (Required) - Red ascending */}
@@ -1413,48 +1586,54 @@ const PumpSimulatorPanel = ({
                   style={{ maxHeight: '500px', overflow: 'visible' }}
                 >
                   {/* Grid lines */}
-                  {[0, 20, 40, 60, 80, 100].map((tickQ) => (
-                    <g key={tickQ}>
-                      <line
-                        x1={getSvgX(tickQ)}
-                        y1={getSvgYHead(0)}
-                        x2={getSvgX(tickQ)}
-                        y2={getSvgYHead(50)}
-                        stroke="rgba(15, 23, 42, 0.04)"
-                        strokeDasharray="3,3"
-                      />
-                      <text
-                        x={getSvgX(tickQ)}
-                        y={212}
-                        fill="var(--text-muted)"
-                        fontSize="8"
-                        textAnchor="middle"
-                      >
-                        {flowDisplayVal(tickQ)}
-                      </text>
-                    </g>
-                  ))}
-                  {[0, 10, 20, 30, 40, 50].map((tickH) => (
-                    <g key={tickH}>
-                      <line
-                        x1={getSvgX(0)}
-                        y1={getSvgYHead(tickH)}
-                        x2={getSvgX(100)}
-                        y2={getSvgYHead(tickH)}
-                        stroke="rgba(15, 23, 42, 0.04)"
-                        strokeDasharray="3,3"
-                      />
-                      <text
-                        x={32}
-                        y={getSvgYHead(tickH) + 3}
-                        fill="var(--text-muted)"
-                        fontSize="8"
-                        textAnchor="end"
-                      >
-                        {tickH}
-                      </text>
-                    </g>
-                  ))}
+                  {[0, 0.2, 0.4, 0.6, 0.8, 1.0].map((ratio) => {
+                    const tickQ = ratio * Q_limit;
+                    return (
+                      <g key={ratio}>
+                        <line
+                          x1={getSvgX(tickQ)}
+                          y1={getSvgYHead(0)}
+                          x2={getSvgX(tickQ)}
+                          y2={getSvgYHead(maxHeadAxis)}
+                          stroke="rgba(15, 23, 42, 0.04)"
+                          strokeDasharray="3,3"
+                        />
+                        <text
+                          x={getSvgX(tickQ)}
+                          y={212}
+                          fill="var(--text-muted)"
+                          fontSize="8"
+                          textAnchor="middle"
+                        >
+                          {flowDisplayVal(tickQ).toFixed(0)}
+                        </text>
+                      </g>
+                    );
+                  })}
+                  {[0, 0.2, 0.4, 0.6, 0.8, 1.0].map((ratio) => {
+                    const tickH = ratio * maxHeadAxis;
+                    return (
+                      <g key={ratio}>
+                        <line
+                          x1={getSvgX(0)}
+                          y1={getSvgYHead(tickH)}
+                          x2={getSvgX(Q_limit)}
+                          y2={getSvgYHead(tickH)}
+                          stroke="rgba(15, 23, 42, 0.04)"
+                          strokeDasharray="3,3"
+                        />
+                        <text
+                          x={32}
+                          y={getSvgYHead(tickH) + 3}
+                          fill="var(--text-muted)"
+                          fontSize="8"
+                          textAnchor="end"
+                        >
+                          {tickH.toFixed(0)}
+                        </text>
+                      </g>
+                    );
+                  })}
 
                   {/* Families of Pump curves */}
                   {diameters.map((d) => {
@@ -1578,48 +1757,54 @@ const PumpSimulatorPanel = ({
                   style={{ maxHeight: '500px', overflow: 'visible' }}
                 >
                   {/* Grid lines */}
-                  {[0, 20, 40, 60, 80, 100].map((tickQ) => (
-                    <g key={tickQ}>
-                      <line
-                        x1={getSvgX(tickQ)}
-                        y1={getSvgYNPSH(0)}
-                        x2={getSvgX(tickQ)}
-                        y2={getSvgYNPSH(10)}
-                        stroke="rgba(15, 23, 42, 0.04)"
-                        strokeDasharray="3,3"
-                      />
-                      <text
-                        x={getSvgX(tickQ)}
-                        y={212}
-                        fill="var(--text-muted)"
-                        fontSize="8"
-                        textAnchor="middle"
-                      >
-                        {flowDisplayVal(tickQ)}
-                      </text>
-                    </g>
-                  ))}
-                  {[0, 2, 4, 6, 8, 10].map((tickN) => (
-                    <g key={tickN}>
-                      <line
-                        x1={getSvgX(0)}
-                        y1={getSvgYNPSH(tickN)}
-                        x2={getSvgX(100)}
-                        y2={getSvgYNPSH(tickN)}
-                        stroke="rgba(15, 23, 42, 0.04)"
-                        strokeDasharray="3,3"
-                      />
-                      <text
-                        x={32}
-                        y={getSvgYNPSH(tickN) + 3}
-                        fill="var(--text-muted)"
-                        fontSize="8"
-                        textAnchor="end"
-                      >
-                        {tickN}
-                      </text>
-                    </g>
-                  ))}
+                  {[0, 0.2, 0.4, 0.6, 0.8, 1.0].map((ratio) => {
+                    const tickQ = ratio * Q_limit;
+                    return (
+                      <g key={ratio}>
+                        <line
+                          x1={getSvgX(tickQ)}
+                          y1={getSvgYNPSH(0)}
+                          x2={getSvgX(tickQ)}
+                          y2={getSvgYNPSH(maxNPSHAxis)}
+                          stroke="rgba(15, 23, 42, 0.04)"
+                          strokeDasharray="3,3"
+                        />
+                        <text
+                          x={getSvgX(tickQ)}
+                          y={212}
+                          fill="var(--text-muted)"
+                          fontSize="8"
+                          textAnchor="middle"
+                        >
+                          {flowDisplayVal(tickQ).toFixed(0)}
+                        </text>
+                      </g>
+                    );
+                  })}
+                  {[0, 0.2, 0.4, 0.6, 0.8, 1.0].map((ratio) => {
+                    const tickN = ratio * maxNPSHAxis;
+                    return (
+                      <g key={ratio}>
+                        <line
+                          x1={getSvgX(0)}
+                          y1={getSvgYNPSH(tickN)}
+                          x2={getSvgX(Q_limit)}
+                          y2={getSvgYNPSH(tickN)}
+                          stroke="rgba(15, 23, 42, 0.04)"
+                          strokeDasharray="3,3"
+                        />
+                        <text
+                          x={32}
+                          y={getSvgYNPSH(tickN) + 3}
+                          fill="var(--text-muted)"
+                          fontSize="8"
+                          textAnchor="end"
+                        >
+                          {tickN.toFixed(0)}
+                        </text>
+                      </g>
+                    );
+                  })}
 
                   {/* Curves */}
                   <path

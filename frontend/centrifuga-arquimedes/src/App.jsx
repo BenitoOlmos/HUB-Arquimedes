@@ -39,7 +39,14 @@ function App() {
     1: true,
     1.5: true,
     2: true,
-    3: true
+    3: true,
+    4: true,
+    6: true,
+    8: true,
+    10: true,
+    12: true,
+    14: true,
+    16: true
   });
   const [isCavitating, setIsCavitating] = useState(false);
   const [sidebarMode, setSidebarMode] = useState('simulation'); // 'simulation' or 'inspection'

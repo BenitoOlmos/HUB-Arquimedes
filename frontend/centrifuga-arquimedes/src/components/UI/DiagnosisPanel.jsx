@@ -487,6 +487,338 @@ const DiagnosisPanel = () => {
                             {item.correction}
                           </p>
                         </div>
+
+                        {item.id === 'symp-2' && (
+                          <div style={{ marginTop: '12px' }}>
+                            <strong
+                              style={{
+                                fontSize: '0.78rem',
+                                color: 'var(--text-muted)',
+                                textTransform: 'uppercase',
+                                display: 'block',
+                                marginBottom: '6px'
+                              }}
+                            >
+                              Gráfico de Comportamiento Térmico del Rodamiento
+                            </strong>
+                            <div
+                              style={{
+                                background: 'var(--bg-secondary)',
+                                padding: '12px',
+                                borderRadius: '8px',
+                                border: '1px solid var(--border-glass)'
+                              }}
+                            >
+                              <svg
+                                viewBox="0 0 460 140"
+                                width="100%"
+                                height="130"
+                                style={{ overflow: 'visible' }}
+                              >
+                                {/* Grid lines */}
+                                {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((x) => (
+                                  <line
+                                    key={x}
+                                    x1={40 + x * 38}
+                                    y1={10}
+                                    x2={40 + x * 38}
+                                    y2={100}
+                                    stroke="rgba(15, 23, 42, 0.04)"
+                                    strokeDasharray="2,2"
+                                  />
+                                ))}
+                                {[30, 50, 70, 90].map((y) => (
+                                  <g key={y}>
+                                    <line
+                                      x1={40}
+                                      y1={100 - (y - 30) * 1.28}
+                                      x2={420}
+                                      y2={100 - (y - 30) * 1.28}
+                                      stroke="rgba(15, 23, 42, 0.04)"
+                                      strokeDasharray="2,2"
+                                    />
+                                    <text
+                                      x={34}
+                                      y={100 - (y - 30) * 1.28 + 3}
+                                      fontSize="9"
+                                      fill="var(--text-muted)"
+                                      textAnchor="end"
+                                    >
+                                      {y}°C
+                                    </text>
+                                  </g>
+                                ))}
+                                {/* Normal/Abnormal threshold line at 75°C */}
+                                <line
+                                  x1={40}
+                                  y1={100 - (75 - 30) * 1.28}
+                                  x2={420}
+                                  y2={100 - (75 - 30) * 1.28}
+                                  stroke="var(--status-replace)"
+                                  strokeDasharray="3,3"
+                                  strokeWidth="1"
+                                />
+                                <text
+                                  x={415}
+                                  y={100 - (75 - 30) * 1.28 - 4}
+                                  fontSize="9"
+                                  fill="var(--status-replace)"
+                                  fontWeight="bold"
+                                  textAnchor="end"
+                                >
+                                  Límite Crítico (75°C)
+                                </text>
+
+                                {/* Trend Curve */}
+                                <path
+                                  d="M 40 74.4 L 78 70.5 L 116 71.8 L 154 68 L 192 69.3 L 230 65.4 L 268 64.1"
+                                  fill="none"
+                                  stroke="var(--status-operational)"
+                                  strokeWidth="3"
+                                  strokeLinecap="round"
+                                />
+                                <path
+                                  d="M 268 64.1 L 306 51.3 L 344 32 L 382 12.8 L 420 10.2"
+                                  fill="none"
+                                  stroke="var(--status-replace)"
+                                  strokeWidth="3"
+                                  strokeLinecap="round"
+                                />
+
+                                {/* Warning label */}
+                                <text
+                                  x={280}
+                                  y={22}
+                                  fontSize="9"
+                                  fill="var(--status-replace)"
+                                  fontWeight="bold"
+                                  textAnchor="start"
+                                >
+                                  Alza de Temperatura (&gt;75°C)
+                                </text>
+
+                                {/* Axes */}
+                                <line
+                                  x1={40}
+                                  y1={100}
+                                  x2={420}
+                                  y2={100}
+                                  stroke="var(--text-muted)"
+                                  strokeWidth="1.2"
+                                />
+                                <line
+                                  x1={40}
+                                  y1={10}
+                                  x2={40}
+                                  y2={100}
+                                  stroke="var(--text-muted)"
+                                  strokeWidth="1.2"
+                                />
+                                <text x={40} y={115} fontSize="8" fill="var(--text-muted)">
+                                  t = 0 (Normal)
+                                </text>
+                                <text
+                                  x={268}
+                                  y={115}
+                                  fontSize="8"
+                                  fill="var(--status-inspect)"
+                                  fontWeight="bold"
+                                  textAnchor="middle"
+                                >
+                                  Falla / Fricción
+                                </text>
+                                <text
+                                  x={420}
+                                  y={115}
+                                  fontSize="8"
+                                  fill="var(--text-muted)"
+                                  textAnchor="end"
+                                >
+                                  t = 24h
+                                </text>
+                              </svg>
+                              <p
+                                style={{
+                                  fontSize: '0.75rem',
+                                  color: 'var(--text-muted)',
+                                  marginTop: '6px',
+                                  lineHeight: '1.35',
+                                  margin: 0
+                                }}
+                              >
+                                * El gráfico vincula el alza térmica repentina (&gt;75°C) con causas
+                                propuestas como lubricación deficiente o desalineación angular de
+                                ejes en terreno.
+                              </p>
+                            </div>
+                          </div>
+                        )}
+
+                        {item.id === 'symp-3' && (
+                          <div style={{ marginTop: '12px' }}>
+                            <strong
+                              style={{
+                                fontSize: '0.78rem',
+                                color: 'var(--text-muted)',
+                                textTransform: 'uppercase',
+                                display: 'block',
+                                marginBottom: '6px'
+                              }}
+                            >
+                              Gráfico de Comportamiento de Caudal de Descarga
+                            </strong>
+                            <div
+                              style={{
+                                background: 'var(--bg-secondary)',
+                                padding: '12px',
+                                borderRadius: '8px',
+                                border: '1px solid var(--border-glass)'
+                              }}
+                            >
+                              <svg
+                                viewBox="0 0 460 140"
+                                width="100%"
+                                height="130"
+                                style={{ overflow: 'visible' }}
+                              >
+                                {/* Grid lines */}
+                                {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((x) => (
+                                  <line
+                                    key={x}
+                                    x1={40 + x * 38}
+                                    y1={10}
+                                    x2={40 + x * 38}
+                                    y2={100}
+                                    stroke="rgba(15, 23, 42, 0.04)"
+                                    strokeDasharray="2,2"
+                                  />
+                                ))}
+                                {[0, 50, 100, 150, 200, 250].map((y) => (
+                                  <g key={y}>
+                                    <line
+                                      x1={40}
+                                      y1={100 - y * 0.36}
+                                      x2={420}
+                                      y2={100 - y * 0.36}
+                                      stroke="rgba(15, 23, 42, 0.04)"
+                                      strokeDasharray="2,2"
+                                    />
+                                    <text
+                                      x={34}
+                                      y={100 - y * 0.36 + 3}
+                                      fontSize="9"
+                                      fill="var(--text-muted)"
+                                      textAnchor="end"
+                                    >
+                                      {y} m³
+                                    </text>
+                                  </g>
+                                ))}
+
+                                {/* Nominal line at 200 m3/h */}
+                                <line
+                                  x1={40}
+                                  y1={100 - 200 * 0.36}
+                                  x2={420}
+                                  y2={100 - 200 * 0.36}
+                                  stroke="var(--accent-blue)"
+                                  strokeDasharray="3,3"
+                                  strokeWidth="1"
+                                />
+                                <text
+                                  x={415}
+                                  y={100 - 200 * 0.36 - 4}
+                                  fontSize="9"
+                                  fill="var(--accent-blue)"
+                                  fontWeight="bold"
+                                  textAnchor="end"
+                                >
+                                  Caudal Nominal Estable (200 m³/h)
+                                </text>
+
+                                {/* Trend Curve */}
+                                <path
+                                  d="M 40 28 L 78 28 L 116 28 L 154 28 L 192 28 L 230 28 L 268 28"
+                                  fill="none"
+                                  stroke="var(--status-operational)"
+                                  strokeWidth="3"
+                                  strokeLinecap="round"
+                                />
+                                <path
+                                  d="M 268 28 L 306 45 L 344 68 L 382 85 L 420 89"
+                                  fill="none"
+                                  stroke="var(--status-replace)"
+                                  strokeWidth="3"
+                                  strokeLinecap="round"
+                                />
+
+                                {/* Warning label */}
+                                <text
+                                  x={280}
+                                  y={65}
+                                  fontSize="9"
+                                  fill="var(--status-replace)"
+                                  fontWeight="bold"
+                                  textAnchor="start"
+                                >
+                                  Pérdida de Caudal (Caída brusca)
+                                </text>
+
+                                {/* Axes */}
+                                <line
+                                  x1={40}
+                                  y1={100}
+                                  x2={420}
+                                  y2={100}
+                                  stroke="var(--text-muted)"
+                                  strokeWidth="1.2"
+                                />
+                                <line
+                                  x1={40}
+                                  y1={10}
+                                  x2={40}
+                                  y2={100}
+                                  stroke="var(--text-muted)"
+                                  strokeWidth="1.2"
+                                />
+                                <text x={40} y={115} fontSize="8" fill="var(--text-muted)">
+                                  t = 0 (Estable)
+                                </text>
+                                <text
+                                  x={268}
+                                  y={115}
+                                  fontSize="8"
+                                  fill="var(--status-inspect)"
+                                  fontWeight="bold"
+                                  textAnchor="middle"
+                                >
+                                  Falla / Obstrucción
+                                </text>
+                                <text
+                                  x={420}
+                                  y={115}
+                                  fontSize="8"
+                                  fill="var(--text-muted)"
+                                  textAnchor="end"
+                                >
+                                  t = 24h
+                                </text>
+                              </svg>
+                              <p
+                                style={{
+                                  fontSize: '0.75rem',
+                                  color: 'var(--text-muted)',
+                                  marginTop: '6px',
+                                  lineHeight: '1.35',
+                                  margin: 0
+                                }}
+                              >
+                                * Representación del caudal nominal estable de la bomba y la caída
+                                brusca causada por holgura de anillos o giro en sentido inverso.
+                              </p>
+                            </div>
+                          </div>
+                        )}
                       </div>
 
                       {/* Right: Step-by-Step VR Verification Checklist */}
@@ -602,6 +934,7 @@ const DiagnosisPanel = () => {
           <div
             style={{
               display: 'flex',
+              flexWrap: 'wrap',
               gap: '6px',
               background: 'var(--bg-sidebar-header)',
               padding: '3px',
@@ -609,7 +942,7 @@ const DiagnosisPanel = () => {
               border: '1px solid var(--border-glass)'
             }}
           >
-            {[1, 2, 3].map((power) => (
+            {[1, 1.5, 2, 3, 5, 10, 15, 50, 100, 500].map((power) => (
               <button
                 key={power}
                 onClick={() => setSelectedVibPower(power)}

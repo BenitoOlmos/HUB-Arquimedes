@@ -306,9 +306,9 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
         />
         <text
           x={width - padding - 5}
-          y={yAlarm - 4}
+          y={yAlarm - 10}
           fill="var(--status-replace)"
-          fontSize="7"
+          fontSize="21"
           fontWeight="bold"
           textAnchor="end"
         >
@@ -327,9 +327,9 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
         />
         <text
           x={width - padding - 5}
-          y={yWarning - 4}
+          y={yWarning - 10}
           fill="var(--status-inspect)"
-          fontSize="7"
+          fontSize="21"
           fontWeight="bold"
           textAnchor="end"
         >
@@ -398,9 +398,9 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
             {i === 5 && (
               <text
                 x={p.x}
-                y={p.y - 8}
+                y={p.y - 12}
                 fill="var(--status-replace)"
-                fontSize="8"
+                fontSize="24"
                 fontWeight="bold"
                 textAnchor="middle"
                 fontFamily="monospace"
@@ -412,23 +412,23 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
         ))}
 
         {/* X axis labels */}
-        <text x={padding} y={height - 8} fill="var(--text-muted)" fontSize="8">
+        <text x={padding} y={height - 5} fill="var(--text-muted)" fontSize="24">
           Día 1
         </text>
         <text
           x={width / 2}
-          y={height - 8}
+          y={height - 5}
           fill="var(--text-muted)"
-          fontSize="8"
+          fontSize="24"
           textAnchor="middle"
         >
           Mantenimiento (Día 6)
         </text>
         <text
           x={width - padding}
-          y={height - 8}
+          y={height - 5}
           fill="var(--text-muted)"
-          fontSize="8"
+          fontSize="24"
           textAnchor="end"
         >
           Día 14
@@ -536,41 +536,41 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
         {/* Text Labels */}
         <text
           x={bearingPoints[14].x + 5}
-          y={bearingPoints[14].y + 2}
+          y={bearingPoints[14].y + 4}
           fill="var(--status-inspect)"
-          fontSize="7"
+          fontSize="21"
           fontWeight="bold"
         >
           46°C
         </text>
         <text
           x={coilPoints[14].x + 5}
-          y={coilPoints[14].y - 4}
+          y={coilPoints[14].y - 10}
           fill="var(--status-replace)"
-          fontSize="7"
+          fontSize="21"
           fontWeight="bold"
         >
           58°C
         </text>
 
         {/* X axis labels */}
-        <text x={padding} y={height - 8} fill="var(--text-muted)" fontSize="8">
+        <text x={padding} y={height - 5} fill="var(--text-muted)" fontSize="24">
           00:00
         </text>
         <text
           x={width / 2}
-          y={height - 8}
+          y={height - 5}
           fill="var(--text-muted)"
-          fontSize="8"
+          fontSize="24"
           textAnchor="middle"
         >
           12:00
         </text>
         <text
           x={width - padding}
-          y={height - 8}
+          y={height - 5}
           fill="var(--text-muted)"
-          fontSize="8"
+          fontSize="24"
           textAnchor="end"
         >
           23:00
@@ -583,7 +583,7 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
   const renderFlowPressureChart = (customHeight) => {
     const width = 500;
     const height = customHeight || 150;
-    const paddingLeft = 45;
+    const paddingLeft = 75;
     const paddingRight = 25;
     const paddingTop = 20;
     const paddingBottom = 25;
@@ -646,10 +646,10 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
                 strokeWidth="1"
               />
               <text
-                x={paddingLeft - 8}
+                x={paddingLeft - 12}
                 y={yTick + 3}
                 fill="var(--text-secondary)"
-                fontSize="8"
+                fontSize="24"
                 textAnchor="end"
                 fontWeight="600"
               >
@@ -661,11 +661,11 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
 
         {/* Y Axis Label */}
         <text
-          transform="rotate(-90 12 72)"
-          x={12}
-          y={72}
+          transform="rotate(-90 22 75)"
+          x={22}
+          y={75}
           fill="var(--text-secondary)"
-          fontSize="8"
+          fontSize="24"
           fontWeight="bold"
           textAnchor="middle"
         >
@@ -738,9 +738,9 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
               />
               <text
                 x={p.x}
-                y={p.y - (isDraggable ? 10 : 8)}
+                y={p.y - (isDraggable ? 18 : 14)}
                 fill="var(--text-secondary)"
-                fontSize="7"
+                fontSize="21"
                 fontWeight="600"
                 textAnchor="middle"
                 fontFamily="monospace"
@@ -752,23 +752,23 @@ const HistoryPanel = ({ userRole = 'Leader' }) => {
         })}
 
         {/* X axis labels */}
-        <text x={paddingLeft} y={height - 6} fill="var(--text-muted)" fontSize="8">
+        <text x={paddingLeft} y={height - 4} fill="var(--text-muted)" fontSize="24">
           0 m³/h (Válvula Cerrada)
         </text>
         <text
           x={paddingLeft + chartWidth / 2}
-          y={height - 6}
+          y={height - 4}
           fill="var(--text-muted)"
-          fontSize="8"
+          fontSize="24"
           textAnchor="middle"
         >
           50 m³/h
         </text>
         <text
           x={width - paddingRight}
-          y={height - 6}
+          y={height - 4}
           fill="var(--text-muted)"
-          fontSize="8"
+          fontSize="24"
           textAnchor="end"
         >
           100 m³/h (Apertura Total)

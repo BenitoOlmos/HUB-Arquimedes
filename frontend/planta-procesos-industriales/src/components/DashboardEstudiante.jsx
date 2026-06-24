@@ -242,13 +242,13 @@ export default function DashboardEstudiante({
                   background: 'var(--accent-gradient)'
                 }}
               >
-                BO
+                BG
               </div>
               <div style={{ flex: 1 }}>
                 <div
                   style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
                 >
-                  <h3 style={{ fontSize: '1.2rem', fontWeight: 700 }}>Benito Olmos</h3>
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: 700 }}>Benjamín González</h3>
                   <span className="badge badge-blue">8 Semestres Activos</span>
                 </div>
                 <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>

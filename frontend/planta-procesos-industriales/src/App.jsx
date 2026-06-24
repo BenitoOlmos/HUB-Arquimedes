@@ -182,9 +182,9 @@ export default function App() {
           </button>
 
           <div className="user-profile-badge">
-            <div className="avatar">BO</div>
+            <div className="avatar">BG</div>
             <div className="user-info">
-              <span className="user-name">Benito Olmos</span>
+              <span className="user-name">Benjamín González</span>
               <span className="user-role">Ingeniería Conf.</span>
             </div>
           </div>

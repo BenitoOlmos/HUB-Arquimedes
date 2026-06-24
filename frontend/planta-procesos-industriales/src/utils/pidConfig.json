@@ -1,0 +1,39 @@
+{
+  "equipos": [
+    {
+      "id3D": "bomba",
+      "nombre": "Bomba Centrífuga - PMP-101",
+      "planoSVG_id": "plano_general",
+      "nodoSVG_id": "pid_bomba",
+      "coordenadasZoom": { "x": -150, "y": -345, "scale": 2.0 }
+    },
+    {
+      "id3D": "motor",
+      "nombre": "Motor Eléctrico - MOT-101",
+      "planoSVG_id": "plano_general",
+      "nodoSVG_id": "pid_motor",
+      "coordenadasZoom": { "x": -150, "y": -585, "scale": 2.0 }
+    },
+    {
+      "id3D": "compresor",
+      "nombre": "Compresor Reciprocante - CMP-101",
+      "planoSVG_id": "plano_general",
+      "nodoSVG_id": "pid_compresor",
+      "coordenadasZoom": { "x": -1050, "y": 35, "scale": 2.0 }
+    },
+    {
+      "id3D": "intercambiador",
+      "nombre": "Intercambiador Tubo y Carcasa - HEX-101",
+      "planoSVG_id": "plano_general",
+      "nodoSVG_id": "pid_intercambiador",
+      "coordenadasZoom": { "x": -690, "y": -225, "scale": 2.0 }
+    },
+    {
+      "id3D": "valvula",
+      "nombre": "Válvula de Control Proporcional - TCV-101",
+      "planoSVG_id": "plano_general",
+      "nodoSVG_id": "pid_valvula",
+      "coordenadasZoom": { "x": -1050, "y": -225, "scale": 2.0 }
+    }
+  ]
+}

@@ -17,16 +17,35 @@ import {
   RefreshCw,
   BarChart2,
   Flame,
-  AlertCircle
+  AlertCircle,
+  Layers
 } from 'lucide-react';
+
+import VisorPID from './UI/VisorPID';
 
 export default function SimuladorFallas() {
   const [selectedFault, setSelectedFault] = useState('ninguna');
+  const [openPidModal, setOpenPidModal] = useState(false);
   const [telemetryHistory, setTelemetryHistory] = useState([]);
 
   // Student inputs
   const [hypothesis, setHypothesis] = useState('');
   const [correctiveAction, setCorrectiveAction] = useState('');
+
+  const mapFaultToEquipment = (fault) => {
+    switch (fault) {
+      case 'cavitacion':
+        return 'bomba';
+      case 'desalineacion':
+        return 'motor';
+      case 'incrustaciones':
+        return 'intercambiador';
+      case 'histeresis':
+        return 'valvula';
+      default:
+        return null;
+    }
+  };
 
   // Feedback evaluation
   const [evaluated, setEvaluated] = useState(false);
@@ -389,12 +408,28 @@ export default function SimuladorFallas() {
               <Activity className="text-accent" />
               Tendencias Históricas y Telemetría en Tiempo Real
             </h3>
-            <span
-              className="badge badge-green"
-              style={{ textTransform: 'uppercase', fontSize: '0.68rem' }}
-            >
-              Adquisición Activa (1 Hz)
-            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <button
+                onClick={() => setOpenPidModal(true)}
+                className="btn btn-secondary"
+                style={{
+                  padding: '6px 12px',
+                  fontSize: '0.75rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}
+              >
+                <Layers size={14} className="text-accent" />
+                Ver Plano P&ID
+              </button>
+              <span
+                className="badge badge-green"
+                style={{ textTransform: 'uppercase', fontSize: '0.68rem' }}
+              >
+                Adquisición Activa (1 Hz)
+              </span>
+            </div>
           </div>
 
           {/* Line Chart */}
@@ -575,6 +610,44 @@ export default function SimuladorFallas() {
           </div>
         </div>
       </div>
+
+      {/* Modal Visor P&ID */}
+      {openPidModal && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            backgroundColor: 'rgba(15, 23, 42, 0.75)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 9999,
+            padding: '20px'
+          }}
+        >
+          <div
+            style={{
+              width: '90%',
+              maxWidth: '1100px',
+              height: '80%',
+              maxHeight: '650px',
+              backgroundColor: 'var(--bg-secondary)',
+              borderRadius: 'var(--radius-lg)',
+              boxShadow: '0 20px 25px -5px rgba(0,0,0,0.5)',
+              overflow: 'hidden'
+            }}
+          >
+            <VisorPID
+              selectedEquipmentId={mapFaultToEquipment(selectedFault)}
+              onClose={() => setOpenPidModal(false)}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

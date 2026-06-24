@@ -12,6 +12,7 @@ import {
   AlertCircle,
   FileText
 } from 'lucide-react';
+import VisorPID from './UI/VisorPID';
 
 export default function SimuladorMantenimiento({ selectedSemester }) {
   const [activeTask, setActiveTask] = useState('alineacion'); // alineacion, lubricacion, preventiva
@@ -37,6 +38,18 @@ export default function SimuladorMantenimiento({ selectedSemester }) {
   const [bearingWidth, setBearingWidth] = useState(30); // mm
   const [greaseInput, setGreaseInput] = useState('');
   const [greaseFeedback, setGreaseFeedback] = useState('');
+
+  const getEquipmentForActiveTask = () => {
+    if (activeTask === 'alineacion') {
+      return 'motor';
+    } else if (activeTask === 'lubricacion') {
+      return 'bomba';
+    } else if (activeTask === 'preventiva') {
+      if (step === 2) return 'bomba';
+      return 'motor';
+    }
+    return null;
+  };
 
   const calculateCorrectGrease = () => {
     // Formula: G = D * B * 0.005 (grams)
@@ -599,324 +612,222 @@ export default function SimuladorMantenimiento({ selectedSemester }) {
             ))}
           </div>
 
-          <div
-            style={{
-              flex: 1,
-              backgroundColor: 'var(--bg-primary)',
-              borderRadius: 'var(--radius-md)',
-              border: '1px solid var(--border-color)',
-              padding: '16px',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              minHeight: '260px'
-            }}
-          >
-            {/* VIRTUAL TOOL 1: CALIBRADOR VERNIER */}
-            {activeTool === 'calibrador' && (
-              <div style={{ textAlign: 'center' }}>
-                <span className="badge badge-blue" style={{ marginBottom: '8px' }}>
-                  Calibrador Vernier
-                </span>
-                <p
-                  style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '16px' }}
-                >
-                  Desplaza el nonio para medir el diámetro del eje o chavetero (exactitud ±0.02mm).
-                </p>
-
-                {/* Caliper Measurement Readout */}
-                <div
-                  style={{
-                    fontSize: '1.5rem',
-                    fontWeight: 800,
-                    fontFamily: 'var(--font-mono)',
-                    color: 'var(--text-accent)',
-                    marginBottom: '20px'
-                  }}
-                >
-                  {caliperPos.toFixed(2)} mm
-                </div>
-
-                <input
-                  type="range"
-                  min="0.0"
-                  max="150.0"
-                  step="0.02"
-                  value={caliperPos}
-                  onChange={(e) => setCaliperPos(parseFloat(e.target.value))}
-                  style={{ width: '100%', accentColor: 'var(--accent-color)' }}
-                />
-
-                {/* Caliper graphic rendering with SVG */}
-                <svg viewBox="0 0 250 50" width="100%" height="auto" style={{ marginTop: '20px' }}>
-                  {/* Fixed body */}
-                  <rect x="10" y="20" width="230" height="12" fill="#94a3b8" />
-                  <rect x="10" y="10" width="8" height="22" fill="#94a3b8" />
-                  {/* Sliding jaws (moves based on caliperPos) */}
-                  <g transform={`translate(${caliperPos * 1.2}, 0)`}>
-                    <rect x="25" y="16" width="16" height="20" fill="#cbd5e1" stroke="#94a3b8" />
-                    <rect x="25" y="8" width="6" height="12" fill="#94a3b8" />
-                  </g>
-                </svg>
-              </div>
-            )}
-
-            {/* VIRTUAL TOOL 2: MULTÍMETRO */}
-            {activeTool === 'multimetro' && (
-              <div style={{ textAlign: 'center' }}>
-                <span className="badge badge-blue" style={{ marginBottom: '8px' }}>
-                  Multímetro Fluke
-                </span>
-                <p
-                  style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '16px' }}
-                >
-                  Posiciona las puntas de prueba en la bornera trifásica del motor para comprobar el
-                  voltaje.
-                </p>
-
-                {/* Multimeter Display screen */}
-                <div
-                  style={{
-                    backgroundColor: '#1e293b',
-                    color: '#10b981',
-                    fontFamily: 'var(--font-mono)',
-                    padding: '16px',
-                    borderRadius: 'var(--radius-sm)',
-                    fontSize: '1.25rem',
-                    fontWeight: 700,
-                    marginBottom: '20px',
-                    boxShadow: 'inset 0 0 10px rgba(0,0,0,0.5)'
-                  }}
-                >
-                  {probePoint === 'Phase-1' && '380.2 VAC'}
-                  {probePoint === 'Phase-2' && '379.8 VAC'}
-                  {probePoint === 'Ground' && '0.1 VAC'}
-                  <div
-                    style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: '4px' }}
-                  >
-                    TRMS AUTO - 50.0 Hz
-                  </div>
-                </div>
-
-                <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-                  {['Phase-1', 'Phase-2', 'Ground'].map((point) => (
-                    <button
-                      key={point}
-                      onClick={() => setProbePoint(point)}
-                      className={`btn ${probePoint === point ? 'btn-primary' : 'btn-secondary'}`}
-                      style={{ padding: '6px 10px', fontSize: '0.7rem' }}
-                    >
-                      {point}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* VIRTUAL TOOL 3: TERMÓMETRO LÁSER */}
-            {activeTool === 'termometro' && (
-              <div style={{ textAlign: 'center' }}>
-                <span className="badge badge-blue" style={{ marginBottom: '8px' }}>
-                  Termómetro de Contacto e Infrarrojo
-                </span>
-                <p
-                  style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '12px' }}
-                >
-                  Inspecciona la temperatura de los rodamientos de la bomba. Valores &gt;75°C
-                  indican falta de grasa o desgaste severo.
-                </p>
-
-                {/* Laser Thermometer display */}
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-around',
-                    alignItems: 'center',
-                    marginBottom: '16px'
-                  }}
-                >
-                  <div
+          {activeTool === 'planos' ? (
+            <div style={{ height: '460px', width: '100%' }}>
+              <VisorPID selectedEquipmentId={getEquipmentForActiveTask()} />
+            </div>
+          ) : (
+            <div
+              style={{
+                flex: 1,
+                backgroundColor: 'var(--bg-primary)',
+                borderRadius: 'var(--radius-md)',
+                border: '1px solid var(--border-color)',
+                padding: '16px',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                minHeight: '260px'
+              }}
+            >
+              {/* VIRTUAL TOOL 1: CALIBRADOR VERNIER */}
+              {activeTool === 'calibrador' && (
+                <div style={{ textAlign: 'center' }}>
+                  <span className="badge badge-blue" style={{ marginBottom: '8px' }}>
+                    Calibrador Vernier
+                  </span>
+                  <p
                     style={{
-                      padding: '10px',
-                      backgroundColor: 'var(--bg-secondary)',
-                      borderRadius: 'var(--radius-sm)',
-                      border: '1px solid var(--border-color)'
+                      fontSize: '0.78rem',
+                      color: 'var(--text-muted)',
+                      marginBottom: '16px'
                     }}
                   >
-                    <div
-                      style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 700 }}
-                    >
-                      RODAMIENTO 1 (ACOPLE)
-                    </div>
-                    <div
-                      style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--color-success)' }}
-                    >
-                      58.4 °C
-                    </div>
-                  </div>
+                    Desplaza el nonio para medir el diámetro del eje o chavetero (exactitud
+                    ±0.02mm).
+                  </p>
+
+                  {/* Caliper Measurement Readout */}
                   <div
                     style={{
-                      padding: '10px',
-                      backgroundColor: 'var(--bg-secondary)',
-                      borderRadius: 'var(--radius-sm)',
-                      border: '1px solid var(--border-color)'
+                      fontSize: '1.5rem',
+                      fontWeight: 800,
+                      fontFamily: 'var(--font-mono)',
+                      color: 'var(--text-accent)',
+                      marginBottom: '20px'
                     }}
                   >
+                    {caliperPos.toFixed(2)} mm
+                  </div>
+
+                  <input
+                    type="range"
+                    min="0.0"
+                    max="150.0"
+                    step="0.02"
+                    value={caliperPos}
+                    onChange={(e) => setCaliperPos(parseFloat(e.target.value))}
+                    style={{ width: '100%', accentColor: 'var(--accent-color)' }}
+                  />
+
+                  {/* Caliper graphic rendering with SVG */}
+                  <svg
+                    viewBox="0 0 250 50"
+                    width="100%"
+                    height="auto"
+                    style={{ marginTop: '20px' }}
+                  >
+                    {/* Fixed body */}
+                    <rect x="10" y="20" width="230" height="12" fill="#94a3b8" />
+                    <rect x="10" y="10" width="8" height="22" fill="#94a3b8" />
+                    {/* Sliding jaws (moves based on caliperPos) */}
+                    <g transform={`translate(${caliperPos * 1.2}, 0)`}>
+                      <rect x="25" y="16" width="16" height="20" fill="#cbd5e1" stroke="#94a3b8" />
+                      <rect x="25" y="8" width="6" height="12" fill="#94a3b8" />
+                    </g>
+                  </svg>
+                </div>
+              )}
+
+              {/* VIRTUAL TOOL 2: MULTÍMETRO */}
+              {activeTool === 'multimetro' && (
+                <div style={{ textAlign: 'center' }}>
+                  <span className="badge badge-blue" style={{ marginBottom: '8px' }}>
+                    Multímetro Fluke
+                  </span>
+                  <p
+                    style={{
+                      fontSize: '0.78rem',
+                      color: 'var(--text-muted)',
+                      marginBottom: '16px'
+                    }}
+                  >
+                    Posiciona las puntas de prueba en la bornera trifásica del motor para comprobar
+                    el voltaje.
+                  </p>
+
+                  {/* Multimeter Display screen */}
+                  <div
+                    style={{
+                      backgroundColor: '#1e293b',
+                      color: '#10b981',
+                      fontFamily: 'var(--font-mono)',
+                      padding: '16px',
+                      borderRadius: 'var(--radius-sm)',
+                      fontSize: '1.25rem',
+                      fontWeight: 700,
+                      marginBottom: '20px',
+                      boxShadow: 'inset 0 0 10px rgba(0,0,0,0.5)'
+                    }}
+                  >
+                    {probePoint === 'Phase-1' && '380.2 VAC'}
+                    {probePoint === 'Phase-2' && '379.8 VAC'}
+                    {probePoint === 'Ground' && '0.1 VAC'}
                     <div
-                      style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 700 }}
+                      style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: '4px' }}
                     >
-                      RODAMIENTO 2 (BOMBA)
-                    </div>
-                    <div
-                      style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--color-danger)' }}
-                    >
-                      78.2 °C
+                      TRMS AUTO - 50.0 Hz
                     </div>
                   </div>
-                </div>
-                <div style={{ fontSize: '0.72rem', color: 'var(--color-danger)', fontWeight: 600 }}>
-                  ⚠️ Alerta: El rodamiento 2 excede la temperatura de operación segura de 75°C.
-                  Requiere engrase inmediato.
-                </div>
-              </div>
-            )}
 
-            {/* VIRTUAL TOOL 4: PLANOS TÉCNICOS INTERACTIVOS */}
-            {activeTool === 'planos' && (
-              <div style={{ textAlign: 'center' }}>
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: '8px'
-                  }}
-                >
-                  <span className="badge badge-blue">Planos P&ID Integrados</span>
-                  <div style={{ display: 'flex', gap: '4px' }}>
-                    {['Todos', 'Mecánico', 'Instrumentación'].map((layer) => (
+                  <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                    {['Phase-1', 'Phase-2', 'Ground'].map((point) => (
                       <button
-                        key={layer}
-                        onClick={() => setBlueprintLayer(layer)}
-                        className="btn btn-secondary"
-                        style={{
-                          padding: '2px 6px',
-                          fontSize: '0.65rem',
-                          background: blueprintLayer === layer ? 'var(--border-color)' : 'none'
-                        }}
+                        key={point}
+                        onClick={() => setProbePoint(point)}
+                        className={`btn ${probePoint === point ? 'btn-primary' : 'btn-secondary'}`}
+                        style={{ padding: '6px 10px', fontSize: '0.7rem' }}
                       >
-                        {layer}
+                        {point}
                       </button>
                     ))}
                   </div>
                 </div>
+              )}
 
-                {/* Blueprint Drawing Container */}
-                <div
-                  style={{
-                    height: '140px',
-                    backgroundColor: '#0f172a',
-                    border: '2px solid #334155',
-                    borderRadius: 'var(--radius-sm)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    overflow: 'hidden',
-                    position: 'relative'
-                  }}
-                >
-                  {/* Simulated P&ID Blueprint lines */}
-                  <svg viewBox="0 0 200 100" width="100%" height="100%">
-                    {/* Grid */}
-                    <path
-                      d="M 0 20 L 200 20 M 0 40 L 200 40 M 0 60 L 200 60 M 0 80 L 200 80 M 50 0 L 50 100 M 100 0 L 100 100 M 150 0 L 150 100"
-                      stroke="#1e293b"
-                      strokeWidth="0.5"
-                    />
-
-                    {/* Mechanical Layer */}
-                    {(blueprintLayer === 'Todos' || blueprintLayer === 'Mecánico') && (
-                      <g>
-                        <circle
-                          cx="100"
-                          cy="50"
-                          r="18"
-                          fill="none"
-                          stroke="#60a5fa"
-                          strokeWidth="1.5"
-                        />
-                        <line x1="20" y1="50" x2="82" y2="50" stroke="#60a5fa" strokeWidth="1.5" />
-                        <line
-                          x1="118"
-                          y1="50"
-                          x2="180"
-                          y2="50"
-                          stroke="#60a5fa"
-                          strokeWidth="1.5"
-                        />
-                        <path d="M 80 40 L 80 60" stroke="#60a5fa" strokeWidth="1.5" />
-                        <path d="M 120 40 L 120 60" stroke="#60a5fa" strokeWidth="1.5" />
-                      </g>
-                    )}
-
-                    {/* Instrumentation/Electrical Layer */}
-                    {(blueprintLayer === 'Todos' || blueprintLayer === 'Instrumentación') && (
-                      <g>
-                        <circle
-                          cx="100"
-                          cy="18"
-                          r="8"
-                          fill="none"
-                          stroke="#34d399"
-                          strokeWidth="1.2"
-                          strokeDasharray="2,2"
-                        />
-                        <line
-                          x1="100"
-                          y1="32"
-                          x2="100"
-                          y2="18"
-                          stroke="#34d399"
-                          strokeWidth="1.2"
-                          strokeDasharray="2,2"
-                        />
-                        <text
-                          x="100"
-                          y="21"
-                          textAnchor="middle"
-                          fontSize="6"
-                          fill="#34d399"
-                          fontWeight="700"
-                        >
-                          FIT
-                        </text>
-                        {/* Control loop line */}
-                        <path
-                          d="M 100 10 L 150 10 L 150 50"
-                          fill="none"
-                          stroke="#f59e0b"
-                          strokeWidth="1"
-                          strokeDasharray="3,3"
-                        />
-                        <circle cx="150" cy="50" r="5" fill="#f59e0b" />
-                      </g>
-                    )}
-                  </svg>
-                  <div
+              {/* VIRTUAL TOOL 3: TERMÓMETRO LÁSER */}
+              {activeTool === 'termometro' && (
+                <div style={{ textAlign: 'center' }}>
+                  <span className="badge badge-blue" style={{ marginBottom: '8px' }}>
+                    Termómetro de Contacto e Infrarrojo
+                  </span>
+                  <p
                     style={{
-                      position: 'absolute',
-                      bottom: 4,
-                      left: 6,
-                      fontSize: '0.65rem',
-                      color: '#64748b'
+                      fontSize: '0.78rem',
+                      color: 'var(--text-muted)',
+                      marginBottom: '12px'
                     }}
                   >
-                    Escala 1:10 - Ref: ANSI P&ID Standard
+                    Inspecciona la temperatura de los rodamientos de la bomba. Valores &gt;75°C
+                    indican falta de grasa o desgaste severo.
+                  </p>
+
+                  {/* Laser Thermometer display */}
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-around',
+                      alignItems: 'center',
+                      marginBottom: '16px'
+                    }}
+                  >
+                    <div
+                      style={{
+                        padding: '10px',
+                        backgroundColor: 'var(--bg-secondary)',
+                        borderRadius: 'var(--radius-sm)',
+                        border: '1px solid var(--border-color)'
+                      }}
+                    >
+                      <div
+                        style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 700 }}
+                      >
+                        RODAMIENTO 1 (ACOPLE)
+                      </div>
+                      <div
+                        style={{
+                          fontSize: '1.2rem',
+                          fontWeight: 800,
+                          color: 'var(--color-success)'
+                        }}
+                      >
+                        58.4 °C
+                      </div>
+                    </div>
+                    <div
+                      style={{
+                        padding: '10px',
+                        backgroundColor: 'var(--bg-secondary)',
+                        borderRadius: 'var(--radius-sm)',
+                        border: '1px solid var(--border-color)'
+                      }}
+                    >
+                      <div
+                        style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 700 }}
+                      >
+                        RODAMIENTO 2 (BOMBA)
+                      </div>
+                      <div
+                        style={{
+                          fontSize: '1.2rem',
+                          fontWeight: 800,
+                          color: 'var(--color-danger)'
+                        }}
+                      >
+                        78.2 °C
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    style={{ fontSize: '0.72rem', color: 'var(--color-danger)', fontWeight: 600 }}
+                  >
+                    ⚠️ Alerta: El rodamiento 2 excede la temperatura de operación segura de 75°C.
+                    Requiere engrase inmediato.
                   </div>
                 </div>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -55,6 +55,8 @@ HOST_PORT_REDIS=20003
 HOST_PORT_WEB=20004
 HOST_PORT_CENTRIFUGA=20000
 HOST_PORT_TALLERAUTOMOTRIZ=20005
+HOST_PORT_PROCESOSINDUSTRIALES=20006
+HOST_PORT_PROCESOSINDUSTRUALES=20006
 
 # VARIABLES DEL BACKEND
 DATABASE_URL="postgresql://admin_arquimedes:admin_password_secure@localhost:20002/arquimedes_database?schema=public"
@@ -64,6 +66,8 @@ JWT_SECRET="CualquierClaveLargaYSecreta123"
 WEB_URL="https://www.arquimedes.online"
 CENTRIFUGA_URL="https://centrifuga.arquimedes.online"
 TALLERAUTOMOTRIZ_URL="https://tallerautomotriz.arquimedes.online"
+PROCESOSINDUSTRIALES_URL="https://procesosindustriales.arquimedes.online"
+PROCESOSINDUSTRUALES_URL="https://procesosindustriales.arquimedes.online"
 
 
 
@@ -106,5 +110,6 @@ echo "Acceso a servicios:"
 echo " - Portal Web: http://localhost:20004"
 echo " - Simulador Bomba (React): http://localhost:20000"
 echo " - ERP Taller Automotriz (React): http://localhost:20005"
+echo " - Planta Procesos Industriales (React): http://localhost:20006"
 echo " - API Backend: http://localhost:20001"
 echo " - PostgreSQL: localhost:20002"

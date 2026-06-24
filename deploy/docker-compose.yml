@@ -59,6 +59,17 @@ services:
       - backend
 
 
+  frontend-plantaprocesos:
+    build:
+      context: ..
+      dockerfile: frontend/planta-procesos-industriales/Dockerfile
+    container_name: hub-arquimedes-frontend-plantaprocesos
+    restart: always
+    ports:
+      - "${HOST_PORT_PROCESOSINDUSTRIALES:-20006}:80"
+    depends_on:
+      - backend
+
   frontend-web:
     build:
       context: ..
@@ -78,6 +89,7 @@ services:
     depends_on:
       - frontend-centrifuga
       - frontend-tallerautomotriz
+      - frontend-plantaprocesos
       - frontend-web
       - backend
 

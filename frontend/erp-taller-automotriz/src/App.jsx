@@ -242,7 +242,7 @@ function App() {
 
   const purchasePartsFromSupplier = (partSku, qty, supplierId, associatedOtId = null) => {
     const part = parts.find((p) => p.sku === partSku);
-    const supplier = suppliers.find((s) => s.id === supplierId);
+    const supplier = mockSuppliers.find((s) => s.id === supplierId);
     if (!part || !supplier) return;
 
     // Check strike delay

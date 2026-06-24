@@ -55,16 +55,6 @@ HOST_PORT_REDIS=20003
 HOST_PORT_WEB=20004
 HOST_PORT_CENTRIFUGA=20000
 HOST_PORT_TALLERAUTOMOTRIZ=20005
-HOST_PORT_HIS=20006
-HOST_PORT_SMARTPORT=20007
-HOST_PORT_AGROTECH=20008
-HOST_PORT_FINTECH=20009
-HOST_PORT_SCADA=20010
-HOST_PORT_RETAIL=20011
-HOST_PORT_SMARTCITY=20012
-HOST_PORT_INDUSTRY40=20013
-HOST_PORT_HOSPITALITY=20014
-HOST_PORT_GREENTECH=20015
 
 # VARIABLES DEL BACKEND
 DATABASE_URL="postgresql://admin_arquimedes:admin_password_secure@localhost:20002/arquimedes_database?schema=public"
@@ -74,16 +64,6 @@ JWT_SECRET="CualquierClaveLargaYSecreta123"
 WEB_URL="https://www.arquimedes.online"
 CENTRIFUGA_URL="https://centrifuga.arquimedes.online"
 TALLERAUTOMOTRIZ_URL="https://tallerautomotriz.arquimedes.online"
-HIS_URL="https://his.arquimedes.online"
-SMARTPORT_URL="https://smartport.arquimedes.online"
-AGROTECH_URL="https://agrotech.arquimedes.online"
-FINTECH_URL="https://fintech.arquimedes.online"
-SCADA_URL="https://scada.arquimedes.online"
-RETAIL_URL="https://retail.arquimedes.online"
-SMARTCITY_URL="https://smartcity.arquimedes.online"
-INDUSTRY40_URL="https://industry.arquimedes.online"
-HOSPITALITY_URL="https://hospitality.arquimedes.online"
-GREENTECH_URL="https://greentech.arquimedes.online"
 
 
 
@@ -126,15 +106,5 @@ echo "Acceso a servicios:"
 echo " - Portal Web: http://localhost:20004"
 echo " - Simulador Bomba (React): http://localhost:20000"
 echo " - ERP Taller Automotriz (React): http://localhost:20005"
-echo " - HIS Triage Táctico (React): http://localhost:20006"
-echo " - Smart Port ERP (React): http://localhost:20007"
-echo " - AgroTech Dashboard (React): http://localhost:20008"
-echo " - Fintech Sandbox (React): http://localhost:20009"
-echo " - SCADA Panel (React): http://localhost:20010"
-echo " - Retail Analytics (React): http://localhost:20011"
-echo " - Smart City Hub (React): http://localhost:20012"
-echo " - Industry 4.0 Digital Twin (React): http://localhost:20013"
-echo " - Hospitality ERP (React): http://localhost:20014"
-echo " - GreenTech ESG Tracker (React): http://localhost:20015"
 echo " - API Backend: http://localhost:20001"
 echo " - PostgreSQL: localhost:20002"

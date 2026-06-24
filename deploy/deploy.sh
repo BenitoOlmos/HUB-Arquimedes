@@ -56,7 +56,6 @@ HOST_PORT_WEB=20004
 HOST_PORT_CENTRIFUGA=20000
 HOST_PORT_TALLERAUTOMOTRIZ=20005
 HOST_PORT_PROCESOSINDUSTRIALES=20006
-HOST_PORT_PROCESOSINDUSTRUALES=20006
 
 # VARIABLES DEL BACKEND
 DATABASE_URL="postgresql://admin_arquimedes:admin_password_secure@localhost:20002/arquimedes_database?schema=public"
@@ -67,9 +66,6 @@ WEB_URL="https://www.arquimedes.online"
 CENTRIFUGA_URL="https://centrifuga.arquimedes.online"
 TALLERAUTOMOTRIZ_URL="https://tallerautomotriz.arquimedes.online"
 PROCESOSINDUSTRIALES_URL="https://procesosindustriales.arquimedes.online"
-PROCESOSINDUSTRUALES_URL="https://procesosindustriales.arquimedes.online"
-
-
 
 # CREDENCIALES ZOHO MAIL
 SMTP_HOST="smtp.zoho.com"

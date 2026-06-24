@@ -1311,7 +1311,7 @@ footer {
 }
 
 /* ==========================================================================
-   ESTILOS DE TEMA CLARO (.light-theme) PARA proyectos.html
+   ESTILOS DE TEMA CLARO (.light-theme)
    ========================================================================== */
 body.light-theme {
   --bg-primary: #f8f9fa;
@@ -1326,6 +1326,16 @@ body.light-theme {
   --accent-gold: #3b6653; /* Verde Botánico */
   --accent-gold-muted: #4e7d6b; /* Verde Salvia */
 
+  /* Mapeo de acentos cian/neón a tonos botánicos y tierra */
+  --accent-cyan: #3b6653; /* Verde Botánico */
+  --accent-cyan-muted: #4e7d6b; /* Verde Salvia */
+
+  /* Colores para lienzos e ilustraciones SVG */
+  --water-color-fill: rgba(75, 163, 165, 0.12); /* Azul/verde muy pálido y elegante */
+  --water-color-stroke: #4ba3a5;
+  --wall-color: #cbd5e1; /* Gris suave de plano */
+  --wood-color: #bfa17f; /* Madera pastel / Bronce mate */
+
   background-color: var(--bg-primary);
   color: var(--text-primary);
 }
@@ -1334,6 +1344,8 @@ body.light-theme {
 body.light-theme header {
   background: rgba(248, 250, 252, 0.9);
   border-bottom: 1px solid var(--border-glass);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
 }
 
 /* Nav links en tema claro */
@@ -1341,7 +1353,7 @@ body.light-theme .nav-links a {
   color: var(--text-secondary);
 }
 body.light-theme .nav-links a:hover {
-  color: var(--text-primary);
+  color: var(--accent-gold);
 }
 
 /* Logo en tema claro */
@@ -1356,98 +1368,183 @@ body.light-theme .logo-text {
   -webkit-text-fill-color: transparent;
 }
 
+/* Botón Nav Proyectos */
+body.light-theme .btn-nav-projects {
+  background: rgba(78, 125, 107, 0.08) !important;
+  border: 1px solid var(--accent-gold-muted) !important;
+  color: var(--accent-gold) !important;
+  box-shadow: none !important;
+}
+body.light-theme .btn-nav-projects:hover {
+  background: var(--accent-gold) !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+  box-shadow: 0 4px 12px rgba(59, 102, 83, 0.2) !important;
+}
+
 /* Hero Title en tema claro */
 body.light-theme .hero-title {
-  background: linear-gradient(
-    135deg,
-    var(--text-primary) 40%,
-    var(--accent-gold) 70%,
-    var(--accent-gold-muted)
-  );
+  background: none !important;
+  -webkit-background-clip: initial !important;
+  -webkit-text-fill-color: initial !important;
+  color: var(--text-primary) !important; /* Slate Oscuro Sólido */
+}
+
+/* Botones en Hero */
+body.light-theme .btn-primary.gold {
+  background: var(--accent-gold);
+  color: #ffffff;
+  box-shadow: 0 4px 20px rgba(59, 102, 83, 0.15);
+}
+body.light-theme .btn-primary.gold:hover {
+  background: var(--accent-gold-muted);
+  box-shadow: 0 8px 30px rgba(78, 125, 107, 0.3);
+  transform: translateY(-3px);
+}
+body.light-theme .btn-outline {
+  border-color: rgba(15, 23, 42, 0.15);
+  color: var(--text-secondary);
+}
+body.light-theme .btn-outline:hover {
+  border-color: var(--accent-gold-muted);
+  color: var(--accent-gold-muted);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(78, 125, 107, 0.06);
+}
+
+/* Section Title en tema claro */
+body.light-theme .section-title {
+  background: linear-gradient(135deg, var(--text-primary), var(--accent-gold));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-/* Tarjetas de Proyecto en Tema Claro */
-body.light-theme .project-card {
-  background: var(--bg-glass);
-  border: 1px solid var(--border-glass);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
-  transition: var(--transition-smooth);
+/* Timeline / Historia */
+body.light-theme .timeline::before {
+  background: var(--accent-gold-muted); /* Línea sólida Verde Salvia */
 }
 
-body.light-theme .project-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
-  border-color: rgba(78, 125, 107, 0.2);
+body.light-theme .timeline-badge {
+  background: #ffffff !important;
+  border: 3px solid var(--accent-gold) !important;
+}
+body.light-theme .timeline-item:nth-child(even) .timeline-badge {
+  border-color: var(--accent-gold-muted) !important;
+}
+body.light-theme .timeline-item:hover .timeline-badge {
+  transform: scale(1.2);
+  box-shadow: 0 0 8px rgba(59, 102, 83, 0.3) !important;
+}
+body.light-theme .timeline-item:nth-child(even):hover .timeline-badge {
+  box-shadow: 0 0 8px rgba(78, 125, 107, 0.3) !important;
 }
 
-/* Override category-specific border hovers on light theme to stay uniform */
-body.light-theme .project-card.hydraulic-card:hover,
-body.light-theme .project-card.automotive-card:hover,
-body.light-theme .project-card.hospitality-card:hover,
-body.light-theme .project-card.his-card:hover,
-body.light-theme .project-card.greentech-card:hover {
-  border-color: rgba(78, 125, 107, 0.3);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+body.light-theme .timeline-date {
+  color: var(--accent-gold) !important;
 }
-
-/* Status y Badge */
-body.light-theme .project-status {
-  background: rgba(78, 125, 107, 0.08) !important;
-  border: 1px solid rgba(78, 125, 107, 0.15) !important;
+body.light-theme .timeline-item:nth-child(even) .timeline-date {
   color: var(--accent-gold-muted) !important;
 }
 
-/* Iconos de las tarjetas */
-body.light-theme .project-icon {
-  background: rgba(78, 125, 107, 0.05) !important;
-  border: 1px solid rgba(78, 125, 107, 0.1) !important;
+body.light-theme .timeline-content {
+  background: #ffffff;
+  border: 1px solid var(--border-glass);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.03);
+}
+body.light-theme .timeline-item:hover .timeline-content {
+  border-color: rgba(78, 125, 107, 0.25);
+  box-shadow: 0 15px 35px rgba(15, 23, 42, 0.06);
+  transform: translateY(-5px);
+}
+body.light-theme .timeline-item:nth-child(even):hover .timeline-content {
+  border-color: rgba(78, 125, 107, 0.25);
+  box-shadow: 0 15px 35px rgba(15, 23, 42, 0.06);
 }
 
-body.light-theme .project-icon svg {
-  fill: var(--accent-gold-muted) !important;
+/* Tarjetas de Inventos */
+body.light-theme .invention-card {
+  background: var(--bg-glass);
+  border: 1px solid var(--border-glass);
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.03);
+  border-radius: 12px;
+}
+body.light-theme .invention-card::before {
+  background: linear-gradient(180deg, transparent 50%, rgba(255, 255, 255, 0.95) 90%);
+}
+body.light-theme .invention-card:hover {
+  transform: translateY(-8px);
+  border-color: rgba(78, 125, 107, 0.25);
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.07);
 }
 
-body.light-theme .project-card:hover .project-icon {
-  background: rgba(78, 125, 107, 0.1) !important;
-  border-color: var(--accent-gold) !important;
+/* Fondo de Ilustraciones SVG (Lienzo de museo) */
+body.light-theme .svg-illustration {
+  background: #f1f5f9;
 }
 
-body.light-theme .project-card:hover .project-icon svg {
-  fill: var(--accent-gold) !important;
-  transform: scale(1.05) rotate(0deg) !important;
-}
-
-/* Override all project types hover icon transformations to keep it minimal */
-body.light-theme .project-card.hydraulic-card:hover .project-icon svg,
-body.light-theme .project-card.automotive-card:hover .project-icon svg,
-body.light-theme .project-card.hospitality-card:hover .project-icon svg,
-body.light-theme .project-card.his-card:hover .project-icon svg,
-body.light-theme .project-card.greentech-card:hover .project-icon svg {
-  transform: scale(1.05) !important;
-}
-
-/* Botones de acción "Ingresar" / "Abrir" */
-body.light-theme .btn-project-link {
+/* Botones de acción "Ver Detalles" transformados */
+body.light-theme .invention-link-text {
   background: var(--accent-gold-muted) !important;
   color: #ffffff !important;
   border: none !important;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02) !important;
+  box-shadow: 0 4px 6px rgba(15, 23, 42, 0.04) !important;
   border-radius: 8px !important;
+  text-transform: none !important;
+  letter-spacing: 0.5px !important;
+  padding: 0.6rem 1.2rem !important;
+  width: fit-content;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: var(--font-body);
+  transition: var(--transition-smooth);
+}
+body.light-theme .invention-link-text svg {
+  fill: #ffffff !important;
+}
+body.light-theme .invention-card:hover .invention-link-text {
+  background: var(--accent-gold) !important;
+  box-shadow: 0 4px 12px rgba(59, 102, 83, 0.2) !important;
 }
 
-body.light-theme .project-card:hover .btn-project-link {
-  background: var(--accent-gold) !important;
-  color: #ffffff !important;
-  box-shadow: 0 4px 12px rgba(78, 125, 107, 0.2) !important;
+/* Modales en Tema Claro */
+body.light-theme .modal {
+  background: rgba(248, 250, 252, 0.85);
+}
+body.light-theme .modal-content {
+  background: #ffffff;
+  border: 1px solid var(--border-glass);
+  box-shadow: 0 25px 50px rgba(15, 23, 42, 0.08);
+}
+body.light-theme .modal-close {
+  background: rgba(15, 23, 42, 0.05);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  color: var(--text-primary);
+}
+body.light-theme .modal-close:hover {
+  background: var(--accent-gold);
+  color: #ffffff;
+}
+body.light-theme .modal-img-container::before {
+  background: linear-gradient(180deg, transparent 40%, #ffffff 100%);
+}
+body.light-theme .modal-formula {
+  background: rgba(78, 125, 107, 0.06);
+  border-left: 3px solid var(--accent-gold-muted);
+  color: var(--accent-gold);
+}
+body.light-theme .modal-title {
+  background: linear-gradient(90deg, var(--accent-gold), var(--accent-gold-muted));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 /* Ajustes de Engranajes y Partículas de Fondo en Tema Claro */
 body.light-theme .background-gears {
   opacity: 0.06;
 }
-
 body.light-theme .gear-svg {
   fill: var(--accent-gold-muted);
 }
@@ -1457,11 +1554,68 @@ body.light-theme footer {
   background: #f1f5f9;
   border-top: 1px solid rgba(15, 23, 42, 0.05);
 }
-
 body.light-theme .footer-copy {
   color: #64748b;
 }
-
 body.light-theme .footer-quote {
   color: var(--accent-gold-muted);
+}
+
+/* Tarjetas de Proyecto en proyectos.html */
+body.light-theme .project-card {
+  background: var(--bg-glass);
+  border: 1px solid var(--border-glass);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+  transition: var(--transition-smooth);
+}
+body.light-theme .project-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+  border-color: rgba(78, 125, 107, 0.2);
+}
+body.light-theme .project-card.hydraulic-card:hover,
+body.light-theme .project-card.automotive-card:hover,
+body.light-theme .project-card.hospitality-card:hover,
+body.light-theme .project-card.his-card:hover,
+body.light-theme .project-card.greentech-card:hover {
+  border-color: rgba(78, 125, 107, 0.3);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+}
+body.light-theme .project-status {
+  background: rgba(78, 125, 107, 0.08) !important;
+  border: 1px solid rgba(78, 125, 107, 0.15) !important;
+  color: var(--accent-gold-muted) !important;
+}
+body.light-theme .project-icon {
+  background: rgba(78, 125, 107, 0.05) !important;
+  border: 1px solid rgba(78, 125, 107, 0.1) !important;
+}
+body.light-theme .project-icon svg {
+  fill: var(--accent-gold-muted) !important;
+}
+body.light-theme .project-card:hover .project-icon {
+  background: rgba(78, 125, 107, 0.1) !important;
+  border-color: var(--accent-gold) !important;
+}
+body.light-theme .project-card:hover .project-icon svg {
+  fill: var(--accent-gold) !important;
+}
+body.light-theme .project-card.hydraulic-card:hover .project-icon svg,
+body.light-theme .project-card.automotive-card:hover .project-icon svg,
+body.light-theme .project-card.hospitality-card:hover .project-icon svg,
+body.light-theme .project-card.his-card:hover .project-icon svg,
+body.light-theme .project-card.greentech-card:hover .project-icon svg {
+  transform: scale(1.05) !important;
+}
+body.light-theme .btn-project-link {
+  background: var(--accent-gold-muted) !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02) !important;
+  border-radius: 8px !important;
+}
+body.light-theme .project-card:hover .btn-project-link {
+  background: var(--accent-gold) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(78, 125, 107, 0.2) !important;
 }

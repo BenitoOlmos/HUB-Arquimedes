@@ -79,6 +79,7 @@ export default function PlantaInteractiva({ defaultContext = 'Minería', selecte
   const equipmentFamilies = {
     bomba: {
       name: 'Bomba Centrífuga',
+      tag: 'PMP-101',
       subtitle: 'Familia: Turbomáquinas de Fluido',
       desc: 'Equipo crítico encargado de desplazar fluidos e insumos líquidos a través de la tubería incrementando su presión hidráulica.',
       components: [
@@ -110,6 +111,7 @@ export default function PlantaInteractiva({ defaultContext = 'Minería', selecte
     },
     motor: {
       name: 'Motor Eléctrico de Inducción',
+      tag: 'MOT-101',
       subtitle: 'Familia: Convertidores Rotativos de Energía',
       desc: 'Accionamiento principal de la planta. Convierte energía eléctrica trifásica en energía mecánica rotacional.',
       components: [
@@ -141,6 +143,7 @@ export default function PlantaInteractiva({ defaultContext = 'Minería', selecte
     },
     compresor: {
       name: 'Compresor Alternativo (Pistón)',
+      tag: 'CMP-101',
       subtitle: 'Familia: Desplazamiento Positivo Neumático',
       desc: 'Comprime gases o aire ambiental mediante pistones reciprocantes para accionar actuadores neumáticos y válvulas.',
       components: [
@@ -171,6 +174,7 @@ export default function PlantaInteractiva({ defaultContext = 'Minería', selecte
     },
     intercambiador: {
       name: 'Intercambiador Tubo y Carcasa',
+      tag: 'HEX-101',
       subtitle: 'Familia: Transferencia Térmica Estática',
       desc: 'Transfiere energía térmica de un fluido caliente a uno frío sin contacto directo físico entre ellos.',
       components: [
@@ -202,6 +206,7 @@ export default function PlantaInteractiva({ defaultContext = 'Minería', selecte
     },
     valvula: {
       name: 'Válvula de Control Proporcional',
+      tag: 'TCV-101',
       subtitle: 'Familia: Elementos Finales de Control',
       desc: 'Regula activamente variables de proceso (presión, caudal, temperatura) variando el área de paso del fluido.',
       components: [
@@ -583,6 +588,7 @@ export default function PlantaInteractiva({ defaultContext = 'Minería', selecte
                     setMostrarPID(true);
                   }}
                 >
+                  <title>Bomba Centrífuga (PMP-101)</title>
                   <rect
                     x="0"
                     y="0"
@@ -647,6 +653,7 @@ export default function PlantaInteractiva({ defaultContext = 'Minería', selecte
                     setMostrarPID(true);
                   }}
                 >
+                  <title>Motor Eléctrico (MOT-101)</title>
                   <rect
                     x="0"
                     y="0"
@@ -728,6 +735,7 @@ export default function PlantaInteractiva({ defaultContext = 'Minería', selecte
                     setMostrarPID(true);
                   }}
                 >
+                  <title>Compresor Reciprocante (CMP-101)</title>
                   <rect
                     x="0"
                     y="0"
@@ -794,6 +802,7 @@ export default function PlantaInteractiva({ defaultContext = 'Minería', selecte
                     setMostrarPID(true);
                   }}
                 >
+                  <title>Intercambiador de Calor (HEX-101)</title>
                   <rect
                     x="0"
                     y="0"
@@ -870,6 +879,7 @@ export default function PlantaInteractiva({ defaultContext = 'Minería', selecte
                     setMostrarPID(true);
                   }}
                 >
+                  <title>Válvula de Control Proporcional (TCV-101)</title>
                   <rect
                     x="0"
                     y="0"
@@ -1014,11 +1024,11 @@ export default function PlantaInteractiva({ defaultContext = 'Minería', selecte
                     }}
                   >
                     {[
-                      { id: 'bomba', name: 'PMP-101 (Bomba)' },
-                      { id: 'motor', name: 'MOT-101 (Motor)' },
-                      { id: 'compresor', name: 'CMP-101 (Compresor)' },
-                      { id: 'intercambiador', name: 'HEX-101 (Intercambiador)' },
-                      { id: 'valvula', name: 'TCV-101 (Válvula)' }
+                      { id: 'bomba', name: 'Bomba Centrífuga (PMP-101)' },
+                      { id: 'motor', name: 'Motor Eléctrico (MOT-101)' },
+                      { id: 'compresor', name: 'Compresor Reciprocante (CMP-101)' },
+                      { id: 'intercambiador', name: 'Intercambiador de Calor (HEX-101)' },
+                      { id: 'valvula', name: 'Válvula de Control (TCV-101)' }
                     ].map((eq) => (
                       <button
                         key={eq.id}
@@ -1079,7 +1089,12 @@ export default function PlantaInteractiva({ defaultContext = 'Minería', selecte
                         Equipo Seleccionado
                       </span>
                       <span style={{ fontSize: '0.7rem', fontWeight: 'bold', color: '#fff' }}>
-                        {selectedEquipment.toUpperCase()}
+                        {selectedEquipment === 'bomba' && 'Bomba Centrífuga (PMP-101)'}
+                        {selectedEquipment === 'motor' && 'Motor Eléctrico (MOT-101)'}
+                        {selectedEquipment === 'compresor' && 'Compresor Reciprocante (CMP-101)'}
+                        {selectedEquipment === 'intercambiador' &&
+                          'Intercambiador de Calor (HEX-101)'}
+                        {selectedEquipment === 'valvula' && 'Válvula de Control (TCV-101)'}
                       </span>
                       <button
                         onClick={() => {
@@ -1101,6 +1116,118 @@ export default function PlantaInteractiva({ defaultContext = 'Minería', selecte
                       </button>
                     </div>
                   )}
+                </div>
+
+                {/* Floating Context-Aware HUD Panel */}
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '12px',
+                    right: '12px',
+                    width: '260px',
+                    backgroundColor: 'rgba(15, 23, 42, 0.85)',
+                    backdropFilter: 'blur(8px)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    borderRadius: 'var(--radius-md)',
+                    padding: '12px',
+                    zIndex: 10,
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.5)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '6px'
+                  }}
+                >
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+                      paddingBottom: '6px'
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: '0.62rem',
+                        fontWeight: 800,
+                        color: 'var(--accent-color)',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.5px'
+                      }}
+                    >
+                      HUD: SIMULACIÓN DE FLUIDOS
+                    </span>
+                    <span
+                      style={{
+                        fontSize: '0.58rem',
+                        backgroundColor: `${activeContext.primaryColor}30`,
+                        color: activeContext.primaryColor,
+                        padding: '2px 6px',
+                        borderRadius: 'var(--radius-sm)',
+                        fontWeight: 'bold'
+                      }}
+                    >
+                      {context.toUpperCase()}
+                    </span>
+                  </div>
+
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '4px',
+                      fontSize: '0.7rem'
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: '#94a3b8' }}>Material Procesado:</span>
+                      <span style={{ color: '#f1f5f9', fontWeight: 'bold' }}>
+                        {context === 'Minería' && 'Pulpa / Rocas de Cobre'}
+                        {context === 'Alimenticia' && 'Leche Entera Pasteurizada'}
+                        {context === 'Energía' && 'Vapor Saturado Seco'}
+                        {context === 'Química' && 'Reactivo Catálisis A+B'}
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: '#94a3b8' }}>Líneas de Tubería (DIN 2403):</span>
+                      <span
+                        style={{
+                          color: activeContext.primaryColor,
+                          fontWeight: 'bold',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '4px'
+                        }}
+                      >
+                        <span
+                          style={{
+                            display: 'inline-block',
+                            width: '8px',
+                            height: '8px',
+                            borderRadius: '50%',
+                            backgroundColor: activeContext.primaryColor
+                          }}
+                        />
+                        {context === 'Minería' && 'Marrón (Pulpa Cobre)'}
+                        {context === 'Alimenticia' && 'Blanco (Lácteos)'}
+                        {context === 'Energía' && 'Gris Plata (Vapor/Agua)'}
+                        {context === 'Química' && 'Violeta (Reactivos/Ácidos)'}
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: '#94a3b8' }}>Variable Crítica Sector:</span>
+                      <span style={{ color: '#cbd5e1' }}>
+                        {context === 'Minería' && 'Presión Descarga: 4.2 bar'}
+                        {context === 'Alimenticia' && 'Temp Pasteurización: 72°C'}
+                        {context === 'Energía' && 'Presión Vapor: 12.5 bar'}
+                        {context === 'Química' && 'Balance de pH: 6.6'}
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: '#94a3b8' }}>Circuito Industrial:</span>
+                      <span style={{ color: '#10b981', fontWeight: 600 }}>Cerrado y Estable</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
@@ -1127,7 +1254,8 @@ export default function PlantaInteractiva({ defaultContext = 'Minería', selecte
                       {equipmentFamilies[selectedEquipment].subtitle}
                     </span>
                     <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-main)' }}>
-                      {equipmentFamilies[selectedEquipment].name}
+                      {equipmentFamilies[selectedEquipment].name} (
+                      {equipmentFamilies[selectedEquipment].tag})
                     </h3>
                   </div>
                   <button

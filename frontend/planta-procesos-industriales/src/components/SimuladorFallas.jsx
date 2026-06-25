@@ -66,28 +66,28 @@ export default function SimuladorFallas() {
       temperature: 52,
       pressure: 2.1, // Caída de presión de succión
       flow: 78, // Caudal inestable y bajo
-      desc: 'Señal de succión deficiente. El ojo del impulsor forma burbujas de vapor que colapsan implosionando contra la voluta.'
+      desc: 'Señal de succión deficiente. El ojo del impulsor forma burbujas de vapor que colapsan implosionando contra la voluta en la Bomba Centrífuga (PMP-101).'
     },
     desalineacion: {
       vibration: 11.2, // Vibración axial severa (2x y 1x rpm)
       temperature: 79, // Calentamiento de rodamientos
       pressure: 4.1,
       flow: 118,
-      desc: 'Desalineación angular y paralela entre eje del motor y la bomba. Genera fuerzas alternantes severas en acoplamiento.'
+      desc: 'Desalineación angular y paralela entre el eje del Motor Eléctrico (MOT-101) y la Bomba Centrífuga (PMP-101). Genera fuerzas alternantes severas en el acoplamiento.'
     },
     incrustaciones: {
       vibration: 2.0,
       temperature: 92, // Alta temperatura de salida del proceso (falla de enfriamiento)
       pressure: 6.2, // Mayor caída de presión (obstrucción)
       flow: 105,
-      desc: 'Deposición de carbonatos y óxidos en el haz de tubos del intercambiador de calor, bloqueando el coeficiente global U.'
+      desc: 'Deposición de carbonatos y óxidos en el haz de tubos del Intercambiador de Calor (HEX-101), bloqueando el coeficiente global U.'
     },
     histeresis: {
       vibration: 2.2,
       temperature: 46,
       pressure: 5.8, // Presión fluctuante aguas arriba
       flow: 60, // Caudal trabado o desfasado
-      desc: 'Fricción excesiva en la empaquetadura del vástago de la válvula. Causa histéresis y oscilaciones constantes (hunting).'
+      desc: 'Fricción excesiva en la empaquetadura del vástago de la Válvula de Control (TCV-101). Causa histéresis y oscilaciones constantes (hunting).'
     }
   };
 
@@ -159,45 +159,45 @@ export default function SimuladorFallas() {
       if (hypothesis === 'cavitacion' && correctiveAction === 'npsh') {
         calculatedScore = 100;
         feedback =
-          '✅ ¡Felicidades! Identificaste correctamente la Cavitación debido a la caída de presión de succión y la acción idónea es elevar el NPSH disponible (limpieza de filtro de succión o subir nivel de estanque).';
+          '✅ ¡Felicidades! Identificaste correctamente la Cavitación debido a la caída de presión de succión en la Bomba Centrífuga (PMP-101) y la acción idónea es elevar el NPSH disponible (limpieza de filtro de succión o subir nivel de estanque).';
       } else if (hypothesis === 'cavitacion') {
         calculatedScore = 50;
         feedback =
-          '⚠️ Identificaste la cavitación, pero la acción correctiva propuesta no soluciona la presión de succión. Se requiere elevar el NPSH disponible.';
+          '⚠️ Identificaste la cavitación en la Bomba Centrífuga (PMP-101), pero la acción correctiva propuesta no soluciona la presión de succión. Se requiere elevar el NPSH disponible.';
       } else {
         calculatedScore = 10;
         feedback =
-          '❌ Diagnóstico fallido. La combinación de alta vibración y baja presión en succión es síntoma patognomónico de Cavitación Hidráulica.';
+          '❌ Diagnóstico fallido. La combinación de alta vibración y baja presión en succión es síntoma patognomónico de Cavitación Hidráulica en la Bomba Centrífuga (PMP-101).';
       }
     } else if (selectedFault === 'desalineacion') {
       if (hypothesis === 'desalineacion' && correctiveAction === 'alinear') {
         calculatedScore = 100;
         feedback =
-          '✅ ¡Diagnóstico Correcto! La vibración axial severa y el alza térmica en los rodamientos de acople del motor apuntaban a desalineación. Resolver alineando con comparador de carátula o láser.';
+          '✅ ¡Diagnóstico Correcto! La vibración axial severa y el alza térmica en los rodamientos de acople del Motor Eléctrico (MOT-101) apuntaban a desalineación. Resolver alineando con comparador de carátula o láser el acoplamiento con la Bomba Centrífuga (PMP-101).';
       } else {
         calculatedScore = 30;
         feedback =
-          '❌ Fallo en análisis. Un aumento térmico en rodamientos acoplados con espectro de vibración elevado responde a desalineación de ejes, no a fallas eléctricas.';
+          '❌ Fallo en análisis. Un aumento térmico en rodamientos acoplados entre el Motor Eléctrico (MOT-101) y la Bomba Centrífuga (PMP-101) con espectro de vibración elevado responde a desalineación de ejes, no a fallas eléctricas.';
       }
     } else if (selectedFault === 'incrustaciones') {
       if (hypothesis === 'incrustacion' && correctiveAction === 'limpieza') {
         calculatedScore = 100;
         feedback =
-          '✅ ¡Excelente! La caída térmica del intercambiador junto al aumento en la presión diferencial (presión a 6.2 bar) diagnostica incrustaciones. La solución es retrolavado o limpieza química.';
+          '✅ ¡Excelente! La caída térmica en el Intercambiador de Calor (HEX-101) junto al aumento en la presión diferencial (presión a 6.2 bar) diagnostica incrustaciones. La solución es retrolavado o limpieza química.';
       } else {
         calculatedScore = 20;
         feedback =
-          '❌ Fallo en análisis. La pérdida de transferencia térmica junto al aumento de la caída de presión indica incrustaciones en la superficie del haz de tubos.';
+          '❌ Fallo en análisis. La pérdida de transferencia térmica junto al aumento de la caída de presión en el Intercambiador de Calor (HEX-101) indica incrustaciones en la superficie del haz de tubos.';
       }
     } else if (selectedFault === 'histeresis') {
       if (hypothesis === 'histeresis' && correctiveAction === 'empaquetadura') {
         calculatedScore = 100;
         feedback =
-          '✅ ¡Impecable! La oscilación en el caudal (hunting) y presión residual del actuador indica histéresis severa por empaquetadura apretada. Requiere reajuste o cambio de empaquetadura.';
+          '✅ ¡Impecable! La oscilación en el caudal (hunting) y presión residual en la Válvula de Control (TCV-101) indica histéresis severa por empaquetadura apretada. Requiere reajuste o cambio de empaquetadura.';
       } else {
         calculatedScore = 40;
         feedback =
-          '⚠️ Parcialmente correcto. Las oscilaciones repetitivas de caudal con una señal de control inestable demuestran fricción física en el vástago (histéresis de válvula).';
+          '⚠️ Parcialmente correcto. Las oscilaciones repetitivas de caudal con una señal de control inestable demuestran fricción física en el vástago de la Válvula de Control (TCV-101) (histéresis).';
       }
     }
 
@@ -243,10 +243,13 @@ export default function SimuladorFallas() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {[
                 { id: 'ninguna', label: 'Operación Nominal (Estable)' },
-                { id: 'cavitacion', label: 'Cavitación en Bomba' },
-                { id: 'desalineacion', label: 'Desalineación de Eje Acople' },
-                { id: 'incrustaciones', label: 'Incrustaciones en Intercambiador' },
-                { id: 'histeresis', label: 'Histéresis en Válvula Control' }
+                { id: 'cavitacion', label: 'Cavitación en Bomba Centrífuga (PMP-101)' },
+                { id: 'desalineacion', label: 'Desalineación de Eje Acople (MOT-101 / PMP-101)' },
+                {
+                  id: 'incrustaciones',
+                  label: 'Incrustaciones en Intercambiador de Calor (HEX-101)'
+                },
+                { id: 'histeresis', label: 'Histéresis en Válvula de Control (TCV-101)' }
               ].map((f) => (
                 <button
                   key={f.id}
@@ -512,10 +515,18 @@ export default function SimuladorFallas() {
                 >
                   <option value="">-- Seleccionar Hipótesis --</option>
                   <option value="nominal">Operación Nominal / Estable</option>
-                  <option value="cavitacion">Cavitación por Bajo NPSH</option>
-                  <option value="desalineacion">Desalineación Angular/Paralela de Eje</option>
-                  <option value="incrustacion">Incrustación de Tubos (Intercambiador)</option>
-                  <option value="histeresis">Histéresis del Obturador (Válvula de Control)</option>
+                  <option value="cavitacion">
+                    Cavitación por Bajo NPSH - Bomba Centrífuga (PMP-101)
+                  </option>
+                  <option value="desalineacion">
+                    Desalineación Angular/Paralela de Eje - Motor Eléctrico (MOT-101)
+                  </option>
+                  <option value="incrustacion">
+                    Incrustación de Tubos - Intercambiador de Calor (HEX-101)
+                  </option>
+                  <option value="histeresis">
+                    Histéresis del Obturador - Válvula de Control (TCV-101)
+                  </option>
                 </select>
               </div>
 
@@ -539,12 +550,17 @@ export default function SimuladorFallas() {
                   <option value="">-- Seleccionar Acción Correctiva --</option>
                   <option value="monitoreo">Mantener Monitoreo y Telemetría Predictiva</option>
                   <option value="npsh">
-                    Incrementar NPSH disponible (Abrir succión/Subir nivel)
+                    Incrementar NPSH disponible - Bomba Centrífuga (PMP-101)
                   </option>
-                  <option value="alinear">Realinear equipo dinámico en caliente</option>
-                  <option value="limpieza">Ejecutar retrolavado y desincrustación química</option>
+                  <option value="alinear">
+                    Realinear eje de acople - Motor Eléctrico (MOT-101) / Bomba Centrífuga (PMP-101)
+                  </option>
+                  <option value="limpieza">
+                    Ejecutar retrolavado y desincrustación química - Intercambiador de Calor
+                    (HEX-101)
+                  </option>
                   <option value="empaquetadura">
-                    Ajustar/Reemplazar empaquetadura de teflón del vástago
+                    Ajustar/Reemplazar empaquetadura - Válvula de Control (TCV-101)
                   </option>
                 </select>
               </div>

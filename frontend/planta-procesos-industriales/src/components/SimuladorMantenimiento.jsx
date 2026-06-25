@@ -165,9 +165,10 @@ export default function SimuladorMantenimiento({ selectedSemester }) {
               </div>
 
               <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '20px' }}>
-                Ajusta las bases del motor utilizando los pernos de nivelación y lainas calibradas.
-                Logra desalineaciones por debajo de la norma ISO tolerada (Radial &lt; 0.05 mm,
-                Angular &lt; 0.03 mm).
+                Ajusta las bases del Motor Eléctrico (MOT-101) utilizando los pernos de nivelación y
+                lainas calibradas para alinearlo con la Bomba Centrífuga (PMP-101). Logra
+                desalineaciones por debajo de la norma ISO tolerada (Radial &lt; 0.05 mm, Angular
+                &lt; 0.03 mm).
               </p>
 
               {/* Misalignment Controls Slider */}
@@ -342,7 +343,8 @@ export default function SimuladorMantenimiento({ selectedSemester }) {
 
               <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '16px' }}>
                 Utiliza la fórmula estandarizada de relubricación de rodamientos de bolas para
-                calcular la cantidad en gramos de grasa requerida:
+                calcular la cantidad en gramos de grasa requerida para los rodamientos de la Bomba
+                Centrífuga (PMP-101):
                 <br />
                 <code
                   style={{
@@ -483,8 +485,9 @@ export default function SimuladorMantenimiento({ selectedSemester }) {
               </div>
 
               <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '20px' }}>
-                Sigue la lista de verificación para realizar la rutina de inspección al motor y
-                bomba. Presiona completar paso tras realizar la verificación de torque o física.
+                Sigue la lista de verificación para realizar la rutina de inspección al Motor
+                Eléctrico (MOT-101) y la Bomba Centrífuga (PMP-101). Presiona completar paso tras
+                realizar la verificación de torque o física.
               </p>
 
               {/* Checklist steps */}
@@ -702,8 +705,8 @@ export default function SimuladorMantenimiento({ selectedSemester }) {
                       marginBottom: '16px'
                     }}
                   >
-                    Posiciona las puntas de prueba en la bornera trifásica del motor para comprobar
-                    el voltaje.
+                    Posiciona las puntas de prueba en la bornera trifásica del Motor Eléctrico
+                    (MOT-101) para comprobar el voltaje.
                   </p>
 
                   {/* Multimeter Display screen */}
@@ -758,8 +761,8 @@ export default function SimuladorMantenimiento({ selectedSemester }) {
                       marginBottom: '12px'
                     }}
                   >
-                    Inspecciona la temperatura de los rodamientos de la bomba. Valores &gt;75°C
-                    indican falta de grasa o desgaste severo.
+                    Inspecciona la temperatura de los rodamientos de la Bomba Centrífuga (PMP-101).
+                    Valores &gt;75°C indican falta de grasa o desgaste severo.
                   </p>
 
                   {/* Laser Thermometer display */}
@@ -782,7 +785,7 @@ export default function SimuladorMantenimiento({ selectedSemester }) {
                       <div
                         style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 700 }}
                       >
-                        RODAMIENTO 1 (ACOPLE)
+                        RODAMIENTO 1 (ACOPLE MOTOR MOT-101)
                       </div>
                       <div
                         style={{
@@ -805,7 +808,7 @@ export default function SimuladorMantenimiento({ selectedSemester }) {
                       <div
                         style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 700 }}
                       >
-                        RODAMIENTO 2 (BOMBA)
+                        RODAMIENTO 2 (BOMBA PMP-101)
                       </div>
                       <div
                         style={{

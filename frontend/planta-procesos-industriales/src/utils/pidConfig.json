@@ -2,38 +2,56 @@
   "equipos": [
     {
       "id3D": "bomba",
-      "nombre": "Bomba Centrífuga - PMP-101",
+      "nombre_comun": "Bomba Centrífuga",
+      "tag": "PMP-101",
       "planoSVG_id": "plano_general",
       "nodoSVG_id": "pid_bomba",
-      "coordenadasZoom": { "x": -150, "y": -345, "scale": 2.0 }
+      "coordenadasZoom": { "x": -150, "y": -345, "scale": 2.0 },
+      "descripcion": "Desplaza fluidos incrementando su presión hidráulica. Es fundamental para transportar la pulpa en minería, el agua de alimentación en energía, o la leche en procesos alimentarios.",
+      "instrumentos": [
+        { "tag": "PIT-101", "funcion": "Transmisor de Presión (Succión)" },
+        { "tag": "FIT-101", "funcion": "Transmisor de Caudal (Descarga)" }
+      ]
     },
     {
       "id3D": "motor",
-      "nombre": "Motor Eléctrico - MOT-101",
+      "nombre_comun": "Motor Eléctrico",
+      "tag": "MOT-101",
       "planoSVG_id": "plano_general",
       "nodoSVG_id": "pid_motor",
-      "coordenadasZoom": { "x": -150, "y": -585, "scale": 2.0 }
+      "coordenadasZoom": { "x": -150, "y": -585, "scale": 2.0 },
+      "descripcion": "Accionamiento principal rotativo que convierte energía eléctrica trifásica en torque mecánico para acoplar y mover la bomba de proceso.",
+      "instrumentos": [{ "tag": "TIT-101", "funcion": "Transmisor de Temperatura de Devanado" }]
     },
     {
       "id3D": "compresor",
-      "nombre": "Compresor Reciprocante - CMP-101",
+      "nombre_comun": "Compresor Reciprocante",
+      "tag": "CMP-101",
       "planoSVG_id": "plano_general",
       "nodoSVG_id": "pid_compresor",
-      "coordenadasZoom": { "x": -1050, "y": 35, "scale": 2.0 }
+      "coordenadasZoom": { "x": -1050, "y": 35, "scale": 2.0 },
+      "descripcion": "Comprime aire ambiente mediante pistones reciprocantes para accionar actuadores neumáticos, cilindros y posicionadores de válvulas.",
+      "instrumentos": [{ "tag": "PIT-102", "funcion": "Transmisor de Presión de Descarga" }]
     },
     {
       "id3D": "intercambiador",
-      "nombre": "Intercambiador Tubo y Carcasa - HEX-101",
+      "nombre_comun": "Intercambiador de Calor",
+      "tag": "HEX-101",
       "planoSVG_id": "plano_general",
       "nodoSVG_id": "pid_intercambiador",
-      "coordenadasZoom": { "x": -690, "y": -225, "scale": 2.0 }
+      "coordenadasZoom": { "x": -690, "y": -225, "scale": 2.0 },
+      "descripcion": "Transfiere energía térmica entre el fluido de proceso caliente y una corriente secundaria fría sin contacto físico directo.",
+      "instrumentos": [{ "tag": "TIT-101", "funcion": "Transmisor de Temperatura de Salida" }]
     },
     {
       "id3D": "valvula",
-      "nombre": "Válvula de Control Proporcional - TCV-101",
+      "nombre_comun": "Válvula de Control",
+      "tag": "TCV-101",
       "planoSVG_id": "plano_general",
       "nodoSVG_id": "pid_valvula",
-      "coordenadasZoom": { "x": -1050, "y": -225, "scale": 2.0 }
+      "coordenadasZoom": { "x": -1050, "y": -225, "scale": 2.0 },
+      "descripcion": "Regula activamente variables de proceso (presión, caudal, temperatura) variando el área del obturador mediante un actuador neumático.",
+      "instrumentos": [{ "tag": "TCV-101", "funcion": "Válvula de Control Neumática" }]
     }
   ]
 }

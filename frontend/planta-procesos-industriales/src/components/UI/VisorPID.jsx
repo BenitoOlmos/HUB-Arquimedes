@@ -6,16 +6,23 @@ import pidConfig from '../../utils/pidConfig.json';
 export default function VisorPID({ selectedEquipmentId, onClose }) {
   const transformWrapperRef = useRef(null);
 
-  // Focus and zoom automatically to the selected equipment when it changes
+  // Focus and zoom automatically to the selected equipment when it changes, or center it
   useEffect(() => {
-    if (selectedEquipmentId && transformWrapperRef.current) {
-      const { setTransform } = transformWrapperRef.current;
-      const config = pidConfig.equipos.find((e) => e.id3D === selectedEquipmentId);
-      if (config && config.coordenadasZoom) {
-        const { x, y, scale } = config.coordenadasZoom;
-        setTransform(x, y, scale, 400, 'easeOut');
+    const timer = setTimeout(() => {
+      if (transformWrapperRef.current) {
+        const { setTransform, resetTransform } = transformWrapperRef.current;
+        if (selectedEquipmentId) {
+          const config = pidConfig.equipos.find((e) => e.id3D === selectedEquipmentId);
+          if (config && config.coordenadasZoom) {
+            const { x, y, scale } = config.coordenadasZoom;
+            setTransform(x, y, scale, 400, 'easeOut');
+            return;
+          }
+        }
+        resetTransform(300);
       }
-    }
+    }, 150);
+    return () => clearTimeout(timer);
   }, [selectedEquipmentId]);
 
   const handleReset = () => {
@@ -106,14 +113,22 @@ export default function VisorPID({ selectedEquipmentId, onClose }) {
         }
       `}</style>
 
-      {/* Content Layout: 75% CAD Canvas, 25% Information Side Panel */}
+      {/* Content Layout: CAD Canvas and Information Panel Below */}
       <div
-        style={{ display: 'flex', flex: 1, gap: '16px', overflow: 'hidden', minHeight: '380px' }}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          flex: 1,
+          gap: '16px',
+          overflowY: 'auto'
+        }}
       >
-        {/* P&ID CAD Canvas (75% width) */}
+        {/* P&ID CAD Canvas */}
         <div
           style={{
-            flex: '3 1 75%',
+            width: '100%',
+            height: '420px',
+            minHeight: '350px',
             backgroundColor: '#0b0f19',
             borderRadius: 'var(--radius-md)',
             position: 'relative',
@@ -127,8 +142,6 @@ export default function VisorPID({ selectedEquipmentId, onClose }) {
           <TransformWrapper
             ref={transformWrapperRef}
             initialScale={0.8}
-            initialPositionX={0}
-            initialPositionY={0}
             minScale={0.4}
             maxScale={5}
             centerOnInit={true}
@@ -658,33 +671,32 @@ export default function VisorPID({ selectedEquipmentId, onClose }) {
           </TransformWrapper>
         </div>
 
-        {/* Information Side Panel (25% width) */}
+        {/* Information Panel Below (100% width) */}
         <div
           style={{
-            flex: '1 1 25%',
+            width: '100%',
             backgroundColor: 'var(--bg-primary)',
             borderRadius: 'var(--radius-md)',
             border: '1px solid var(--border-color)',
             padding: '16px',
             display: 'flex',
             flexDirection: 'column',
-            gap: '12px',
-            overflowY: 'auto',
-            maxHeight: '420px'
+            gap: '12px'
           }}
         >
           {getSelectedEquipmentInfo() ? (
-            <>
-              <div>
+            <div className="visor-pid-info-grid">
+              {/* Col 1: Equipo Activo */}
+              <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                 <span
                   className="badge badge-yellow"
-                  style={{ fontSize: '0.62rem', marginBottom: '4px' }}
+                  style={{ fontSize: '0.62rem', marginBottom: '4px', width: 'fit-content' }}
                 >
                   Equipo Activo
                 </span>
                 <h5
                   style={{
-                    fontSize: '0.9rem',
+                    fontSize: '0.95rem',
                     fontWeight: 800,
                     margin: 0,
                     color: 'var(--text-main)'
@@ -694,29 +706,71 @@ export default function VisorPID({ selectedEquipmentId, onClose }) {
                 </h5>
                 <span
                   style={{
-                    fontSize: '0.72rem',
+                    fontSize: '0.75rem',
                     color: 'var(--text-muted)',
-                    fontFamily: 'var(--font-mono)'
+                    fontFamily: 'var(--font-mono)',
+                    marginTop: '2px'
                   }}
                 >
                   TAG: {getSelectedEquipmentInfo().tag}
                 </span>
               </div>
 
-              <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '10px' }}>
+              {/* Col 2: Función del Proceso */}
+              <div
+                style={{
+                  borderLeft: '1px solid var(--border-color)',
+                  paddingLeft: '20px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center'
+                }}
+              >
                 <span
                   style={{
                     fontSize: '0.65rem',
                     fontWeight: 700,
                     color: 'var(--text-muted)',
-                    textTransform: 'uppercase'
+                    textTransform: 'uppercase',
+                    marginBottom: '4px'
+                  }}
+                >
+                  Función del Proceso
+                </span>
+                <p
+                  style={{
+                    fontSize: '0.75rem',
+                    color: 'var(--text-muted)',
+                    margin: 0,
+                    lineHeight: '1.4'
+                  }}
+                >
+                  {getSelectedEquipmentInfo().descripcion}
+                </p>
+              </div>
+
+              {/* Col 3: Instrumentación Asociada */}
+              <div
+                style={{
+                  borderLeft: '1px solid var(--border-color)',
+                  paddingLeft: '20px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center'
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: '0.65rem',
+                    fontWeight: 700,
+                    color: 'var(--text-muted)',
+                    textTransform: 'uppercase',
+                    marginBottom: '6px'
                   }}
                 >
                   Instrumentación Asociada
                 </span>
-                <div
-                  style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '6px' }}
-                >
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                   {getSelectedEquipmentInfo().instrumentos &&
                     getSelectedEquipmentInfo().instrumentos.map((inst, i) => (
                       <div
@@ -725,9 +779,10 @@ export default function VisorPID({ selectedEquipmentId, onClose }) {
                           display: 'flex',
                           justifyContent: 'space-between',
                           fontSize: '0.72rem',
-                          padding: '4px 6px',
+                          padding: '4px 8px',
                           backgroundColor: 'var(--bg-secondary)',
-                          borderRadius: 'var(--radius-sm)'
+                          borderRadius: 'var(--radius-sm)',
+                          border: '1px solid var(--border-color)'
                         }}
                       >
                         <span style={{ fontWeight: 'bold', color: '#10b981' }}>{inst.tag}</span>
@@ -736,47 +791,22 @@ export default function VisorPID({ selectedEquipmentId, onClose }) {
                     ))}
                 </div>
               </div>
-
-              <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '10px' }}>
-                <span
-                  style={{
-                    fontSize: '0.65rem',
-                    fontWeight: 700,
-                    color: 'var(--text-muted)',
-                    textTransform: 'uppercase'
-                  }}
-                >
-                  Función del Proceso
-                </span>
-                <p
-                  style={{
-                    fontSize: '0.72rem',
-                    color: 'var(--text-muted)',
-                    margin: '4px 0 0 0',
-                    lineHeight: '1.4'
-                  }}
-                >
-                  {getSelectedEquipmentInfo().descripcion}
-                </p>
-              </div>
-            </>
+            </div>
           ) : (
             <div
               style={{
                 display: 'flex',
-                flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                height: '100%',
-                textAlign: 'center',
+                gap: '8px',
                 color: 'var(--text-muted)',
-                padding: '20px 0'
+                padding: '10px 0'
               }}
             >
-              <span style={{ fontSize: '1.5rem', marginBottom: '8px' }}>🔍</span>
-              <p style={{ fontSize: '0.75rem', margin: 0 }}>
+              <span style={{ fontSize: '1.25rem' }}>🔍</span>
+              <p style={{ fontSize: '0.78rem', margin: 0 }}>
                 Haz clic en un componente del plano P&ID o en la vista 3D para ver su telemetría e
-                información técnica.
+                información técnica detallada.
               </p>
             </div>
           )}

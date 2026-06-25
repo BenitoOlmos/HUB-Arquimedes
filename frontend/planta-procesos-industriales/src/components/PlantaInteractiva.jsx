@@ -293,11 +293,14 @@ export default function PlantaInteractiva({ defaultContext = 'Minería', selecte
         </div>
       </div>
 
-      {/* Layout de pantalla dividida con Visor P&ID */}
-      <div className="grid-cols-12" style={{ gap: '20px', alignItems: 'stretch' }}>
+      {/* Fila Superior: Planta Interactiva (2D/3D) y Visor P&ID */}
+      <div
+        className="grid-cols-12"
+        style={{ gap: '20px', alignItems: 'stretch', marginBottom: '20px' }}
+      >
         <div
           className={mostrarPID ? 'col-span-7' : 'col-span-12'}
-          style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}
+          style={{ display: 'flex', flexDirection: 'column' }}
         >
           {/* SVG Planta de Proceso Interactivo */}
           <div
@@ -308,7 +311,10 @@ export default function PlantaInteractiva({ defaultContext = 'Minería', selecte
               background: vistaPlanta === '3d' ? '#0b0f19' : activeContext.bgColor,
               border: `1.5px solid ${vistaPlanta === '3d' ? '#1e293b' : activeContext.primaryColor + '30'}`,
               borderRadius: 'var(--radius-lg)',
-              transition: 'all 0.3s ease'
+              transition: 'all 0.3s ease',
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column'
             }}
           >
             {/* Leyenda de Contexto Activo */}
@@ -1232,232 +1238,9 @@ export default function PlantaInteractiva({ defaultContext = 'Minería', selecte
               </div>
             )}
           </div>
-
-          {/* POPUP DE INSPECCIÓN DE SUBSISTEMAS Y COMPONENTES */}
-          {selectedEquipment ? (
-            <div className="grid-cols-12 slide-in-left">
-              {/* General Equipment Specifications */}
-              <div
-                className={mostrarPID ? 'col-span-12 glass-card' : 'col-span-6 glass-card'}
-                style={{ borderLeft: `5px solid ${activeContext.primaryColor}` }}
-              >
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'flex-start',
-                    marginBottom: '16px'
-                  }}
-                >
-                  <div>
-                    <span className="badge badge-blue" style={{ marginBottom: '4px' }}>
-                      {equipmentFamilies[selectedEquipment].subtitle}
-                    </span>
-                    <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-main)' }}>
-                      {equipmentFamilies[selectedEquipment].name} (
-                      {equipmentFamilies[selectedEquipment].tag})
-                    </h3>
-                  </div>
-                  <button
-                    onClick={() => setSelectedEquipment(null)}
-                    className="btn btn-secondary"
-                    style={{ padding: '4px 8px', fontSize: '0.75rem' }}
-                  >
-                    Cerrar
-                  </button>
-                </div>
-
-                <p
-                  style={{
-                    fontSize: '0.88rem',
-                    color: 'var(--text-muted)',
-                    marginBottom: '20px',
-                    lineHeight: '1.5'
-                  }}
-                >
-                  {equipmentFamilies[selectedEquipment].desc}
-                </p>
-
-                <h4
-                  style={{
-                    fontSize: '0.9rem',
-                    fontWeight: 700,
-                    color: 'var(--text-main)',
-                    marginBottom: '10px',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.5px'
-                  }}
-                >
-                  Despiece y Componentes Internos
-                </h4>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  {equipmentFamilies[selectedEquipment].components.map((comp, index) => (
-                    <div
-                      key={index}
-                      style={{
-                        padding: '10px',
-                        backgroundColor: 'var(--bg-primary)',
-                        borderRadius: 'var(--radius-sm)',
-                        border: '1px solid var(--border-color)'
-                      }}
-                    >
-                      <span
-                        style={{
-                          fontWeight: 700,
-                          fontSize: '0.85rem',
-                          color: activeContext.primaryColor
-                        }}
-                      >
-                        {comp.name}
-                      </span>
-                      <p
-                        style={{
-                          fontSize: '0.78rem',
-                          color: 'var(--text-muted)',
-                          marginTop: '2px'
-                        }}
-                      >
-                        {comp.desc}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Subsystems Integration (Mecánico, Eléctrico, Control) */}
-              <div className={mostrarPID ? 'col-span-12 glass-card' : 'col-span-6 glass-card'}>
-                <h4
-                  style={{
-                    fontSize: '1.05rem',
-                    fontWeight: 800,
-                    marginBottom: '16px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px'
-                  }}
-                >
-                  <Layers3 size={18} className="text-accent" />
-                  Integración de Subsistemas Industriales
-                </h4>
-                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '20px' }}>
-                  Los alumnos de 4° a 8° semestre interactúan analizando cómo cada subsistema afecta
-                  a los otros dos.
-                </p>
-
-                {/* Subsystem Toggles */}
-                <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
-                  {['Mecánico', 'Eléctrico', 'Control'].map((sub) => (
-                    <button
-                      key={sub}
-                      onClick={() => setActiveSubsystem(sub)}
-                      className={`btn ${activeSubsystem === sub ? 'btn-primary' : 'btn-secondary'} flex-center gap-12`}
-                      style={{ flex: 1, padding: '10px 6px', fontSize: '0.85rem' }}
-                    >
-                      {sub === 'Mecánico' && <Settings size={14} />}
-                      {sub === 'Eléctrico' && <Zap size={14} />}
-                      {sub === 'Control' && <Cpu size={14} />}
-                      <span>{sub}</span>
-                    </button>
-                  ))}
-                </div>
-
-                <div
-                  style={{
-                    padding: '20px',
-                    backgroundColor: 'var(--bg-primary)',
-                    borderRadius: 'var(--radius-md)',
-                    border: '1.5px solid var(--border-color)',
-                    minHeight: '180px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    position: 'relative',
-                    overflow: 'hidden'
-                  }}
-                >
-                  {/* Decorative dynamic pulse based on subsystem */}
-                  <div
-                    style={{
-                      position: 'absolute',
-                      top: '-20px',
-                      right: '-20px',
-                      width: '80px',
-                      height: '80px',
-                      borderRadius: '50%',
-                      backgroundColor:
-                        activeSubsystem === 'Mecánico'
-                          ? 'var(--color-minerria)'
-                          : activeSubsystem === 'Eléctrico'
-                            ? 'var(--color-energia)'
-                            : 'var(--color-quimica)',
-                      opacity: 0.05,
-                      filter: 'blur(10px)'
-                    }}
-                  />
-
-                  <span
-                    style={{
-                      fontSize: '0.75rem',
-                      fontWeight: 700,
-                      textTransform: 'uppercase',
-                      color: 'var(--text-muted)',
-                      display: 'block',
-                      marginBottom: '6px'
-                    }}
-                  >
-                    Foco de Inspección ({activeSubsystem})
-                  </span>
-                  <p
-                    style={{
-                      fontSize: '0.9rem',
-                      color: 'var(--text-main)',
-                      fontWeight: 600,
-                      lineHeight: '1.6'
-                    }}
-                  >
-                    {equipmentFamilies[selectedEquipment].subsystems[activeSubsystem]}
-                  </p>
-
-                  <div
-                    style={{
-                      display: 'flex',
-                      gap: '10px',
-                      marginTop: '20px',
-                      borderTop: '1px solid var(--border-color)',
-                      paddingTop: '16px',
-                      alignItems: 'center'
-                    }}
-                  >
-                    <span className="badge badge-green" style={{ fontSize: '0.65rem' }}>
-                      Apto Evaluaciones
-                    </span>
-                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                      Variables clave: Temperatura, Vibraciones, Señales de feedback analógicas.
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div
-              style={{
-                padding: '40px',
-                backgroundColor: 'var(--bg-secondary)',
-                border: '1px dashed var(--border-color)',
-                borderRadius: 'var(--radius-lg)',
-                textAlign: 'center',
-                color: 'var(--text-muted)',
-                fontSize: '0.9rem'
-              }}
-            >
-              💡 Selecciona un equipo del diagrama superior (Bomba, Motor, Compresor,
-              Intercambiador, Válvula) para abrir la vista detallada de sus piezas y subsistemas
-              mecánicos, eléctricos y lógicos.
-            </div>
-          )}
         </div>
 
-        {/* Visor P&ID Lateral */}
+        {/* Visor P&ID Lateral (Fila Superior) */}
         {mostrarPID && (
           <div className="col-span-5" style={{ display: 'flex', flexDirection: 'column' }}>
             <VisorPID
@@ -1467,6 +1250,230 @@ export default function PlantaInteractiva({ defaultContext = 'Minería', selecte
           </div>
         )}
       </div>
+
+      {/* Fila Inferior: Panel de Inspección de Componentes y Subsistemas */}
+      {selectedEquipment ? (
+        <div className="grid-cols-12 slide-in-left" style={{ gap: '20px' }}>
+          {/* General Equipment Specifications */}
+          <div
+            className="col-span-6 glass-card"
+            style={{ borderLeft: `5px solid ${activeContext.primaryColor}` }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'flex-start',
+                marginBottom: '16px'
+              }}
+            >
+              <div>
+                <span className="badge badge-blue" style={{ marginBottom: '4px' }}>
+                  {equipmentFamilies[selectedEquipment].subtitle}
+                </span>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-main)' }}>
+                  {equipmentFamilies[selectedEquipment].name} (
+                  {equipmentFamilies[selectedEquipment].tag})
+                </h3>
+              </div>
+              <button
+                onClick={() => setSelectedEquipment(null)}
+                className="btn btn-secondary"
+                style={{ padding: '4px 8px', fontSize: '0.75rem' }}
+              >
+                Cerrar
+              </button>
+            </div>
+
+            <p
+              style={{
+                fontSize: '0.88rem',
+                color: 'var(--text-muted)',
+                marginBottom: '20px',
+                lineHeight: '1.5'
+              }}
+            >
+              {equipmentFamilies[selectedEquipment].desc}
+            </p>
+
+            <h4
+              style={{
+                fontSize: '0.9rem',
+                fontWeight: 700,
+                color: 'var(--text-main)',
+                marginBottom: '10px',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px'
+              }}
+            >
+              Despiece y Componentes Internos
+            </h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {equipmentFamilies[selectedEquipment].components.map((comp, index) => (
+                <div
+                  key={index}
+                  style={{
+                    padding: '10px',
+                    backgroundColor: 'var(--bg-primary)',
+                    borderRadius: 'var(--radius-sm)',
+                    border: '1px solid var(--border-color)'
+                  }}
+                >
+                  <span
+                    style={{
+                      fontWeight: 700,
+                      fontSize: '0.85rem',
+                      color: activeContext.primaryColor
+                    }}
+                  >
+                    {comp.name}
+                  </span>
+                  <p
+                    style={{
+                      fontSize: '0.78rem',
+                      color: 'var(--text-muted)',
+                      marginTop: '2px'
+                    }}
+                  >
+                    {comp.desc}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Subsystems Integration (Mecánico, Eléctrico, Control) */}
+          <div className="col-span-6 glass-card">
+            <h4
+              style={{
+                fontSize: '1.05rem',
+                fontWeight: 800,
+                marginBottom: '16px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}
+            >
+              <Layers3 size={18} className="text-accent" />
+              Integración de Subsistemas Industriales
+            </h4>
+            <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '20px' }}>
+              Los alumnos de 4° a 8° semestre interactúan analizando cómo cada subsistema afecta a
+              los otros dos.
+            </p>
+
+            {/* Subsystem Toggles */}
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
+              {['Mecánico', 'Eléctrico', 'Control'].map((sub) => (
+                <button
+                  key={sub}
+                  onClick={() => setActiveSubsystem(sub)}
+                  className={`btn ${activeSubsystem === sub ? 'btn-primary' : 'btn-secondary'} flex-center gap-12`}
+                  style={{ flex: 1, padding: '10px 6px', fontSize: '0.85rem' }}
+                >
+                  {sub === 'Mecánico' && <Settings size={14} />}
+                  {sub === 'Eléctrico' && <Zap size={14} />}
+                  {sub === 'Control' && <Cpu size={14} />}
+                  <span>{sub}</span>
+                </button>
+              ))}
+            </div>
+
+            <div
+              style={{
+                padding: '20px',
+                backgroundColor: 'var(--bg-primary)',
+                borderRadius: 'var(--radius-md)',
+                border: '1.5px solid var(--border-color)',
+                minHeight: '180px',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                position: 'relative',
+                overflow: 'hidden'
+              }}
+            >
+              {/* Decorative dynamic pulse based on subsystem */}
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '-20px',
+                  right: '-20px',
+                  width: '80px',
+                  height: '80px',
+                  borderRadius: '50%',
+                  backgroundColor:
+                    activeSubsystem === 'Mecánico'
+                      ? 'var(--color-minerria)'
+                      : activeSubsystem === 'Eléctrico'
+                        ? 'var(--color-energia)'
+                        : 'var(--color-quimica)',
+                  opacity: 0.05,
+                  filter: 'blur(10px)'
+                }}
+              />
+
+              <span
+                style={{
+                  fontSize: '0.75rem',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  color: 'var(--text-muted)',
+                  display: 'block',
+                  marginBottom: '6px'
+                }}
+              >
+                Foco de Inspección ({activeSubsystem})
+              </span>
+              <p
+                style={{
+                  fontSize: '0.9rem',
+                  color: 'var(--text-main)',
+                  fontWeight: 600,
+                  lineHeight: '1.6'
+                }}
+              >
+                {equipmentFamilies[selectedEquipment].subsystems[activeSubsystem]}
+              </p>
+
+              <div
+                style={{
+                  display: 'flex',
+                  gap: '10px',
+                  marginTop: '20px',
+                  borderTop: '1px solid var(--border-color)',
+                  paddingTop: '16px',
+                  alignItems: 'center'
+                }}
+              >
+                <span className="badge badge-green" style={{ fontSize: '0.65rem' }}>
+                  Apto Evaluaciones
+                </span>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                  Variables clave: Temperatura, Vibraciones, Señales de feedback analógicas.
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div
+          style={{
+            padding: '40px',
+            backgroundColor: 'var(--bg-secondary)',
+            border: '1px dashed var(--border-color)',
+            borderRadius: 'var(--radius-lg)',
+            textAlign: 'center',
+            color: 'var(--text-muted)',
+            fontSize: '0.9rem',
+            marginTop: '20px'
+          }}
+        >
+          💡 Selecciona un equipo del diagrama superior (Bomba, Motor, Compresor, Intercambiador,
+          Válvula) para abrir la vista detallada de sus piezas y subsistemas mecánicos, eléctricos y
+          lógicos.
+        </div>
+      )}
     </div>
   );
 }

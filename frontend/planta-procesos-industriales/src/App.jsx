@@ -11,7 +11,9 @@ import {
   LogOut,
   Bell,
   Info,
-  HelpCircle
+  HelpCircle,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 
 import TutorialGuiado from './components/TutorialGuiado';
@@ -26,6 +28,17 @@ export default function App() {
   const [selectedSemester, setSelectedSemester] = useState(1);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [selectedScenarioCode, setSelectedScenarioCode] = useState(null);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
+    return localStorage.getItem('sidebar_collapsed') === 'true';
+  });
+
+  const toggleSidebar = () => {
+    setIsSidebarCollapsed((prev) => {
+      const next = !prev;
+      localStorage.setItem('sidebar_collapsed', String(next));
+      return next;
+    });
+  };
 
   // Custom scenario route linking
   const handleSelectScenario = (code, targetTab) => {
@@ -119,13 +132,23 @@ export default function App() {
   return (
     <div className="app-container">
       {/* SIDEBAR NAVIGATION */}
-      <aside className="app-sidebar">
+      <aside className={`app-sidebar ${isSidebarCollapsed ? 'collapsed' : ''}`}>
         <div className="logo-container">
-          <div className="logo-icon">PP</div>
-          <div>
-            <h1 className="logo-text">PlantaVirtual</h1>
-            <span className="logo-sub">PC Digital Conf</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div className="logo-icon">PP</div>
+            <div className="logo-text-wrapper">
+              <h1 className="logo-text">PlantaVirtual</h1>
+              <span className="logo-sub">PC Digital Conf</span>
+            </div>
           </div>
+          <button
+            onClick={toggleSidebar}
+            className="btn-collapse-sidebar"
+            title={isSidebarCollapsed ? 'Expandir Menú' : 'Colapsar Menú'}
+            style={{ flexShrink: 0 }}
+          >
+            {isSidebarCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+          </button>
         </div>
 
         <nav className="sidebar-nav">
@@ -192,7 +215,7 @@ export default function App() {
       </aside>
 
       {/* MAIN CONTENT WRAPPER */}
-      <main className="main-wrapper">
+      <main className={`main-wrapper ${isSidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
         <header className="app-header">
           <div className="header-title-container">
             <h1>{headerInfo.title}</h1>

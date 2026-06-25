@@ -594,6 +594,73 @@ body {
   opacity: 1;
 }
 
+/* Collapsible & Responsive Sidebar Styles */
+.app-sidebar.collapsed {
+  width: 80px !important;
+  padding: 24px 8px !important;
+}
+
+.app-sidebar.collapsed .logo-container {
+  flex-direction: column !important;
+  gap: 8px !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+.app-sidebar.collapsed .logo-text-wrapper,
+.app-sidebar.collapsed .logo-text,
+.app-sidebar.collapsed .logo-sub,
+.app-sidebar.collapsed .user-info,
+.app-sidebar.collapsed .nav-item span,
+.app-sidebar.collapsed .sidebar-footer button span {
+  display: none !important;
+}
+
+.app-sidebar.collapsed .nav-item {
+  justify-content: center !important;
+  padding: 12px !important;
+}
+
+.app-sidebar.collapsed .sidebar-footer {
+  align-items: center !important;
+}
+
+.app-sidebar.collapsed .sidebar-footer button {
+  padding: 8px !important;
+  justify-content: center !important;
+}
+
+.app-sidebar.collapsed .user-profile-badge {
+  padding: 4px !important;
+  justify-content: center !important;
+}
+
+.main-wrapper.sidebar-collapsed {
+  margin-left: 80px !important;
+}
+
+/* Sidebar Collapse Toggle Button */
+.btn-collapse-sidebar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-primary);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.btn-collapse-sidebar:hover {
+  background-color: var(--accent-light);
+  color: var(--accent-color);
+  border-color: var(--accent-border);
+}
+
 /* Responsive sidebar */
 @media (max-width: 1024px) {
   .app-sidebar {
@@ -601,10 +668,18 @@ body {
     padding: 24px 8px;
   }
   .logo-text,
+  .logo-text-wrapper,
+  .logo-sub,
   .user-info,
-  .sidebar-footer,
+  .sidebar-footer button span,
   .nav-item span {
-    display: none;
+    display: none !important;
+  }
+  .logo-container {
+    flex-direction: column !important;
+    gap: 8px !important;
+    justify-content: center !important;
+    align-items: center !important;
   }
   .nav-item {
     justify-content: center;
@@ -612,5 +687,16 @@ body {
   }
   .main-wrapper {
     margin-left: 80px;
+  }
+  .sidebar-footer {
+    align-items: center !important;
+  }
+  .sidebar-footer button {
+    padding: 8px !important;
+    justify-content: center !important;
+  }
+  .user-profile-badge {
+    padding: 4px !important;
+    justify-content: center !important;
   }
 }

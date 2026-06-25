@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Eye,
   ShieldAlert,
@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 
 import VisorPID from './UI/VisorPID';
+import CalculadoraConfiabilidad from './CalculadoraConfiabilidad';
 
 export default function PlantaInteractiva({ defaultContext = 'Minería', selectedScenario = null }) {
   const [context, setContext] = useState(defaultContext);
@@ -22,6 +23,93 @@ export default function PlantaInteractiva({ defaultContext = 'Minería', selecte
   const [activeSubsystem, setActiveSubsystem] = useState('Mecánico'); // Mecánico, Eléctrico, Control
   const [mostrarPID, setMostrarPID] = useState(false);
   const [vistaPlanta, setVistaPlanta] = useState('2d'); // '2d' | '3d'
+
+  // Reliability data state per equipment tag
+  const [reliabilityData, setReliabilityData] = useState({
+    bomba: { tiempoOperativo: 800, tiempoReparacion: 40, numFallas: 5 },
+    motor: { tiempoOperativo: 1200, tiempoReparacion: 24, numFallas: 3 },
+    compresor: { tiempoOperativo: 600, tiempoReparacion: 30, numFallas: 6 },
+    intercambiador: { tiempoOperativo: 1500, tiempoReparacion: 50, numFallas: 2 },
+    valvula: { tiempoOperativo: 900, tiempoReparacion: 18, numFallas: 4 }
+  });
+
+  // Load teacher evaluation scenarios from localStorage
+  useEffect(() => {
+    const storedConfig = localStorage.getItem('reliability_teacher_config');
+    if (storedConfig) {
+      try {
+        const parsed = JSON.parse(storedConfig);
+        setReliabilityData((prev) => {
+          const updated = { ...prev };
+          Object.keys(parsed).forEach((key) => {
+            if (parsed[key]) {
+              updated[key] = {
+                tiempoOperativo: parsed[key].tiempoOperativo ?? prev[key].tiempoOperativo,
+                tiempoReparacion: parsed[key].tiempoReparacion ?? prev[key].tiempoReparacion,
+                numFallas: parsed[key].numFallas ?? prev[key].numFallas,
+                isTeacherScenario: true
+              };
+            }
+          });
+          return updated;
+        });
+      } catch (e) {
+        console.error('Error loading teacher reliability config:', e);
+      }
+    }
+  }, []);
+
+  const handleReliabilityChange = (field, value) => {
+    if (!selectedEquipment) return;
+    setReliabilityData((prev) => ({
+      ...prev,
+      [selectedEquipment]: {
+        ...prev[selectedEquipment],
+        [field]: value
+      }
+    }));
+  };
+
+  const handleReliabilityReset = () => {
+    if (!selectedEquipment) return;
+    const factoryDefaults = {
+      bomba: { tiempoOperativo: 800, tiempoReparacion: 40, numFallas: 5 },
+      motor: { tiempoOperativo: 1200, tiempoReparacion: 24, numFallas: 3 },
+      compresor: { tiempoOperativo: 600, tiempoReparacion: 30, numFallas: 6 },
+      intercambiador: { tiempoOperativo: 1500, tiempoReparacion: 50, numFallas: 2 },
+      valvula: { tiempoOperativo: 900, tiempoReparacion: 18, numFallas: 4 }
+    };
+
+    const storedConfig = localStorage.getItem('reliability_teacher_config');
+    let initialVal = factoryDefaults[selectedEquipment];
+    let isTeacher = false;
+
+    if (storedConfig) {
+      try {
+        const parsed = JSON.parse(storedConfig);
+        if (parsed[selectedEquipment]) {
+          initialVal = {
+            tiempoOperativo:
+              parsed[selectedEquipment].tiempoOperativo ?? initialVal.tiempoOperativo,
+            tiempoReparacion:
+              parsed[selectedEquipment].tiempoReparacion ?? initialVal.tiempoReparacion,
+            numFallas: parsed[selectedEquipment].numFallas ?? initialVal.numFallas
+          };
+          isTeacher = true;
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    setReliabilityData((prev) => ({
+      ...prev,
+      [selectedEquipment]: {
+        ...initialVal,
+        isTeacherScenario: isTeacher
+      }
+    }));
+  };
 
   // Industrial Context definitions
   const contexts = {
@@ -1256,7 +1344,7 @@ export default function PlantaInteractiva({ defaultContext = 'Minería', selecte
         <div className="grid-cols-12 slide-in-left" style={{ gap: '20px' }}>
           {/* General Equipment Specifications */}
           <div
-            className="col-span-6 glass-card"
+            className="col-span-4 glass-card"
             style={{ borderLeft: `5px solid ${activeContext.primaryColor}` }}
           >
             <div
@@ -1343,7 +1431,7 @@ export default function PlantaInteractiva({ defaultContext = 'Minería', selecte
           </div>
 
           {/* Subsystems Integration (Mecánico, Eléctrico, Control) */}
-          <div className="col-span-6 glass-card">
+          <div className="col-span-4 glass-card">
             <h4
               style={{
                 fontSize: '1.05rem',
@@ -1454,6 +1542,21 @@ export default function PlantaInteractiva({ defaultContext = 'Minería', selecte
                 </span>
               </div>
             </div>
+          </div>
+
+          {/* Calculadora de Confiabilidad */}
+          <div
+            className="col-span-4 glass-card"
+            style={{ borderRight: `5px solid ${activeContext.primaryColor}` }}
+          >
+            <CalculadoraConfiabilidad
+              equipmentName={equipmentFamilies[selectedEquipment].name}
+              equipmentTag={equipmentFamilies[selectedEquipment].tag}
+              data={reliabilityData[selectedEquipment]}
+              onChange={handleReliabilityChange}
+              onReset={handleReliabilityReset}
+              isTeacherScenario={!!reliabilityData[selectedEquipment].isTeacherScenario}
+            />
           </div>
         </div>
       ) : (

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Award,
   BookOpen,
@@ -8,7 +8,8 @@ import {
   Download,
   AlertTriangle,
   CheckCircle,
-  FileText
+  FileText,
+  Settings
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -30,6 +31,98 @@ export default function DashboardEstudiante({
 }) {
   const [isTeacherView, setIsTeacherView] = useState(false);
   const [downloadMsg, setDownloadMsg] = useState('');
+
+  // States for Teacher Scenario configuration
+  const [selectedEq, setSelectedEq] = useState('bomba');
+  const [opHours, setOpHours] = useState('800');
+  const [downHours, setDownHours] = useState('40');
+  const [failures, setFailures] = useState('5');
+  const [teacherConfigs, setTeacherConfigs] = useState({});
+  const [docenteMsg, setDocenteMsg] = useState('');
+
+  const factoryDefaults = {
+    bomba: 'Bomba Centrífuga (PMP-101)',
+    motor: 'Motor Eléctrico (MOT-101)',
+    compresor: 'Compresor Alternativo (CMP-101)',
+    intercambiador: 'Intercambiador Tubo/Carcasa (HEX-101)',
+    valvula: 'Válvula Control Proporcional (TCV-101)'
+  };
+
+  // Load configurations on mount
+  useEffect(() => {
+    const stored = localStorage.getItem('reliability_teacher_config');
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        setTeacherConfigs(parsed);
+        if (parsed[selectedEq]) {
+          setOpHours(String(parsed[selectedEq].tiempoOperativo));
+          setDownHours(String(parsed[selectedEq].tiempoReparacion));
+          setFailures(String(parsed[selectedEq].numFallas));
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Sync inputs when selected asset changes
+  useEffect(() => {
+    const stored = localStorage.getItem('reliability_teacher_config');
+    let currentConfig = null;
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        if (parsed[selectedEq]) {
+          currentConfig = parsed[selectedEq];
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    if (currentConfig) {
+      setOpHours(String(currentConfig.tiempoOperativo));
+      setDownHours(String(currentConfig.tiempoReparacion));
+      setFailures(String(currentConfig.numFallas));
+    } else {
+      const defaults = {
+        bomba: { op: '800', down: '40', fail: '5' },
+        motor: { op: '1200', down: '24', fail: '3' },
+        compresor: { op: '600', down: '30', fail: '6' },
+        intercambiador: { op: '1500', down: '50', fail: '2' },
+        valvula: { op: '900', down: '18', fail: '4' }
+      };
+      setOpHours(defaults[selectedEq].op);
+      setDownHours(defaults[selectedEq].down);
+      setFailures(defaults[selectedEq].fail);
+    }
+  }, [selectedEq, teacherConfigs]);
+
+  const handleSaveScenario = () => {
+    const newConfig = {
+      ...teacherConfigs,
+      [selectedEq]: {
+        tiempoOperativo: parseFloat(opHours) || 0,
+        tiempoReparacion: parseFloat(downHours) || 0,
+        numFallas: parseInt(failures) || 0
+      }
+    };
+    localStorage.setItem('reliability_teacher_config', JSON.stringify(newConfig));
+    setTeacherConfigs(newConfig);
+    setDocenteMsg(
+      `¡Escenario de evaluación inyectado con éxito para ${factoryDefaults[selectedEq]}!`
+    );
+    setTimeout(() => setDocenteMsg(''), 4000);
+  };
+
+  const handleResetAllScenarios = () => {
+    localStorage.removeItem('reliability_teacher_config');
+    setTeacherConfigs({});
+    setDocenteMsg('¡Se han restablecido todos los equipos a sus parámetros base de fábrica!');
+    setTimeout(() => setDocenteMsg(''), 4000);
+  };
 
   // Curriculum Data Matrix
   const curriculumScenarios = [
@@ -715,6 +808,329 @@ export default function DashboardEstudiante({
                 ))}
               </div>
             </div>
+          </div>
+
+          {/* CONSOLA DE CONFIGURACION DE ESCENARIOS (DOCENTE) */}
+          <div
+            style={{
+              padding: '20px',
+              backgroundColor: 'var(--bg-primary)',
+              borderRadius: 'var(--radius-lg)',
+              border: '1.5px solid var(--border-color)',
+              marginBottom: '24px',
+              animation: 'slideInLeft 0.3s ease-out'
+            }}
+          >
+            <h4
+              style={{
+                fontSize: '1rem',
+                fontWeight: 700,
+                marginBottom: '10px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}
+            >
+              <Settings size={18} className="text-accent" />
+              🔧 Consola Docente: Inyección de Escenarios de Confiabilidad
+            </h4>
+            <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '16px' }}>
+              Define escenarios específicos de fallas ocultas y tiempos operativos. Los estudiantes
+              verán estos parámetros cargados en sus calculadoras al inspeccionar los equipos en la
+              Planta Virtual.
+            </p>
+
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '1.2fr 1.8fr',
+                gap: '24px',
+                alignItems: 'start'
+              }}
+            >
+              {/* Formulario */}
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '12px',
+                  padding: '16px',
+                  backgroundColor: 'var(--bg-secondary)',
+                  borderRadius: 'var(--radius-md)',
+                  border: '1px solid var(--border-color)'
+                }}
+              >
+                <div>
+                  <label
+                    style={{
+                      display: 'block',
+                      fontSize: '0.75rem',
+                      fontWeight: 700,
+                      color: 'var(--text-muted)',
+                      marginBottom: '4px'
+                    }}
+                  >
+                    Seleccionar Equipo Industrial
+                  </label>
+                  <select
+                    value={selectedEq}
+                    onChange={(e) => setSelectedEq(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '8px',
+                      borderRadius: 'var(--radius-sm)',
+                      border: '1px solid var(--border-color)',
+                      backgroundColor: 'var(--bg-primary)',
+                      color: 'var(--text-main)',
+                      fontSize: '0.85rem'
+                    }}
+                  >
+                    <option value="bomba">Bomba Centrífuga (PMP-101)</option>
+                    <option value="motor">Motor Eléctrico (MOT-101)</option>
+                    <option value="compresor">Compresor Alternativo (CMP-101)</option>
+                    <option value="intercambiador">Intercambiador de Calor (HEX-101)</option>
+                    <option value="valvula">Válvula de Control (TCV-101)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label
+                    style={{
+                      display: 'block',
+                      fontSize: '0.75rem',
+                      fontWeight: 700,
+                      color: 'var(--text-muted)',
+                      marginBottom: '4px'
+                    }}
+                  >
+                    Tiempo Operativo Base (Horas)
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={opHours}
+                    onChange={(e) => setOpHours(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '8px',
+                      borderRadius: 'var(--radius-sm)',
+                      border: '1px solid var(--border-color)',
+                      backgroundColor: 'var(--bg-primary)',
+                      color: 'var(--text-main)',
+                      fontSize: '0.85rem'
+                    }}
+                  />
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 700,
+                        color: 'var(--text-muted)',
+                        marginBottom: '4px'
+                      }}
+                    >
+                      Reparación (Horas)
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      value={downHours}
+                      onChange={(e) => setDownHours(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '8px',
+                        borderRadius: 'var(--radius-sm)',
+                        border: '1px solid var(--border-color)',
+                        backgroundColor: 'var(--bg-primary)',
+                        color: 'var(--text-main)',
+                        fontSize: '0.85rem'
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 700,
+                        color: 'var(--text-muted)',
+                        marginBottom: '4px'
+                      }}
+                    >
+                      N° de Fallas
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      value={failures}
+                      onChange={(e) => setFailures(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '8px',
+                        borderRadius: 'var(--radius-sm)',
+                        border: '1px solid var(--border-color)',
+                        backgroundColor: 'var(--bg-primary)',
+                        color: 'var(--text-main)',
+                        fontSize: '0.85rem'
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div
+                  style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px' }}
+                >
+                  <button
+                    onClick={handleSaveScenario}
+                    className="btn btn-primary"
+                    style={{ fontSize: '0.8rem', padding: '10px' }}
+                  >
+                    Inyectar Escenario Docente
+                  </button>
+                  <button
+                    onClick={handleResetAllScenarios}
+                    className="btn btn-secondary"
+                    style={{ fontSize: '0.75rem', padding: '8px', color: 'var(--color-danger)' }}
+                  >
+                    Limpiar Todos los Escenarios
+                  </button>
+                </div>
+              </div>
+
+              {/* Tabla Resumen */}
+              <div
+                style={{
+                  padding: '16px',
+                  backgroundColor: 'var(--bg-secondary)',
+                  borderRadius: 'var(--radius-md)',
+                  border: '1px solid var(--border-color)',
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '12px'
+                }}
+              >
+                <h5
+                  style={{
+                    fontSize: '0.85rem',
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                    color: 'var(--text-muted)'
+                  }}
+                >
+                  Configuración Activa de Equipos (Base de Datos Local)
+                </h5>
+
+                <div style={{ overflowX: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem' }}>
+                    <thead>
+                      <tr
+                        style={{
+                          borderBottom: '1px solid var(--border-color)',
+                          color: 'var(--text-muted)',
+                          textAlign: 'left'
+                        }}
+                      >
+                        <th style={{ padding: '8px 4px' }}>Equipo (Tag)</th>
+                        <th style={{ padding: '8px 4px' }}>T. Operación</th>
+                        <th style={{ padding: '8px 4px' }}>T. Inactividad</th>
+                        <th style={{ padding: '8px 4px' }}>Fallas</th>
+                        <th style={{ padding: '8px 4px' }}>Disponibilidad</th>
+                        <th style={{ padding: '8px 4px', textAlign: 'right' }}>Estado</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {Object.entries(factoryDefaults).map(([key, _name]) => {
+                        const isCustom = !!teacherConfigs[key];
+                        const defaults = {
+                          bomba: { op: 800, down: 40, fail: 5 },
+                          motor: { op: 1200, down: 24, fail: 3 },
+                          compresor: { op: 600, down: 30, fail: 6 },
+                          intercambiador: { op: 1500, down: 50, fail: 2 },
+                          valvula: { op: 900, down: 18, fail: 4 }
+                        };
+
+                        const op = isCustom
+                          ? teacherConfigs[key].tiempoOperativo
+                          : defaults[key].op;
+                        const down = isCustom
+                          ? teacherConfigs[key].tiempoReparacion
+                          : defaults[key].down;
+                        const fail = isCustom ? teacherConfigs[key].numFallas : defaults[key].fail;
+
+                        let disp = 100;
+                        if (fail > 0) {
+                          const mtbf = op / fail;
+                          const mttr = down / fail;
+                          disp = (mtbf / (mtbf + mttr)) * 100;
+                        } else {
+                          disp = op + down > 0 ? (op / (op + down)) * 100 : 100;
+                        }
+
+                        const shortName =
+                          key === 'bomba'
+                            ? 'PMP-101'
+                            : key === 'motor'
+                              ? 'MOT-101'
+                              : key === 'compresor'
+                                ? 'CMP-101'
+                                : key === 'intercambiador'
+                                  ? 'HEX-101'
+                                  : 'TCV-101';
+
+                        return (
+                          <tr key={key} style={{ borderBottom: '1px solid var(--border-color)' }}>
+                            <td style={{ padding: '8px 4px', fontWeight: 600 }}>{shortName}</td>
+                            <td style={{ padding: '8px 4px' }}>{op} h</td>
+                            <td style={{ padding: '8px 4px' }}>{down} h</td>
+                            <td style={{ padding: '8px 4px' }}>{fail}</td>
+                            <td
+                              style={{
+                                padding: '8px 4px',
+                                fontWeight: 700,
+                                color: disp >= 95 ? '#10b981' : disp >= 90 ? '#f59e0b' : '#ef4444'
+                              }}
+                            >
+                              {disp.toFixed(1)}%
+                            </td>
+                            <td style={{ padding: '8px 4px', textAlign: 'right' }}>
+                              <span
+                                className={`badge ${isCustom ? 'badge-blue' : 'badge-green'}`}
+                                style={{ fontSize: '0.65rem', padding: '2px 6px' }}
+                              >
+                                {isCustom ? 'Docente' : 'Fábrica'}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            {docenteMsg && (
+              <div
+                style={{
+                  marginTop: '12px',
+                  padding: '10px 14px',
+                  backgroundColor: 'var(--accent-light)',
+                  border: '1px solid var(--accent-border)',
+                  color: 'var(--text-accent)',
+                  borderRadius: 'var(--radius-sm)',
+                  fontSize: '0.8rem',
+                  fontWeight: 600,
+                  animation: 'slideInLeft 0.2s ease-out'
+                }}
+              >
+                {docenteMsg}
+              </div>
+            )}
           </div>
 
           {/* Botones de Descarga y Mensaje */}

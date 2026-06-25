@@ -300,9 +300,10 @@ export default function PlantaInteractiva({ defaultContext = 'Minería', selecte
             style={{
               padding: '24px',
               position: 'relative',
-              background: activeContext.bgColor,
-              border: `1.5px solid ${activeContext.primaryColor}30`,
-              borderRadius: 'var(--radius-lg)'
+              background: vistaPlanta === '3d' ? '#0b0f19' : activeContext.bgColor,
+              border: `1.5px solid ${vistaPlanta === '3d' ? '#1e293b' : activeContext.primaryColor + '30'}`,
+              borderRadius: 'var(--radius-lg)',
+              transition: 'all 0.3s ease'
             }}
           >
             {/* Leyenda de Contexto Activo */}
@@ -336,18 +337,30 @@ export default function PlantaInteractiva({ defaultContext = 'Minería', selecte
                     display: 'flex',
                     borderRadius: 'var(--radius-md)',
                     overflow: 'hidden',
-                    border: '1.5px solid var(--border-color)',
-                    background: 'var(--bg-primary)'
+                    border: `1.5px solid ${vistaPlanta === '3d' ? '#334155' : 'var(--border-color)'}`,
+                    background: vistaPlanta === '3d' ? '#1e293b' : 'var(--bg-primary)',
+                    padding: '2px',
+                    gap: '2px'
                   }}
                 >
                   <button
                     onClick={() => setVistaPlanta('2d')}
-                    className={`btn ${vistaPlanta === '2d' ? 'btn-primary' : 'btn-secondary'}`}
+                    className={`btn ${vistaPlanta === '2d' ? 'btn-primary' : ''}`}
                     style={{
-                      padding: '4px 12px',
+                      padding: '4px 14px',
                       fontSize: '0.75rem',
-                      borderRadius: 0,
+                      borderRadius: 'var(--radius-sm)',
                       border: 'none',
+                      backgroundColor: vistaPlanta === '2d' ? 'var(--accent-color)' : 'transparent',
+                      color:
+                        vistaPlanta === '2d'
+                          ? '#fff'
+                          : vistaPlanta === '3d'
+                            ? '#94a3b8'
+                            : 'var(--text-muted)',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
                       boxShadow: 'none'
                     }}
                   >
@@ -355,12 +368,17 @@ export default function PlantaInteractiva({ defaultContext = 'Minería', selecte
                   </button>
                   <button
                     onClick={() => setVistaPlanta('3d')}
-                    className={`btn ${vistaPlanta === '3d' ? 'btn-primary' : 'btn-secondary'}`}
+                    className={`btn ${vistaPlanta === '3d' ? 'btn-primary' : ''}`}
                     style={{
-                      padding: '4px 12px',
+                      padding: '4px 14px',
                       fontSize: '0.75rem',
-                      borderRadius: 0,
+                      borderRadius: 'var(--radius-sm)',
                       border: 'none',
+                      backgroundColor: vistaPlanta === '3d' ? 'var(--accent-color)' : 'transparent',
+                      color: vistaPlanta === '3d' ? '#fff' : 'var(--text-muted)',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
                       boxShadow: 'none'
                     }}
                   >
@@ -921,10 +939,13 @@ export default function PlantaInteractiva({ defaultContext = 'Minería', selecte
                 className="sketchfab-embed-wrapper"
                 style={{
                   width: '100%',
-                  height: '380px',
+                  height: '420px',
                   marginTop: '10px',
-                  display: 'flex',
-                  flexDirection: 'column'
+                  position: 'relative',
+                  borderRadius: 'var(--radius-md)',
+                  overflow: 'hidden',
+                  border: '1px solid var(--border-color)',
+                  boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.3)'
                 }}
               >
                 <iframe
@@ -940,49 +961,147 @@ export default function PlantaInteractiva({ defaultContext = 'Minería', selecte
                   web-share="true"
                   width="100%"
                   height="100%"
-                  style={{
-                    borderRadius: 'var(--radius-md)',
-                    border: '1px solid var(--border-color)',
-                    flex: 1
-                  }}
-                  src="https://sketchfab.com/models/9143423e241e4a7b98def7e74c15b49b/embed?autospin=1&preload=1&transparent=1"
+                  src="https://sketchfab.com/models/9143423e241e4a7b98def7e74c15b49b/embed?preload=1&dnt=1"
                 />
-                <p
+
+                {/* Floating Explorer Panel over 3D Viewer */}
+                <div
                   style={{
-                    fontSize: '11px',
-                    fontWeight: 'normal',
-                    margin: '5px 0 0 0',
-                    color: 'var(--text-muted)',
-                    textAlign: 'right'
+                    position: 'absolute',
+                    top: '12px',
+                    left: '12px',
+                    width: '220px',
+                    backgroundColor: 'rgba(15, 23, 42, 0.85)',
+                    backdropFilter: 'blur(8px)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    borderRadius: 'var(--radius-md)',
+                    padding: '12px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '8px',
+                    zIndex: 10,
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.5)'
                   }}
                 >
-                  <a
-                    href="https://sketchfab.com/3d-models/industrial-factory-equipment-9143423e241e4a7b98def7e74c15b49b?utm_medium=embed&utm_campaign=share-popup&utm_content=9143423e241e4a7b98def7e74c15b49b"
-                    target="_blank"
-                    rel="nofollow"
-                    style={{ fontWeight: 'bold', color: 'var(--accent-color)' }}
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+                      paddingBottom: '6px'
+                    }}
                   >
-                    Industrial Factory Equipment
-                  </a>{' '}
-                  by{' '}
-                  <a
-                    href="https://sketchfab.com/vp.studio3d?utm_medium=embed&utm_campaign=share-popup&utm_content=9143423e241e4a7b98def7e74c15b49b"
-                    target="_blank"
-                    rel="nofollow"
-                    style={{ fontWeight: 'bold', color: 'var(--accent-color)' }}
+                    <span
+                      style={{
+                        fontSize: '0.62rem',
+                        fontWeight: 800,
+                        color: '#94a3b8',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.5px'
+                      }}
+                    >
+                      Explorador de Equipamiento 3D
+                    </span>
+                  </div>
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '4px',
+                      maxHeight: '180px',
+                      overflowY: 'auto'
+                    }}
                   >
-                    VP.Studio3d
-                  </a>{' '}
-                  on{' '}
-                  <a
-                    href="https://sketchfab.com?utm_medium=embed&utm_campaign=share-popup&utm_content=9143423e241e4a7b98def7e74c15b49b"
-                    target="_blank"
-                    rel="nofollow"
-                    style={{ fontWeight: 'bold', color: 'var(--accent-color)' }}
-                  >
-                    Sketchfab
-                  </a>
-                </p>
+                    {[
+                      { id: 'bomba', name: 'PMP-101 (Bomba)' },
+                      { id: 'motor', name: 'MOT-101 (Motor)' },
+                      { id: 'compresor', name: 'CMP-101 (Compresor)' },
+                      { id: 'intercambiador', name: 'HEX-101 (Intercambiador)' },
+                      { id: 'valvula', name: 'TCV-101 (Válvula)' }
+                    ].map((eq) => (
+                      <button
+                        key={eq.id}
+                        onClick={() => {
+                          setSelectedEquipment(eq.id);
+                          setMostrarPID(true);
+                        }}
+                        style={{
+                          textAlign: 'left',
+                          padding: '6px 10px',
+                          fontSize: '0.72rem',
+                          borderRadius: 'var(--radius-sm)',
+                          border: '1px solid',
+                          borderColor:
+                            selectedEquipment === eq.id ? 'var(--accent-color)' : 'transparent',
+                          backgroundColor:
+                            selectedEquipment === eq.id ? 'rgba(234, 179, 8, 0.15)' : 'transparent',
+                          color: selectedEquipment === eq.id ? '#eab308' : '#cbd5e1',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s ease',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between'
+                        }}
+                      >
+                        <span>{eq.name}</span>
+                        {selectedEquipment === eq.id && (
+                          <span
+                            style={{
+                              width: '6px',
+                              height: '6px',
+                              borderRadius: '50%',
+                              backgroundColor: '#eab308'
+                            }}
+                          />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                  {selectedEquipment && (
+                    <div
+                      style={{
+                        marginTop: '4px',
+                        borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+                        paddingTop: '6px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '2px'
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontSize: '0.58rem',
+                          color: '#94a3b8',
+                          textTransform: 'uppercase'
+                        }}
+                      >
+                        Equipo Seleccionado
+                      </span>
+                      <span style={{ fontSize: '0.7rem', fontWeight: 'bold', color: '#fff' }}>
+                        {selectedEquipment.toUpperCase()}
+                      </span>
+                      <button
+                        onClick={() => {
+                          setSelectedEquipment(null);
+                          setMostrarPID(false);
+                        }}
+                        style={{
+                          marginTop: '4px',
+                          border: 'none',
+                          background: 'none',
+                          padding: 0,
+                          fontSize: '0.62rem',
+                          color: '#f43f5e',
+                          cursor: 'pointer',
+                          textAlign: 'left'
+                        }}
+                      >
+                        Limpiar selección
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>
